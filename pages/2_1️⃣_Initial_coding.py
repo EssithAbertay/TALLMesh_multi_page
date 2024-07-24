@@ -19,7 +19,7 @@ def get_completion(prompt, model):
     )
     return response.choices[0].message.content.strip()
 
-@st.cache
+@st.cache_data
 def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv().encode('utf-8')

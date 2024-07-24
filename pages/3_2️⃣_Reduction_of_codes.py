@@ -21,7 +21,7 @@ def get_completion(prompt, model):
 
 
 
-@st.cache
+@st.cache_data
 def convert_df(df):
     return df.to_csv().encode('utf-8')
 

@@ -119,3 +119,6 @@ tallmesh/
 
 # mkdocs documentation
 /site
+
+# testing folders
+/qualitative_analysis
