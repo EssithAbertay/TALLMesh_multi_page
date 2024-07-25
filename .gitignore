@@ -120,8 +120,9 @@ tallmesh/
 # mkdocs documentation
 /site
 
-# testing folders
+# user data and project folders
 /qualitative_analysis
+/projects
 
 # API keys JSON - using to save time in dev, absolutely not for deployment
 api_keys.json 
