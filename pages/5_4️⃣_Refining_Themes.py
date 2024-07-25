@@ -8,6 +8,7 @@ import streamlit as st
 import openai
 import pandas as pd
 import ast
+from api_key_management import manage_api_keys
 
 client = openai
 
@@ -25,16 +26,19 @@ def convert_df(df):
     return df.to_csv().encode('utf-8')
 
 def main():
-    st.sidebar.title("Select Model and Provide Your Key")
+    #st.sidebar.title("Select Model and Provide Your Key")
 
     model_options = ["gpt-3.5-turbo-16k", "text-davinci-002", "llama-2", "mistral"]
     selected_model = st.sidebar.selectbox("Select Model", model_options)
 
-    api_key = st.sidebar.text_input("Enter OpenAI API Key", type="password")
+    #api_key = st.sidebar.text_input("Enter OpenAI API Key", type="password")
 
-    if st.sidebar.button("Confirm Key and Model"):
-        st.sidebar.success("API Key and Model Confirmed!")
-        client.api_key = api_key
+    #if st.sidebar.button("Confirm Key and Model"):
+    #    st.sidebar.success("API Key and Model Confirmed!")
+    #    client.api_key = api_key
+
+
+    manage_api_keys()    
 
     st.header(":orange[Refining Themes]")
     st.subheader("Changing the temperature will result in different creative for the model")

@@ -10,6 +10,7 @@ import pandas as pd
 import ast #I am using this rather than json loads, but this needs to be fixed
 import openai
 from openai import AzureOpenAI
+from api_key_management import manage_api_keys
 
 client = openai
 def get_completion(prompt, model):
@@ -26,12 +27,15 @@ def convert_df(df):
     return df.to_csv().encode('utf-8')
 
 def main():
-    st.sidebar.title("Select Model and Provide Your Key")
+    #st.sidebar.title("Select Model and Provide Your Key")
 
     model_options = ["gpt-3.5-turbo-16k", "azure-gpt35", "llama-2", "mistral"]
     selected_model = st.sidebar.selectbox("Select Model", model_options)
 
-    api_key = st.sidebar.text_input("Enter OpenAI API Key", type="password")
+    # Call the API key management function instead of asking to reinput keys
+    manage_api_keys()
+
+    #api_key = st.sidebar.text_input("Enter OpenAI API Key", type="password")
 
     azure_endpoint = None
     azure_deployment = None
@@ -39,8 +43,8 @@ def main():
         azure_endpoint = st.sidebar.text_input("Enter Azure Endpoint")
         azure_deployment = st.sidebar.text_input("Enter Azure Deployment")
 
-    if st.sidebar.button("Confirm Key and Model"):
-        st.sidebar.success("API Key and Model Confirmed!")
+    #if st.sidebar.button("Confirm Key and Model"):
+    #    st.sidebar.success("API Key and Model Confirmed!")
         
 
     st.header(":orange[Reduction of Duplicates]")

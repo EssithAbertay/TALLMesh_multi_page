@@ -10,6 +10,7 @@ import openai
 import pandas as pd
 import ast
 from openai import AzureOpenAI
+from api_key_management import manage_api_keys
 
 
 def get_completion(prompt, model):
@@ -29,14 +30,17 @@ def main():
     #st.title("Page 1")
 
     # Sidebar for additional options
-    st.sidebar.title("Select Model and Provide Your Key")
+    #st.sidebar.title("Select Model and Provide Your Key")
 
     # Model selection menu
     model_options = ["gpt-3.5-turbo-16k", "azure-gpt35", "llama-2", "mistral"]
     selected_model = st.sidebar.selectbox("Select Model", model_options)
 
     # Input form for OpenAI API key (password type)
-    api_key = st.sidebar.text_input("Enter OpenAI API Key", type="password")
+    #api_key = st.sidebar.text_input("Enter OpenAI API Key", type="password")
+
+    # Call the API key management function instead of asking to reinput keys
+    manage_api_keys()
 
     # For Azure model, ask for endpoint and deployment
     azure_endpoint = None
@@ -46,8 +50,8 @@ def main():
         azure_deployment = st.sidebar.text_input("Enter Azure Deployment",  type="password")
 
     # Confirm button for updating the API key and model
-    if st.sidebar.button("Confirm Key and Model"):
-        st.sidebar.success("API Key and Model Confirmed!")
+    #if st.sidebar.button("Confirm Key and Model"):
+    #    st.sidebar.success("API Key and Model Confirmed!")
        
 
     # File uploader for selecting multiple .txt files
