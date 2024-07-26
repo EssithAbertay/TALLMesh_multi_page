@@ -5,6 +5,25 @@ from api_key_management import manage_api_keys
 
 PROJECTS_DIR = 'projects'
 
+# messages (St.info, success, toast, etc) wont persist through st.rerun() so need session_state vars to store success / fail messages
+if 'message' not in st.session_state:
+    st.session_state.message = None
+    st.session_state.message_type = None
+
+def handle_file_upload(uploaded_files, project_name):
+    if uploaded_files:
+        saved_files = save_uploaded_files(uploaded_files, project_name)
+        if saved_files:
+            st.session_state.message = f"Files uploaded successfully: {', '.join(saved_files)}"
+            st.session_state.message_type = "success"
+        else:
+            st.session_state.message = "No new files were uploaded. They may already exist in the project."
+            st.session_state.message_type = "info"
+    else:
+        st.session_state.message = "Please select files to upload."
+        st.session_state.message_type = "warning"
+
+
 def create_project(project_name):
     project_path = os.path.join(PROJECTS_DIR, project_name)
     os.makedirs(project_path, exist_ok=True)
@@ -106,15 +125,23 @@ def main():
             uploaded_files = st.file_uploader("Upload interviews .txt files", accept_multiple_files=True, label_visibility="hidden")
             submitted = st.form_submit_button("Upload Files")
 
-        if submitted and uploaded_files:
-            saved_files = save_uploaded_files(uploaded_files, st.session_state.selected_project)
-            if saved_files:
-                st.success(f"Files uploaded successfully: {', '.join(saved_files)}")
-            else:
-                st.info("No new files were uploaded. They may already exist in the project.")
-            st.rerun()
-        elif submitted:
-            st.warning("Please select files to upload.")
+            if submitted:
+                handle_file_upload(uploaded_files, st.session_state.selected_project)
+                st.rerun()
+
+        # Display message if it exists in session state
+        if st.session_state.message:
+            if st.session_state.message_type == "success":
+                st.toast(st.session_state.message, icon="😍")
+            elif st.session_state.message_type == "info":
+                st.toast(st.session_state.message, icon="⚠️")
+            elif st.session_state.message_type == "warning":
+                st.warning(st.session_state.message)
+            
+            # Clear the message after displaying
+            st.session_state.message = None
+            st.session_state.message_type = None
+
     else:
         st.write("Please select or create a project to continue.")
 
