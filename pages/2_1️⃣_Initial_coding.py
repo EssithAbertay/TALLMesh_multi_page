@@ -33,8 +33,10 @@ def main():
     #st.sidebar.title("Select Model and Provide Your Key")
 
     # Model selection menu
-    model_options = ["gpt-3.5-turbo-16k", "azure-gpt35", "llama-2", "mistral"]
+    #model_options = ["gpt-3.5-turbo-16k", "azure-gpt35", "llama-2", "mistral"]
+    model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo"]
     selected_model = st.sidebar.selectbox("Select Model", model_options)
+
 
     # Input form for OpenAI API key (password type)
     #api_key = st.sidebar.text_input("Enter OpenAI API Key", type="password")
