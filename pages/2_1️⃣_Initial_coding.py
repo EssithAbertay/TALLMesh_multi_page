@@ -5,71 +5,109 @@ Created on Fri Feb  2 14:51:05 2024
 @author: Stefano De Paoli - s.depaoli@abertay.ac.uk
 """
 import streamlit as st
-import openai
-#import json #I could not parse the json with json loader had to use ast, this needs fixed
+import os
 import pandas as pd
-import ast
-from openai import AzureOpenAI
-from api_key_management import manage_api_keys
+import json
+from openai import OpenAI, AzureOpenAI
+import anthropic
+from api_key_management import manage_api_keys, load_api_keys
 
+PROJECTS_DIR = 'projects'
 
-def get_completion(prompt, model):
-    response = client.chat.completions.create(
-        model=model,
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return response.choices[0].message.content.strip()
+def get_projects():
+    return [d for d in os.listdir(PROJECTS_DIR) if os.path.isdir(os.path.join(PROJECTS_DIR, d))]
 
-@st.cache_data
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode('utf-8')
+def get_project_files(project_name):
+    data_folder = os.path.join(PROJECTS_DIR, project_name, 'data')
+    return [f for f in os.listdir(data_folder) if os.path.isfile(os.path.join(data_folder, f))]
+
+def save_uploaded_files(uploaded_files, project_name):
+    data_folder = os.path.join(PROJECTS_DIR, project_name, 'data')
+    saved_files = []
+    for file in uploaded_files:
+        file_path = os.path.join(data_folder, file.name)
+        if not os.path.exists(file_path):
+            with open(file_path, "wb") as f:
+                f.write(file.getbuffer())
+            saved_files.append(file.name)
+    return saved_files
+
+def save_initial_codes(project_name, file_name, df):
+    initial_codes_folder = os.path.join(PROJECTS_DIR, project_name, 'initial_codes')
+    os.makedirs(initial_codes_folder, exist_ok=True)
+    
+    # strip extension from filename ... could be problematic in cases of here.is.some.file.extension
+    file_name_stripped = str(os.path.splitext(file_name)[0])
+
+    output_file_path = os.path.join(initial_codes_folder, f"{file_name_stripped}_initial_codes.csv")
+    df.to_csv(output_file_path, index=False, encoding='utf-8')
+    return output_file_path
+
+def process_file(file_path, model, prompt):
+    # Specify encoding to handle potential UnicodeDecodeError
+    with open(file_path, 'r', encoding='utf-8') as file:
+        content = file.read()
+    
+    full_prompt = f"{prompt}\n\nFile Content:\n{content}"
+    
+    if model.startswith("gpt"):
+        client = OpenAI(api_key=load_api_keys().get('OpenAI'))
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": full_prompt}],
+            response_format={ "type": "json_object" }
+        )
+        return response.choices[0].message.content
+    
+    elif model.startswith("claude"):
+        client = anthropic.Anthropic(api_key=load_api_keys().get('Anthropic'))
+        response = client.messages.create(
+            model="claude-3-sonnet-20240229",
+            max_tokens=1500,
+            temperature=0.1,
+            messages=[{"role": "user", "content": full_prompt}]
+        )
+        return response.content[0].text
+    # Add handling for Azure if needed
 
 def main():
-    global client  # Declare client as a global variable
-    #st.title("Page 1")
-
-    # Sidebar for additional options
-    #st.sidebar.title("Select Model and Provide Your Key")
-
-    # Model selection menu
-    #model_options = ["gpt-3.5-turbo-16k", "azure-gpt35", "llama-2", "mistral"]
-    model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo"]
-    selected_model = st.sidebar.selectbox("Select Model", model_options)
-
-
-    # Input form for OpenAI API key (password type)
-    #api_key = st.sidebar.text_input("Enter OpenAI API Key", type="password")
-
-    # Call the API key management function instead of asking to reinput keys
-    manage_api_keys()
-
-    # For Azure model, ask for endpoint and deployment
-    azure_endpoint = None
-    azure_deployment = None
-    if selected_model == "azure-gpt35":
-        azure_endpoint = st.sidebar.text_input("Enter Azure Endpoint",  type="password")
-        azure_deployment = st.sidebar.text_input("Enter Azure Deployment",  type="password")
-
-    # Confirm button for updating the API key and model
-    #if st.sidebar.button("Confirm Key and Model"):
-    #    st.sidebar.success("API Key and Model Confirmed!")
-       
-
-    # File uploader for selecting multiple .txt files
     st.header(":orange[Initial Coding]")
-    uploaded_files = st.file_uploader("Upload .txt files of your interviews", type=["txt"], accept_multiple_files=True)
     
-    # Dropdown for selecting which file to process
-    selected_file = st.selectbox("Select an interview to process:", [file.name for file in uploaded_files])
+    # Project selection
+    projects = get_projects()
+    selected_project = st.selectbox("Select a project:", ["Select a project..."] + projects)
     
-    # Display the selected file
-    st.write(f"Selected File: {selected_file}")
-    
-    
-    # Central text input form for the prompt
-    st.header("Enter prompt:")
-    prompt_input = st.text_area("Type your prompt here", value="Can you assist in the generation of a very broad range of initial codes "
+    if selected_project != "Select a project...":
+        # File upload
+        uploaded_files = st.file_uploader("Upload additional files or select below", type=["txt"], accept_multiple_files=True)
+        if uploaded_files:
+            saved_files = save_uploaded_files(uploaded_files, selected_project)
+            if saved_files:
+                st.success(f"Files uploaded successfully: {', '.join(saved_files)}")
+            else:
+                st.info("No new files were uploaded. They may already exist in the project.")
+
+        # File selection
+        project_files = get_project_files(selected_project)
+        
+        with st.expander("Select files to process", expanded=True):
+            col1, col2 = st.columns([0.9, 0.1])
+            select_all = col2.checkbox("Select All", value=True)
+            
+            file_checkboxes = {}
+            for i, file in enumerate(project_files):
+                col1, col2 = st.columns([0.9, 0.1])
+                col1.write(file)
+                file_checkboxes[file] = col2.checkbox(".", key=f"checkbox_{file}", value=select_all, label_visibility="hidden")
+        
+        selected_files = [file for file, checked in file_checkboxes.items() if checked]
+        
+        # Model selection
+        model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
+        selected_model = st.selectbox("Select Model", model_options)
+        
+        # Prompt input
+        prompt_input = st.text_area("Type your prompt here", value="Can you assist in the generation of a very broad range of initial codes "
                                                             "(generate as many initial codes as needed - at least 15 codes - to capture all the significant explicit or latent meaning, "
                                                             "or events in the text, focus on the respondent and not the interviewer), "
                                                             "aiming to encompass a wide spectrum of themes and ideas "
@@ -77,65 +115,48 @@ def main():
                                                             "Provide a name for each code in no more than 4 words, 25 words "
                                                             "dense description of the code and a quote from the respondent for each topic no longer than 4 words. "
                                                             "Format the response as a json file keeping codes, descriptions and quotes together in the json, and keep them together in 'final_codes'.")
-    
-    
-    # Display the processed output
-    if st.button("Process"):
-        if uploaded_files and prompt_input:
-            # Find the selected file based on the user's choice
-            selected_file_object = next(file for file in uploaded_files if file.name == selected_file)
-            st.write("Selected File:")
-            st.write(selected_file_object.name)
-    
-            # Read the content of the selected file
-            file_content = selected_file_object.read()
-    
-            # Combine the file content and the entered prompt for processing
-            prompt = f"{prompt_input}{{}}{{}}File Content:{{}}{{}}{file_content}"
-    
-            # Call the get_completion function to get the processed output
-            with st.spinner("Processing..."):
-                if selected_model == "azure-gpt35":
-                    client_azure = AzureOpenAI(
-                        api_key=api_key,
-                        api_version="2023-12-01-preview",
-                        azure_endpoint=azure_endpoint
-                    )
-                    processed_output = client_azure.chat.completions.create(
-                        model=azure_deployment,
-                        messages = [{"role": "user", "content": prompt}],
-                        temperature=0,
-                    ).choices[0].message.content
-                    #st.write(type(processed_output))
-                else:
-                    client = openai
-                    client.api_key = api_key
-                    #client = openai
-                    processed_output = get_completion(prompt, model=selected_model)
-    
-            # Display the input and output
-            
-            #st.write("Output:") #for debugging and see the json before is pased to df
-            #st.write(processed_output)
-    
-            try:
-                json_output = ast.literal_eval(processed_output)
-                st.subheader("Processed JSON Output:")
-                st.write("You can download your codes as csv now =========>")
-               
-                # Save JSON as CSV
-                          
-                df = pd.json_normalize(json_output['final_codes'])
-                df.columns = ['code', 'description', 'quote']
-                st.write(df)
-                
+        
+        if st.button("Process"):
+            with st.spinner("Processing... beep boop beep"):
+                if selected_files and prompt_input:
+                    for file in selected_files:
+                        file_path = os.path.join(PROJECTS_DIR, selected_project, 'data', file)
+                        processed_output = process_file(file_path, selected_model, prompt_input)
                         
-            except (ValueError, SyntaxError) as e:
-                st.warning(f"Unable to parse the output as JSON. Error: {e}")
-                st.text("Processed Output:")
-                st.text(processed_output)  # Print the processed output for debugging
+                        try:
+                            # Use json.loads instead of ast.literal_eval
+                            json_output = json.loads(processed_output)
+                            df = pd.json_normalize(json_output['final_codes'])
+                            df.columns = ['code', 'description', 'quote']
+                            
+                            st.subheader(f"Processed Output for {file}:")
+                            st.write(df)
+                            
+                            # Save initial codes
+                            saved_file_path = save_initial_codes(selected_project, file, df)
+                            st.success(f"Initial codes saved to {saved_file_path}")
+                            
+                            '''
+                            # Add download button for each file's results
+                            csv = df.to_csv(index=False).encode('utf-8')
+                            st.download_button(
+                                label=f"Download CSV for {file}",
+                                data=csv,
+                                file_name=f"{file}_codes.csv",
+                                mime="text/csv"
+                            )
+                            '''
 
-  
+                        except (ValueError, json.JSONDecodeError) as e:
+                            st.warning(f"Error processing {file}: {e}")
+                            st.text(processed_output)
+                else:
+                    st.warning("Please select files and enter a prompt.")
+    else:
+        st.write("Please select a project to continue.")
+
+    # Call API key management function
+    manage_api_keys()
 
 if __name__ == "__main__":
     main()
