@@ -13,6 +13,7 @@ from openai import OpenAI, AzureOpenAI
 import anthropic
 from api_key_management import manage_api_keys, load_api_keys
 from prompts import initial_coding_prompts
+from project_utils import get_projects, get_project_files, get_processed_files
 
 PROJECTS_DIR = 'projects'
 
@@ -23,17 +24,6 @@ def extract_json(text):
     if match:
         return match.group(0)
     return None
-
-def get_projects():
-    return [d for d in os.listdir(PROJECTS_DIR) if os.path.isdir(os.path.join(PROJECTS_DIR, d))]
-
-def get_project_files(project_name):
-    data_folder = os.path.join(PROJECTS_DIR, project_name, 'data')
-    return [f for f in os.listdir(data_folder) if os.path.isfile(os.path.join(data_folder, f))]
-
-def get_processed_files(project_name):
-    initial_codes_folder = os.path.join(PROJECTS_DIR, project_name, 'initial_codes')
-    return [f for f in os.listdir(initial_codes_folder) if f.endswith('_initial_codes.csv')]
 
 def save_uploaded_files(uploaded_files, project_name):
     data_folder = os.path.join(PROJECTS_DIR, project_name, 'data')
@@ -87,10 +77,11 @@ def process_file(file_path, model, prompt, model_temperature, model_top_p):
 
 def main():
     st.header(":orange[Initial Coding]")
-    
+
+    st.subheader(":orange[Project & Data Selection]")
     # Project selection
     projects = get_projects()
-    selected_project = st.selectbox("Select a project:", ["Select a project..."] + projects)
+    selected_project = st.selectbox("Select a project:", ["Select a project..."] + projects, label_visibility="hidden")
     
     if selected_project != "Select a project...":
         # File upload
@@ -103,8 +94,8 @@ def main():
                 st.info("No new files were uploaded. They may already exist in the project.")
 
         # File selection
-        project_files = get_project_files(selected_project)
-        processed_files = get_processed_files(selected_project)
+        project_files = get_project_files(selected_project, 'data')
+        processed_files = get_processed_files(selected_project, 'initial_codes')
         processed_file_names = [os.path.splitext(f)[0].replace('_initial_codes', '') for f in processed_files]
         
         with st.expander("Select files to process", expanded=True):
@@ -122,6 +113,9 @@ def main():
                     file_checkboxes[file] = col2.checkbox(".", key=f"checkbox_{file}", value=select_all, label_visibility="hidden")
         
         selected_files = [file for file, checked in file_checkboxes.items() if checked]
+        
+        st.divider()
+        st.subheader(":orange[LLM Settings]")
         
         # Model selection
         model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
@@ -144,6 +138,10 @@ def main():
 
         with settings_col2:
             model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1),step=0.01,value=0.1)
+
+        st.divider()
+        st.subheader(":orange[Output(s)]")
+
 
         if st.button("Process"):
             with st.spinner("Generating initial codes ... please wait ..."):
@@ -203,7 +201,7 @@ def main():
                     mime="text/csv"
                 )
     else:
-        st.write("Please select a project to continue.")
+        st.write(f"Please select a project to continue. If you haven't set up a project yet, head over to the '🏠 Folder Set Up' page to get started")
 
     # Call API key management function
     manage_api_keys()

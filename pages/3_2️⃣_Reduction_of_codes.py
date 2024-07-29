@@ -5,20 +5,85 @@ Created on Fri Mar  1 14:30:28 2024
 @author: Stefano De Paoli - s.depaoli@abertay.ac.uk
 """
 
+import os
 import streamlit as st
 import pandas as pd
-import ast #I am using this rather than json loads, but this needs to be fixed
-import openai
-from openai import AzureOpenAI
-from api_key_management import manage_api_keys
+import json # got rid of ast
+from openai import OpenAI
+import anthropic
+from api_key_management import manage_api_keys, load_api_keys
+from project_utils import get_projects, get_project_files, get_processed_files
+from prompts import reduce_duplicate_codes_prompts
 
-client = openai
-def get_completion(prompt, model):
-    response = client.chat.completions.create(
-        model=model,
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return response.choices[0].message.content.strip()
+PROJECTS_DIR = 'projects' # should probably set this in a config or something instead of every single page
+
+def extract_json(text):
+    import re
+    match = re.search(r'\{[\s\S]*\}', text)
+    if match:
+        return match.group(0)
+    return None
+
+
+def save_reduced_codes(project_name, df):
+    reduced_codes_folder = os.path.join(PROJECTS_DIR, project_name, 'reduced_codes')
+    os.makedirs(reduced_codes_folder, exist_ok=True)
+    
+    output_file_path = os.path.join(reduced_codes_folder, f"reduced_codes_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv")
+    df.to_csv(output_file_path, index=False, encoding='utf-8')
+    return output_file_path
+
+
+# Sequentially analyse each of the initial_code files, recursively reducing duplicate codes
+def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_top_p):
+    combined_codes = pd.concat([df1, df2], ignore_index=True)
+    codes_list = [f"{code}: {description}" for code, description in zip(combined_codes['code'], combined_codes['description'])]
+    
+    full_prompt = f"{prompt}\n\nCodes:\n{json.dumps(codes_list)}"
+    
+    if model.startswith("gpt"):
+        client = OpenAI(api_key=load_api_keys().get('OpenAI'))
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": full_prompt}],
+            response_format={ "type": "json_object" },
+            temperature=model_temperature,
+            top_p=model_top_p
+        )
+        processed_output = response.choices[0].message.content
+    elif model.startswith("claude"):
+        client = anthropic.Anthropic(api_key=load_api_keys().get('Anthropic'))
+        response = client.messages.create(
+            model="claude-3-sonnet-20240620",
+            max_tokens=1500,
+            temperature=model_temperature,
+            top_p=model_top_p,
+            messages=[{"role": "user", "content": full_prompt}]
+        )
+        processed_output = response.content[0].text
+    
+    json_string = extract_json(processed_output)
+    if json_string:
+        json_output = json.loads(json_string)
+        reduced_df = pd.DataFrame(json_output['reduced_codes'])
+        return reduced_df
+    else:
+        st.warning("No valid JSON found in the response")
+        return None
+
+# Add a progress bar so users feel in the loop
+def process_files(selected_files, model, prompt, model_temperature, model_top_p):
+    reduced_df = None
+    progress_bar = st.progress(0)
+    for i, file in enumerate(selected_files):
+        df = pd.read_csv(file)
+        if reduced_df is None:
+            reduced_df = df
+        else:
+            reduced_df = compare_and_reduce_codes(reduced_df, df, model, prompt, model_temperature, model_top_p)
+        progress = (i + 1) / len(selected_files)
+        progress_bar.progress(progress)
+    return reduced_df
 
 
 
@@ -27,201 +92,97 @@ def convert_df(df):
     return df.to_csv().encode('utf-8')
 
 def main():
-    #st.sidebar.title("Select Model and Provide Your Key")
-
-    model_options = ["gpt-3.5-turbo-16k", "azure-gpt35", "llama-2", "mistral"]
-    selected_model = st.sidebar.selectbox("Select Model", model_options)
-
-    # Call the API key management function instead of asking to reinput keys
-    manage_api_keys()
-
-    #api_key = st.sidebar.text_input("Enter OpenAI API Key", type="password")
-
-    azure_endpoint = None
-    azure_deployment = None
-    if selected_model == "azure-gpt35":
-        azure_endpoint = st.sidebar.text_input("Enter Azure Endpoint")
-        azure_deployment = st.sidebar.text_input("Enter Azure Deployment")
-
-    #if st.sidebar.button("Confirm Key and Model"):
-    #    st.sidebar.success("API Key and Model Confirmed!")
-        
-
-    st.header(":orange[Reduction of Duplicates]")
-    st.subheader("Upload CSV Files:")
-    form = st.form(key='my_form')
+    st.header(":orange[Reduction of Codes]")
+    st.subheader(":orange[Project & Data Selection]")
     
-    # File uploader for the first CSV file
-    uploaded_file_1 = form.file_uploader("Upload the first Total Codebook CSV file", type=["csv"], key="csv_uploader_1")
+    projects = get_projects()
+    selected_project = st.selectbox("Select a project:", ["Select a project..."] + projects, label_visibility="hidden")
 
-    # File uploader for the second CSV file
-    uploaded_file_2 = form.file_uploader("Upload the codes of the interview we are checking for duplicates", type=["csv"], key="csv_uploader_2")
-
-    submit_button = form.form_submit_button('Process')
-
-    if uploaded_file_1 and uploaded_file_2 and submit_button:
-        st.write("Files Uploaded:")
-        st.write(f"1 Master Cumulative Codebook. {uploaded_file_1.name}")
-        st.write(f"2 Single Interview {uploaded_file_2.name}")
+    if selected_project != "Select a project...":
+        project_files = get_project_files(selected_project, 'initial_codes')
         
-              
-        #this is the cumulative
-        df_cumul = pd.read_csv(uploaded_file_1)
-        
-        # Reset the index to turn the index into a regular column named 'index'
-        # Rename the first column to 'index'
-        df_cumul = df_cumul.rename(columns={df_cumul.columns[0]: 'index'})
-        
-        #check the cumulative codebook
-        st.write(df_cumul)
-        
-       
-        df_to_check = pd.read_csv(uploaded_file_2)
-        
-        
-        #check the cumulative codebook
-        #st.write(df_cumul)
-        
-        #join code-description
-        code_description_list = [f"{code}: {description}" for code, description in zip(df_cumul['code'], df_cumul['description'])]
-        
-       # st.write('List of codes we are checking:', code_description_list)
-
-        st.header("Comparison:")
-        
-        # Create a list to store values for which the comparison is false
-        false_values = []
-        quotes = []
-        codes= []
-       
-
-        # Compare each row of the second CSV with all rows of the first
-        for index, row in df_to_check.iterrows():
+        with st.expander("Select files to process", expanded=True):
+            col1, col2 = st.columns([0.9, 0.1])
+            select_all = col2.checkbox("Select All", value=True)
             
-            # Join code: description for each row in df2
-            value = row['code']+': '+ row['description']
-            st.write('value '+value)
+            file_checkboxes = {}
+            for i, file in enumerate(project_files):
+                col1, col2 = st.columns([0.9, 0.1])
+                col1.write(file)
+                file_checkboxes[file] = col2.checkbox(".", key=f"checkbox_{file}", value=select_all, label_visibility="hidden")
+        
 
-            prompt = f"""
-            Then, determine if value: ```{value}``` conveys a similar idea or meaning
-            to any element in the list combined_previous: {", ".join(code_description_list)}. 
-            Your response should be either asserting 'true' (Similar idea or meaning) or a string 'false' (no similarity),
-            and the index of the similar code in combined_previous (write 9999 when 'false').
-            
-            Format the response as a JSON file using the main key value_in_combined_previous, and subkeys 'comparison' and 'index'
-            """
+        #selected_files = [file for file, checked in file_checkboxes.items() if checked]
+        selected_files = [os.path.join(PROJECTS_DIR, selected_project, 'initial_codes', file) for file, checked in file_checkboxes.items() if checked]
 
-            with st.spinner(f"Processing for value: {value}..."):
-                if selected_model == "azure-gpt35":
-                    client_azure = AzureOpenAI(
-                        api_key=api_key,
-                        api_version="2023-12-01-preview",
-                        azure_endpoint=azure_endpoint
-                    )
-                    processed_output = client_azure.chat.completions.create(
-                        model=azure_deployment,
-                        messages = [{"role": "user", "content": prompt}],
-                        temperature=0,
-                    ).choices[0].message.content
-                else:
-                    #client = openai
-                    client.api_key = api_key
-                    processed_output = get_completion(prompt, model=selected_model)
+        st.divider()
+        st.subheader(":orange[LLM Settings]")
 
-            try:
-                json_output = ast.literal_eval(processed_output)
-                st.subheader(f"Processed JSON Output for value: ")
-                st.write(json_output)
-               
+        model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
+        selected_model = st.selectbox("Select Model", model_options)
+
+        max_temperature_value = 2.0 if selected_model.startswith('gpt') else 1.0
+        
+        selected_preset = st.selectbox("Select a preset prompt:", list(reduce_duplicate_codes_prompts.keys()))
+
+        if 'current_prompt' not in st.session_state or selected_preset != st.session_state.get('last_selected_preset'):
+            st.session_state.current_prompt = reduce_duplicate_codes_prompts[selected_preset]
+            st.session_state.last_selected_preset = selected_preset
+
+        prompt_input = st.text_area("Edit prompt if needed:", value=st.session_state.current_prompt, height=200)
+        
+        settings_col1, settings_col2 = st.columns([0.5, 0.5])
+        with settings_col1:
+            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value), step=0.01, value=0.1)
+        with settings_col2:
+            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=0.1)
+
+        st.divider()
+        st.subheader(":orange[Output]")
+
+        if st.button("Process"):
+            with st.spinner("Reducing codes... please wait..."):
+                reduced_df = process_files(selected_files, selected_model, prompt_input, model_temperature, model_top_p)
                 
-                # You can further process the JSON output as needed
-                if json_output['value_in_combined_previous']['comparison']== 'false': 
-                   
-                    # If comparison is false, add the value to the list
-                    false_values.append(value)
-                else:
-                     # If comparison is true, retrieve the quote from df2 and add it to the quotes list
-                    quote = df_to_check.loc[df_to_check['code'] == row['code'], 'quote'].iloc[0]
-                    st.write(quote)
-                    quotes.append(quote)
+                if reduced_df is not None:
+                    st.write(reduced_df)
                     
-                    #retrieve codes which will need to be checked in df1
-                    index = json_output['value_in_combined_previous']['index']
-                    codes.append(df_cumul['code'][index])
-                   
-
-            except (ValueError, SyntaxError) as e:
-                st.warning(f"Unable to parse the output as JSON. Error: {e}")
-                st.text("Processed Output:")
-                st.text(processed_output)  # Print the processed output for debugging
-
-        # Append false values to df1, these are the Unique Codes
-        if false_values:
-            
-            st.subheader("False Values:")
-           
-            false_records = []
-            for value in false_values:
-                code, description = value.split(':')
-                # Retrieve the corresponding quote from df2
-                quote = df_to_check.loc[df_to_check['code'] == code, 'quote'].iloc[0]
-                false_records.append({'code': code, 'description': description, 'quote': quote})
-            false_df = pd.DataFrame(false_records)
-            df_cumul = pd.concat([df_cumul, false_df], ignore_index=True)
-            df_cumul = df_cumul.drop(columns=['index'], axis=1)  # Drop the 'index' column
-            df_cumul.index = range(len(df_cumul))  # Set the index to the actual index
-            #st.write(df1)
-
-        if codes:
-            # Function to add quotes to the DataFrame
-           # def add_quotes(df, codes, quotes):
-           #    quotes_map = {}
-            #    for code, quote in zip(codes, quotes):
-            #        if code not in quotes_map:
-            #            quotes_map[code] = []
-           #         quotes_map[code].append(quote+' #')
-           #     
-           #     for i, (code, quote_list) in enumerate(quotes_map.items(), start=1):
-           #         new_quote_col = f'quotes_{i}'
-           #         df[new_quote_col] = df['code'].apply(lambda x: quote_list if x == code else None)
-           #     
-           #     return df
-           # def add_quotes(df, codes, quotes):
-           #     quotes_map = {}
-           #     for code, quote in zip(codes, quotes):
-           #         if code not in quotes_map:
-           #             quotes_map[code] = []
-           #         quotes_map[code].append(quote + ' #')
-           #     
-           #     for i, (code, quote_list) in enumerate(quotes_map.items(), start=1):
-           #         new_quote_col = f'quotes_{i}'
-           #         # Iterate over each row and append the quote to the next blank cell in the column
-           #         for index, row in df.iterrows():
-           #             if row['code'] == code:
-           #                 for j, quote in enumerate(quote_list):
-           #                     if pd.isnull(row[new_quote_col]):
-            #                        df.at[index, new_quote_col] = quote
-           #                         break
-           #                 #else:
-           #                     # If no blank cell found in the column, add a new row with the quote
-           #                  #   df.at[index, new_quote_col] = quote_list[0]
-           #                   #  df = df.append(row)
-           #     return df
-
-           # df_cumul = add_quotes(df_cumul, codes, quotes)  
-            
-            
-            #code to shift quotes
-            
-                                              
-            #show output
-            st.write(df_cumul)
-
-        else: st.write('There are no duplicates')
-        
+                    saved_file_path = save_reduced_codes(selected_project, reduced_df)
+                    st.success(f"Reduced codes saved to {saved_file_path}")
+                    
+                    csv = reduced_df.to_csv(index=False).encode('utf-8')
+                    st.download_button(
+                        label="Download reduced codes",
+                        data=csv,
+                        file_name="reduced_codes.csv",
+                        mime="text/csv"
+                    )
     else:
-        st.warning("Please upload exactly two CSV files.")
+        st.write("Please select a project to continue. If you haven't set up a project yet, head over to the '🏠 Folder Set Up' page to get started.")
 
+    # View previously processed files
+    processed_files = get_processed_files(selected_project, 'reduced_codes')
+    with st.expander("Saved Reduced Codes", expanded=False):
+        for processed_file in processed_files:
+            col1, col2 = st.columns([0.9, 0.1])
+            col1.write(processed_file)
+            if col2.button("Delete", key=f"delete_{processed_file}"):
+                os.remove(os.path.join(PROJECTS_DIR, selected_project, 'reduced_codes', processed_file))
+                st.success(f"Deleted {processed_file}")
+                st.rerun()
+            
+            df = pd.read_csv(os.path.join(PROJECTS_DIR, selected_project, 'reduced_codes', processed_file))
+            st.write(df)
+            
+            csv = df.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label=f"Download {processed_file}",
+                data=csv,
+                file_name=processed_file,
+                mime="text/csv"
+            )
+
+    manage_api_keys()
 
 if __name__ == "__main__":
     main()
