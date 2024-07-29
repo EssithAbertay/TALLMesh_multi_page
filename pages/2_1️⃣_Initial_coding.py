@@ -55,7 +55,7 @@ def save_initial_codes(project_name, file_name, df):
     df.to_csv(output_file_path, index=False, encoding='utf-8')
     return output_file_path
 
-def process_file(file_path, model, prompt):
+def process_file(file_path, model, prompt, model_temperature, model_top_p):
     # Specify encoding to handle potential UnicodeDecodeError
     with open(file_path, 'r', encoding='utf-8') as file:
         content = file.read()
@@ -67,7 +67,9 @@ def process_file(file_path, model, prompt):
         response = client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": full_prompt}],
-            response_format={ "type": "json_object" }
+            response_format={ "type": "json_object" },
+            temperature = model_temperature,
+            top_p = model_top_p
         )
         return response.choices[0].message.content
     
@@ -76,7 +78,8 @@ def process_file(file_path, model, prompt):
         response = client.messages.create(
             model="claude-3-5-sonnet-20240620",
             max_tokens=1500,
-            temperature=0.1,
+            temperature=model_temperature,
+            top_p = model_top_p,
             messages=[{"role": "user", "content": full_prompt}]
         )
         return response.content[0].text
@@ -123,6 +126,9 @@ def main():
         # Model selection
         model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
         selected_model = st.selectbox("Select Model", model_options)
+
+        # OpenAI & Anthropic Models have different max temperature settings (2 & 1, respectively)
+        max_temperature_value = 2.0 if selected_model.startswith('gpt') else 1.0
         
         # Prompt selection and input
         selected_preset = st.selectbox("Select a preset prompt:", list(initial_coding_prompts.keys()))
@@ -132,14 +138,20 @@ def main():
             st.session_state.last_selected_preset = selected_preset
 
         prompt_input = st.text_area("Edit prompt if needed:", value=st.session_state.current_prompt, height=200)
+        settings_col1, settings_col2 = st.columns([0.5, 0.5])
+        with settings_col1:
+            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value),step=0.01,value=0.1)
+
+        with settings_col2:
+            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1),step=0.01,value=0.1)
 
         if st.button("Process"):
-            with st.spinner("Processing... beep boop ..."):
+            with st.spinner("Generating initial codes ... please wait ..."):
                 if selected_files and prompt_input:
                     for file in selected_files:
                         file_path = os.path.join(PROJECTS_DIR, selected_project, 'data', file)
                         try:
-                            processed_output = process_file(file_path, selected_model, prompt_input)
+                            processed_output = process_file(file_path, selected_model, prompt_input, model_temperature, model_top_p)
                             json_string = extract_json(processed_output)
                             if json_string:
                                 json_output = json.loads(json_string)
