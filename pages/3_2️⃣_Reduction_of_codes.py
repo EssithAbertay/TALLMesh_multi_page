@@ -36,8 +36,15 @@ def save_reduced_codes(project_name, df):
 
 # Sequentially analyse each of the initial_code files, recursively reducing duplicate codes
 def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_top_p):
+    
     combined_codes = pd.concat([df1, df2], ignore_index=True)
-    codes_list = [f"{code}: {description}" for code, description in zip(combined_codes['code'], combined_codes['description'])]
+    
+    # Ensure 'source' column exists
+    if 'source' not in combined_codes.columns:
+        combined_codes['source'] = 'Unknown'
+
+    codes_list = [{"code": code, "description": description, "quote": quote, "source": source} 
+                  for code, description, quote, source in zip(combined_codes['code'], combined_codes['description'], combined_codes['quote'], combined_codes['source'])]
     
     full_prompt = f"{prompt}\n\nCodes:\n{json.dumps(codes_list)}"
     
@@ -65,18 +72,26 @@ def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_t
     json_string = extract_json(processed_output)
     if json_string:
         json_output = json.loads(json_string)
-        reduced_df = pd.DataFrame(json_output['reduced_codes'])
+        reduced_df = pd.json_normalize(json_output['reduced_codes'])
+        # Explode the quotes column to create separate rows for each quote
+        reduced_df = reduced_df.explode('quotes')
+        reduced_df['quote'] = reduced_df['quotes'].apply(lambda x: x['text'])
+        reduced_df['source'] = reduced_df['quotes'].apply(lambda x: x['source'])
+        reduced_df = reduced_df.drop(columns=['quotes'])
         return reduced_df
     else:
         st.warning("No valid JSON found in the response")
         return None
 
-# Add a progress bar so users feel in the loop
+# Process files and include a progress bar so users feel in the loop
 def process_files(selected_files, model, prompt, model_temperature, model_top_p):
     reduced_df = None
     progress_bar = st.progress(0)
     for i, file in enumerate(selected_files):
         df = pd.read_csv(file)
+        # Add source column if it doesn't exist
+        if 'source' not in df.columns:
+            df['source'] = os.path.basename(file)
         if reduced_df is None:
             reduced_df = df
         else:
@@ -145,7 +160,21 @@ def main():
                 reduced_df = process_files(selected_files, selected_model, prompt_input, model_temperature, model_top_p)
                 
                 if reduced_df is not None:
+                    # Display results
+
                     st.write(reduced_df)
+
+                    _="""
+                    show_reasoning = st.expander("Show LLM reasoning")
+                    for _, row in reduced_df.iterrows():
+                        with st.expander(f"{row['code']}"):
+                            st.write(f"Description: {row['description']}")
+                            st.write(f"Quote: {row['quote']}")
+                            st.write(f"Source: {row['source']}")
+                            if show_reasoning and 'merge_explanation' in row:
+                                st.write(f"Merge explanation: {row['merge_explanation']}")
+                    """
+                            
                     
                     saved_file_path = save_reduced_codes(selected_project, reduced_df)
                     st.success(f"Reduced codes saved to {saved_file_path}")
@@ -157,30 +186,33 @@ def main():
                         file_name="reduced_codes.csv",
                         mime="text/csv"
                     )
+
+        # View previously processed files
+        processed_files = get_processed_files(selected_project, 'reduced_codes')
+        with st.expander("Saved Reduced Codes", expanded=False):
+            for processed_file in processed_files:
+                col1, col2 = st.columns([0.9, 0.1])
+                col1.write(processed_file)
+                if col2.button("Delete", key=f"delete_{processed_file}"):
+                    os.remove(os.path.join(PROJECTS_DIR, selected_project, 'reduced_codes', processed_file))
+                    st.success(f"Deleted {processed_file}")
+                    st.rerun()
+                
+                df = pd.read_csv(os.path.join(PROJECTS_DIR, selected_project, 'reduced_codes', processed_file))
+                st.write(df)
+                
+                csv = df.to_csv(index=False).encode('utf-8')
+                st.download_button(
+                    label=f"Download {processed_file}",
+                    data=csv,
+                    file_name=processed_file,
+                    mime="text/csv"
+            )
+
     else:
         st.write("Please select a project to continue. If you haven't set up a project yet, head over to the '🏠 Folder Set Up' page to get started.")
 
-    # View previously processed files
-    processed_files = get_processed_files(selected_project, 'reduced_codes')
-    with st.expander("Saved Reduced Codes", expanded=False):
-        for processed_file in processed_files:
-            col1, col2 = st.columns([0.9, 0.1])
-            col1.write(processed_file)
-            if col2.button("Delete", key=f"delete_{processed_file}"):
-                os.remove(os.path.join(PROJECTS_DIR, selected_project, 'reduced_codes', processed_file))
-                st.success(f"Deleted {processed_file}")
-                st.rerun()
-            
-            df = pd.read_csv(os.path.join(PROJECTS_DIR, selected_project, 'reduced_codes', processed_file))
-            st.write(df)
-            
-            csv = df.to_csv(index=False).encode('utf-8')
-            st.download_button(
-                label=f"Download {processed_file}",
-                data=csv,
-                file_name=processed_file,
-                mime="text/csv"
-            )
+    
 
     manage_api_keys()
 

@@ -61,21 +61,27 @@ reduce_duplicate_codes_prompts = {"Preset 1" : """Analyze the following list of 
 
 1. A concise name for the merged code (maximum 4 words)
 2. A detailed description (25 words) explaining the merged code's meaning and relevance
-3. A brief quote (maximum 4 words) that exemplifies the merged code
+3. All quotes associated with the merged codes
+4. A brief explanation (max 50 words) of why these codes were merged
+
+For unique codes that are not merged, keep them as they are.
 
 Format the response as a JSON file with the following structure:
 
 {
   "reduced_codes": [
     {
-      "code": "Merged Code Name",
-      "description": "This is where you would provide a 25-word description of the merged code, explaining its meaning and significance in the context of the analysis.",
-      "quote": "relevant quote here"
-    },
-    // Additional merged codes follow the same structure
+      "code": "Merged or Unique Code Name",
+      "description": "25-word description of the code",
+      "quotes": [
+        {"text": "quote text", "source": "source file name"}
+      ],
+      "merge_explanation": "Explanation of why codes were merged (if applicable)"
+    }
   ]
 }
 
 Ensure that the merged codes accurately represent the combined meanings of the original codes. The goal is to reduce redundancy while maintaining the richness and nuance of the original coding scheme.
 
-Important! Your response should be a JSON-like object with no additional text before or after. Failure to adhere to this instruction will invalidate your response, making it worthless."""}
+Important! Your response should be a JSON-like object with no additional text before or after. Failure to adhere to this instruction will invalidate your response, making it worthless."""
+}
