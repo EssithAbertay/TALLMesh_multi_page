@@ -144,14 +144,13 @@ def main():
         with settings_col2:
             model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1),step=0.01,value=0.1)
 
-        st.divider()
-        st.subheader(":orange[Output(s)]")
-
-
         if st.button("Process"):
+            st.divider()
+            st.subheader(":orange[Output]")
             with st.spinner("Generating initial codes ... please wait ..."):
+                prog_bar = st.progress(0)
                 if selected_files and prompt_input:
-                    for file in selected_files:
+                    for i, file in enumerate(selected_files):
                         file_path = os.path.join(PROJECTS_DIR, selected_project, 'data', file)
                         try:
                             processed_output = process_file(file_path, selected_model, prompt_input, model_temperature, model_top_p)
@@ -179,9 +178,13 @@ def main():
                             else:
                                 st.warning(f"No valid JSON found in the response for {file}")
                                 st.text(processed_output)
+                            
                         except (ValueError, json.JSONDecodeError) as e:
                             st.warning(f"Error processing {file}: {e}")
                             st.text(processed_output)
+                        progress = (i + 1) / len(selected_files)
+                        prog_bar.progress(progress)
+                        
                 else:
                     st.warning("Please select files and enter a prompt.")
 

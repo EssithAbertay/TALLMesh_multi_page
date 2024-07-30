@@ -34,9 +34,9 @@ def save_reduced_codes(project_name, df):
     return output_file_path
 
 
-# Sequentially analyse each of the initial_code files, recursively reducing duplicate codes
+# Sequentially analyse each of the initial_code files, recursively reducing duplicate codes. 
+# Added tracking for unique and total codes for saturation metric calculation later on
 def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_top_p):
-    
     combined_codes = pd.concat([df1, df2], ignore_index=True)
     
     # Ensure 'source' column exists
@@ -78,27 +78,52 @@ def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_t
         reduced_df['quote'] = reduced_df['quotes'].apply(lambda x: x['text'])
         reduced_df['source'] = reduced_df['quotes'].apply(lambda x: x['source'])
         reduced_df = reduced_df.drop(columns=['quotes'])
-        return reduced_df
+        
+        # Count total and unique codes correctly
+        total_codes = len(combined_codes)
+        unique_codes = len(reduced_df['code'].unique())  # Count unique codes, not rows
+        
+        return reduced_df, total_codes, unique_codes
     else:
         st.warning("No valid JSON found in the response")
-        return None
+        return None, None, None
 
 # Process files and include a progress bar so users feel in the loop
-def process_files(selected_files, model, prompt, model_temperature, model_top_p):
+def process_files(selected_project, selected_files, model, prompt, model_temperature, model_top_p):
     reduced_df = None
+    total_codes_list = []
+    unique_codes_list = []
+    cumulative_total = 0
     progress_bar = st.progress(0)
     for i, file in enumerate(selected_files):
         df = pd.read_csv(file)
         # Add source column if it doesn't exist
         if 'source' not in df.columns:
             df['source'] = os.path.basename(file)
+        
+        file_total_codes = len(df)
+        cumulative_total += file_total_codes
+        
         if reduced_df is None:
             reduced_df = df
+            total_codes_list.append(cumulative_total)
+            unique_codes_list.append(len(df['code'].unique()))  # Count unique codes in first file
         else:
-            reduced_df = compare_and_reduce_codes(reduced_df, df, model, prompt, model_temperature, model_top_p)
+            reduced_df, _, _ = compare_and_reduce_codes(reduced_df, df, model, prompt, model_temperature, model_top_p)
+            total_codes_list.append(cumulative_total)
+            unique_codes_list.append(len(reduced_df['code'].unique()))  # Count unique codes after reduction
+        
         progress = (i + 1) / len(selected_files)
         progress_bar.progress(progress)
-    return reduced_df
+    
+    # Save intermediate results
+    results_df = pd.DataFrame({
+        'total_codes': total_codes_list,
+        'unique_codes': unique_codes_list
+    })
+    results_df.to_csv(os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv'), index=False)
+    
+    return reduced_df, results_df
 
 
 
@@ -157,29 +182,19 @@ def main():
         with settings_col2:
             model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=0.1)
 
-        st.divider()
-        st.subheader(":orange[Output]")
-
         if st.button("Process"):
-            with st.spinner("Reducing codes... please wait..."):
-                reduced_df = process_files(selected_files, selected_model, prompt_input, model_temperature, model_top_p)
+            st.divider()
+            st.subheader(":orange[Output]")
+            with st.spinner("Reducing codes... depending on the number of initial code files, this could take some time ..."):
+                reduced_df, results_df = process_files(selected_project, selected_files, selected_model, prompt_input, model_temperature, model_top_p)
                 
                 if reduced_df is not None:
                     # Display results
-
                     st.write(reduced_df)
-
-                    _="""
-                    show_reasoning = st.expander("Show LLM reasoning")
-                    for _, row in reduced_df.iterrows():
-                        with st.expander(f"{row['code']}"):
-                            st.write(f"Description: {row['description']}")
-                            st.write(f"Quote: {row['quote']}")
-                            st.write(f"Source: {row['source']}")
-                            if show_reasoning and 'merge_explanation' in row:
-                                st.write(f"Merge explanation: {row['merge_explanation']}")
-                    """
-                            
+                    
+                    # Display intermediate results
+                    st.write("Code Reduction Results:")
+                    st.write(results_df)
                     
                     saved_file_path = save_reduced_codes(selected_project, reduced_df)
                     st.success(f"Reduced codes saved to {saved_file_path}")
@@ -189,6 +204,15 @@ def main():
                         label="Download reduced codes",
                         data=csv,
                         file_name="reduced_codes.csv",
+                        mime="text/csv"
+                    )
+                    
+                    # Save intermediate results
+                    results_csv = results_df.to_csv(index=False).encode('utf-8')
+                    st.download_button(
+                        label="Download code reduction results",
+                        data=results_csv,
+                        file_name="code_reduction_results.csv",
                         mime="text/csv"
                     )
 
