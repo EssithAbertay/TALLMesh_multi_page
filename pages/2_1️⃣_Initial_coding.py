@@ -139,10 +139,10 @@ def main():
         prompt_input = st.text_area("Edit prompt if needed:", value=st.session_state.current_prompt, height=200)
         settings_col1, settings_col2 = st.columns([0.5, 0.5])
         with settings_col1:
-            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value),step=0.01,value=0.1)
+            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value),step=0.01,value=1.0)
 
         with settings_col2:
-            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1),step=0.01,value=0.1)
+            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1),step=0.01,value=1.0)
 
         if st.button("Process"):
             st.divider()
