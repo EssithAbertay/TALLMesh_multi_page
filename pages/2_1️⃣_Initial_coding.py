@@ -76,6 +76,11 @@ def process_file(file_path, model, prompt, model_temperature, model_top_p):
     # Add handling for Azure if needed
 
 def main():
+
+    # session_state persists through page changes so need to reset the text input message 
+    if 'current_prompt' in st.session_state:
+        del st.session_state.current_prompt 
+
     st.header(":orange[Initial Coding]")
 
     st.subheader(":orange[Project & Data Selection]")
@@ -156,21 +161,21 @@ def main():
                                 df = pd.json_normalize(json_output['final_codes'])
                                 df.columns = ['code', 'description', 'quote']
                                 
-                                st.subheader(f"Processed Output for {file}:")
-                                st.write(df)
+                                with st.expander(f"Processed Output for {file}:", expanded=True):
+                                    st.write(df)
                                 
-                                # Save initial codes
-                                saved_file_path = save_initial_codes(selected_project, file, df)
-                                st.success(f"Initial codes saved to {saved_file_path}")
+                                    # Save initial codes
+                                    saved_file_path = save_initial_codes(selected_project, file, df)
+                                    st.success(f"Initial codes saved to {saved_file_path}")
                                 
-                                # Add download button for each file's results
-                                csv = df.to_csv(index=False).encode('utf-8')
-                                st.download_button(
-                                    label=f"Download initial codes for {str(os.path.splitext(file)[0])}",
-                                    data=csv,
-                                    file_name=f"{str(os.path.splitext(file)[0])}_initial_codes.csv",
-                                    mime="text/csv"
-                                )
+                                    # Add download button for each file's results
+                                    csv = df.to_csv(index=False).encode('utf-8')
+                                    st.download_button(
+                                        label=f"Download initial codes for {str(os.path.splitext(file)[0])}",
+                                        data=csv,
+                                        file_name=f"{str(os.path.splitext(file)[0])}_initial_codes.csv",
+                                        mime="text/csv"
+                                    )
                             else:
                                 st.warning(f"No valid JSON found in the response for {file}")
                                 st.text(processed_output)

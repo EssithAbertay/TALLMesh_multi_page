@@ -107,6 +107,11 @@ def convert_df(df):
     return df.to_csv().encode('utf-8')
 
 def main():
+
+    # session_state persists through page changes so need to reset the text input message 
+    if 'current_prompt' in st.session_state:
+        del st.session_state.current_prompt 
+
     st.header(":orange[Reduction of Codes]")
     st.subheader(":orange[Project & Data Selection]")
     
