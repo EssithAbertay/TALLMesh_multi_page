@@ -12,6 +12,7 @@ from api_key_management import manage_api_keys, load_api_keys
 from project_utils import get_projects, get_project_files, get_processed_files
 import os
 from prompts import finding_themes_prompts
+import anthropic
 
 PROJECTS_DIR = 'projects'
 

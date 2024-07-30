@@ -73,12 +73,12 @@ def main():
                 col1, col2 = st.columns(2)
 
                 # Display data in the first column
-                with col1:
+                with col2:
                     st.write("Unique Codes Counts:")
                     st.write(unique_counts)
 
                 # Display data in the second column
-                with col2:
+                with col1:
                     st.write("Total Codes Cumulative Sum:")
                     st.write(total_counts)
         else:

@@ -28,7 +28,7 @@ def create_project(project_name):
     project_path = os.path.join(PROJECTS_DIR, project_name)
     os.makedirs(project_path, exist_ok=True)
     
-    subfolders = ['data', 'initial_codes', 'reduced_codes', 'themes', 'refined_themes']
+    subfolders = ['data', 'initial_codes', 'reduced_codes', 'themes', 'refined_themes', 'theme_book']
     for folder in subfolders:
         os.makedirs(os.path.join(project_path, folder), exist_ok=True)
 
