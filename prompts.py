@@ -85,3 +85,110 @@ Ensure that the merged codes accurately represent the combined meanings of the o
 
 Important! Your response should be a JSON-like object with no additional text before or after. Failure to adhere to this instruction will invalidate your response, making it worthless."""
 }
+
+
+
+finding_themes_prompts = {"Preset 1: Basic Theme Generation": """Analyze the provided list of codes and generate themes that capture the main ideas and patterns in the data. For each theme:
+
+1. Provide a concise name (maximum 5 words)
+2. Write a detailed description (50-75 words) explaining the theme's meaning and relevance
+3. List the codes (by index number) that belong to this theme
+
+Aim to create unique themes that collectively represent the entire dataset. Ensure that each theme is distinct and coherent.
+
+Format the response as a JSON file with the following structure:
+
+{
+  "themes": [
+    {
+      "name": "Theme Name",
+      "description": "Detailed description of the theme...",
+      "codes": [1, 4, 7, 12]
+    }
+  ]
+}
+
+Important! Your response should be a JSON-like object with no additional text before or after.""",
+"Preset 2: Hierarchical Theme Structure": """Analyze the provided list of codes and generate a hierarchical structure of themes and subthemes that capture the main ideas and patterns in the data. For each main theme:
+
+1. Provide a concise name (maximum 5 words)
+2. Write a brief description (25-50 words) explaining the main theme's overall meaning
+3. Create 2-4 subthemes, each with:
+   a. A concise name (maximum 4 words)
+   b. A detailed description (25-50 words)
+   c. List of codes (by index number) that belong to this subtheme
+
+Aim to create 3-5 main themes that collectively represent the entire dataset. Ensure that each theme and subtheme is distinct and coherent.
+
+Format the response as a JSON file with the following structure:
+
+{
+  "themes": [
+    {
+      "name": "Main Theme Name",
+      "description": "Brief description of the main theme...",
+      "subthemes": [
+        {
+          "name": "Subtheme Name",
+          "description": "Detailed description of the subtheme...",
+          "codes": [1, 4, 7, 12]
+        }
+      ]
+    }
+  ]
+}
+
+Important! Your response should be a JSON-like object with no additional text before or after.""",
+"Preset 3: Theme Generation with Relationships": """Analyze the provided list of codes and generate themes that capture the main ideas and patterns in the data. Additionally, identify relationships between themes. For each theme:
+
+1. Provide a concise name (maximum 5 words)
+2. Write a detailed description (50-75 words) explaining the theme's meaning and relevance
+3. List the codes (by index number) that belong to this theme
+4. Identify relationships with other themes (if any)
+
+Aim to create 5-8 themes that collectively represent the entire dataset. Ensure that each theme is distinct and coherent.
+
+Format the response as a JSON file with the following structure:
+
+{
+  "themes": [
+    {
+      "name": "Theme Name",
+      "description": "Detailed description of the theme...",
+      "codes": [1, 4, 7, 12],
+      "relationships": [
+        {
+          "related_theme": "Name of related theme",
+          "relationship_type": "contrasts with / supports / influences",
+          "description": "Brief description of how the themes are related"
+        }
+      ]
+    }
+  ]
+}
+
+Important! Your response should be a JSON-like object with no additional text before or after.""",
+"Preset 4: Latent Theme Identification": """Analyze the provided list of codes and generate themes that capture both explicit and latent patterns in the data. Focus on identifying underlying ideas, assumptions, and conceptualizations that may not be immediately apparent. For each theme:
+
+1. Provide a concise name (maximum 5 words)
+2. Write a detailed description (75-100 words) explaining the theme's meaning, relevance, and any latent concepts it represents
+3. List the codes (by index number) that belong to this theme
+4. Provide a brief explanation of how this theme relates to broader theoretical or conceptual frameworks (if applicable)
+
+Aim to create 4-6 themes that collectively represent the depth and complexity of the dataset. Ensure that each theme is distinct, coherent, and goes beyond surface-level interpretations.
+
+Format the response as a JSON file with the following structure:
+
+{
+  "themes": [
+    {
+      "name": "Theme Name",
+      "description": "Detailed description of the theme, including latent concepts...",
+      "codes": [1, 4, 7, 12],
+      "theoretical_connection": "Brief explanation of theoretical or conceptual connections"
+    }
+  ]
+}
+
+Important! Your response should be a JSON-like object with no additional text before or after."""
+}
