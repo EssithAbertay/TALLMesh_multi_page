@@ -178,7 +178,7 @@ def main():
         st.divider()
         st.subheader(":orange[LLM Settings]")
 
-        model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
+        model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5", "azure_model_1"]
         selected_model = st.selectbox("Select Model", model_options)
 
         max_temperature_value = 2.0 if selected_model.startswith('gpt') else 1.0

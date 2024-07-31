@@ -163,7 +163,7 @@ def main():
         st.divider()
         st.subheader(":orange[LLM Settings]")
 
-        model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
+        model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5", "azure_model_1"]
         selected_model = st.selectbox("Select Model", model_options)
 
         max_temperature_value = 2.0 if selected_model.startswith('gpt') else 1.0
@@ -193,7 +193,7 @@ def main():
                 if themes_output is not None:
                     themes_df = pd.json_normalize(themes_output['themes'])
                     
-                    with st.expander("Codes and Descriptions:"):
+                    with st.expander("Themes, Codes & Descriptions:"):
                         st.write(processed_df)
                     st.write("Generated Themes:")
                     for _, theme in themes_df.iterrows():

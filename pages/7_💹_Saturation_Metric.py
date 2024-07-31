@@ -15,6 +15,7 @@ import plotly.graph_objects as go
 from api_key_management import manage_api_keys, load_api_keys
 from project_utils import get_projects, get_project_files, get_processed_files
 
+
 PROJECTS_DIR = 'projects'
 
 def count_rows_in_folder(folder_path):
@@ -49,12 +50,12 @@ def main():
                 
                 unique_counts = results_df['unique_codes'].tolist()
                 total_counts = results_df['total_codes'].tolist()
-                cumulative_total_counts = cumulative_sum(total_counts)
+                #cumulative_total_counts = cumulative_sum(total_counts)
 
                 st.success("Files processed successfully!")
 
                 # Calculate ITS Metric (Saturation)
-                its_metric = round(unique_counts[-1] / cumulative_total_counts[-1], 3)
+                its_metric = round(unique_counts[-1] / total_counts[-1], 3)
                 
                 col1, col2 = st.columns(2)
                 with col1:

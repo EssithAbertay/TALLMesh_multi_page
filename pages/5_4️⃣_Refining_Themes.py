@@ -30,7 +30,7 @@ def convert_df(df):
 def main():
     #st.sidebar.title("Select Model and Provide Your Key")
 
-    model_options = ["gpt-3.5-turbo-16k", "text-davinci-002", "llama-2", "mistral"]
+    model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5", "azure_model_1"]
     selected_model = st.sidebar.selectbox("Select Model", model_options)
 
     #api_key = st.sidebar.text_input("Enter OpenAI API Key", type="password")
