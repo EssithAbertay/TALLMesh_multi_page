@@ -1,0 +1,1 @@
+azure_model_maps = {"azure_model_1": "deployment_name"}

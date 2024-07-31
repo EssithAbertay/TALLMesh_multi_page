@@ -9,6 +9,8 @@ import pandas as pd
 import os
 from api_key_management import manage_api_keys, load_api_keys
 from project_utils import get_projects, get_project_files, get_processed_files
+from azure_model_mapping import azure_model_maps
+from openai import OpenAI, AzureOpenAI
 
 PROJECTS_DIR = 'projects'
 

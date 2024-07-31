@@ -9,11 +9,12 @@ import os
 import streamlit as st
 import pandas as pd
 import json # got rid of ast
-from openai import OpenAI
+from openai import OpenAI, AzureOpenAI
 import anthropic
 from api_key_management import manage_api_keys, load_api_keys
 from project_utils import get_projects, get_project_files, get_processed_files
 from prompts import reduce_duplicate_codes_prompts
+from azure_model_mapping import azure_model_maps
 
 PROJECTS_DIR = 'projects' # should probably set this in a config or something instead of every single page
 
@@ -68,6 +69,20 @@ def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_t
             messages=[{"role": "user", "content": full_prompt}]
         )
         processed_output = response.content[0].text
+
+    elif model.startswith("azure"): # will need a dict of names : models as azure models share names with gpt models
+        azure_key = st.session_state.api_keys['Azure']['key']
+        azure_endpoint = st.session_state.api_keys['Azure']['endpoint']
+        client = AzureOpenAI(
+            api_key = azure_key,
+            api_version = "2023-12-01-preview",
+            azure_endpoint = azure_endpoint
+        )
+        processed_output = client.chat.completions.create(
+                model=azure_model_maps[model],
+                messages = [{"role": "user", "content": prompt}],
+                temperature=0,
+            ).choices[0].message.content
     
     json_string = extract_json(processed_output)
     if json_string:

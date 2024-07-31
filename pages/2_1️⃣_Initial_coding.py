@@ -14,6 +14,7 @@ import anthropic
 from api_key_management import manage_api_keys, load_api_keys
 from prompts import initial_coding_prompts
 from project_utils import get_projects, get_project_files, get_processed_files
+from azure_model_mapping import azure_model_maps
 
 PROJECTS_DIR = 'projects'
 
@@ -73,6 +74,26 @@ def process_file(file_path, model, prompt, model_temperature, model_top_p):
             messages=[{"role": "user", "content": full_prompt}]
         )
         return response.content[0].text
+    
+
+    elif model.startswith("azure"): # will need a dict of names : models as azure models share names with gpt models
+        azure_key = st.session_state.api_keys['Azure']['key']
+        azure_endpoint = st.session_state.api_keys['Azure']['endpoint']
+        client = AzureOpenAI(
+            api_key = azure_key,
+            api_version = "2023-12-01-preview",
+            azure_endpoint = azure_endpoint
+        )
+        processed_output = client.chat.completions.create(
+                model=azure_model_maps[model],
+                messages = [{"role": "user", "content": prompt}],
+                temperature=0,
+            ).choices[0].message.content
+        return processed_output
+
+
+
+
     _="""
     elif model.startswith("azure"):
         client_azure = AzureOpenAI(api_key=api_key, api_version="2023-12-01-preview", azure_endpoint=azure_endpoint)
@@ -134,7 +155,7 @@ def main():
         st.subheader(":orange[LLM Settings]")
         
         # Model selection
-        model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
+        model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5", "azure_model_1"]
         selected_model = st.selectbox("Select Model", model_options)
 
         # OpenAI & Anthropic Models have different max temperature settings (2 & 1, respectively)

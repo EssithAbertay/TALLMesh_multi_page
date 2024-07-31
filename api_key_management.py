@@ -1,8 +1,3 @@
-'''
-Instead of setting API keys on every page, we want keys to persist the entire session (using session_state) and beyond (saved to api_keys.json).
-Should still be able to manage keys from anywhere - though key management could move to 'account settings' in more robust solution
-'''
-
 import streamlit as st
 import json
 import os
@@ -33,9 +28,25 @@ def manage_api_keys():
     # Add new API key
     new_provider = st.sidebar.selectbox("Provider", providers)
     new_key = st.sidebar.text_input("API Key", type="password")
+    
+    # Handle Azure-specific input
+    if new_provider == 'Azure':
+        new_endpoint = st.sidebar.text_input("API Endpoint")
+    
     if st.sidebar.button("Add API Key"):
         if new_provider and new_key:
-            st.session_state.api_keys[new_provider] = new_key
+            if new_provider == 'Azure':
+                if new_endpoint:
+                    st.session_state.api_keys[new_provider] = {
+                        'key': new_key,
+                        'endpoint': new_endpoint
+                    }
+                else:
+                    st.sidebar.error("Please enter both API key and endpoint for Azure.")
+                    return
+            else:
+                st.session_state.api_keys[new_provider] = new_key
+            
             save_api_keys(st.session_state.api_keys)
             st.sidebar.success(f"API Key for {new_provider} added successfully!")
         else:
@@ -43,10 +54,15 @@ def manage_api_keys():
 
     # Display and manage existing API keys
     st.sidebar.subheader("Saved API Keys")
-    for provider, key in st.session_state.api_keys.items():
+    for provider, value in st.session_state.api_keys.items():
         col1, col2 = st.sidebar.columns([3, 1])
-        masked_key = '*' * (len(key) - 3) + key[-3:]  # show the last n digits of the API key
-        col1.text(f"{provider}: {masked_key[-7:]}") # show the last n digits of the masked key (saves users scrolling right to check last digits)
+        if provider == 'Azure':
+            masked_key = '*' * (len(value['key']) - 3) + value['key'][-3:]
+            col1.text(f"{provider}: {masked_key[-7:]} (Endpoint: {value['endpoint'][:20]}...)")
+        else:
+            masked_key = '*' * (len(value) - 3) + value[-3:]
+            col1.text(f"{provider}: {masked_key[-7:]}")
+        
         if col2.button("❌", key=f"delete_{provider}"):
             del st.session_state.api_keys[provider]
             save_api_keys(st.session_state.api_keys)

@@ -6,9 +6,11 @@ Created on Fri Feb  2 15:16:46 2024
 """
 import streamlit as st
 import openai
+from openai import AzureOpenAI
 import pandas as pd
 import ast
 from api_key_management import manage_api_keys
+from azure_model_mapping import azure_model_maps
 
 client = openai
 
