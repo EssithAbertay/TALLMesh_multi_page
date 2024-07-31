@@ -73,6 +73,17 @@ def process_file(file_path, model, prompt, model_temperature, model_top_p):
             messages=[{"role": "user", "content": full_prompt}]
         )
         return response.content[0].text
+    _="""
+    elif model.startswith("azure"):
+        client_azure = AzureOpenAI(api_key=api_key, api_version="2023-12-01-preview", azure_endpoint=azure_endpoint)
+        processed_output = client_azure.chat.completions.create(
+                model=azure_deployment,
+                messages = [{"role": "user", "content": prompt}],
+                temperature=0,
+            ).choices[0].message.content"""
+
+
+
     # Add handling for Azure if needed
 
 def main():

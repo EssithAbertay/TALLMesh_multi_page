@@ -11,7 +11,7 @@ import os
 API_KEYS_FILE = 'api_keys.json'
 
 # List of LLM providers
-providers = ['OpenAI', 'Anthropic']
+providers = ['OpenAI', 'Anthropic', 'Azure']
 
 def load_api_keys():
     if os.path.exists(API_KEYS_FILE):

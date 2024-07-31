@@ -2,13 +2,9 @@ import os
 import streamlit as st
 import json
 from api_key_management import manage_api_keys
+import shutil
 
 PROJECTS_DIR = 'projects'
-
-# messages (St.info, success, toast, etc) wont persist through st.rerun() so need session_state vars to store success / fail messages
-if 'message' not in st.session_state:
-    st.session_state.message = None
-    st.session_state.message_type = None
 
 def handle_file_upload(uploaded_files, project_name):
     if uploaded_files:
@@ -58,6 +54,41 @@ def remove_files(project_name, filenames):
         if os.path.exists(file_path):
             os.remove(file_path)
 
+def remove_project(project_name):
+    project_path = os.path.join(PROJECTS_DIR, project_name)
+    if os.path.exists(project_path):
+        try:
+            shutil.rmtree(project_path)
+            st.session_state.message = f"Project '{project_name}' has been successfully removed."
+            st.session_state.message_type = "success"
+            # Update the projects list in session state
+            st.session_state.projects = get_projects()
+            st.session_state.selected_project = None
+            st.session_state.delete_project = None  # Reset the delete_project flag
+        except Exception as e:
+            st.session_state.message = f"Error removing project '{project_name}': {str(e)}"
+            st.session_state.message_type = "error"
+    else:
+        st.session_state.message = f"Project '{project_name}' does not exist."
+        st.session_state.message_type = "warning"
+
+# messages (St.info, success, toast, etc) wont persist through st.rerun() so need session_state vars to store success / fail messages
+# Initialize session state variables
+if 'message' not in st.session_state:
+    st.session_state.message = None
+    st.session_state.message_type = None
+
+if 'projects' not in st.session_state:
+    st.session_state.projects = get_projects()
+
+if 'selected_project' not in st.session_state:
+    st.session_state.selected_project = None
+
+if 'delete_project' not in st.session_state:
+    st.session_state.delete_project = None
+
+
+
 def main():
     st.header(":orange[Project Set Up & File Management]")
     st.write("Welcome! This page allows you to:")
@@ -66,28 +97,40 @@ def main():
     st.write("3. Manage your project files.")
     st.write(":green[Select an existing project or create a new one to get started.]")
     
-    if 'projects' not in st.session_state:
-        st.session_state.projects = get_projects()
+    # Update projects list at the start of each run
+    st.session_state.projects = get_projects()
+
+    # Check if a project needs to be deleted
+    if st.session_state.delete_project:
+        remove_project(st.session_state.delete_project)
+        st.rerun()
     
     if 'selected_project' not in st.session_state:
         st.session_state.selected_project = None
+
+    # Check if a project needs to be deleted
+    if st.session_state.delete_project:
+        remove_project(st.session_state.delete_project)
+        st.rerun()
 
     # Project creation
     new_project = st.text_input("Enter new project name:")
     if st.button("Create Project"):
         if new_project and new_project not in st.session_state.projects:
             create_project(new_project)
-            st.success(f"Project '{new_project}' created successfully!")
-            st.session_state.projects.append(new_project)
+            st.session_state.message = f"Project '{new_project}' created successfully!"
+            st.session_state.message_type = "success"
+            st.session_state.projects = get_projects()
             st.session_state.selected_project = new_project
             st.rerun()
         else:
-            st.error("Invalid project name or project already exists.")
+            st.session_state.message = "Invalid project name or project already exists."
+            st.session_state.message_type = "error"
 
     # Project selection
     project_options = ["Select a project..."] + st.session_state.projects
     index = 0 if st.session_state.selected_project is None else project_options.index(st.session_state.selected_project)
-    selected_project = st.selectbox("Select a project:", project_options, key='project_selector', index=index)
+    selected_project = st.selectbox("Select a project:", project_options, index=index)
     
     if selected_project != "Select a project...":
         st.session_state.selected_project = selected_project
@@ -95,12 +138,20 @@ def main():
         st.session_state.selected_project = None
 
     if st.session_state.selected_project:
-        col1, col2 = st.columns([0.95,0.05])
+        col1, col2, col3 = st.columns([0.2,0.2,0.05])
         col1.subheader(f"Project: {st.session_state.selected_project}")
-        delete_button = col2.empty()
-        
+        if col2.button("Delete Project"):
+            st.session_state.delete_project = st.session_state.selected_project
+            st.rerun()
+        delete_button = col3.empty()
+            
+            
         # Display existing files with checkboxes
-        existing_files = get_project_files(st.session_state.selected_project)
+        try:
+            existing_files = get_project_files(st.session_state.selected_project)
+        except:
+            existing_files = []
+
         if existing_files:
             files_to_delete = []
             
@@ -137,13 +188,15 @@ def main():
                 st.toast(st.session_state.message, icon="⚠️")
             elif st.session_state.message_type == "warning":
                 st.warning(st.session_state.message)
+            elif st.session_state.message_type == "error":
+                st.error(st.session_state.message)
             
             # Clear the message after displaying
             st.session_state.message = None
             st.session_state.message_type = None
 
     else:
-        st.write("Please select or create a project to continue.")
+        st.write("Please select or create a project to continue. ")
 
     # Call API key saving function
     manage_api_keys()
