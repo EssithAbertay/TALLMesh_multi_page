@@ -88,6 +88,7 @@ def process_file(file_path, model, prompt, model_temperature, model_top_p):
                 model=azure_model_maps[model],
                 messages = [{"role": "user", "content": prompt}],
                 temperature=0,
+                top_p=model_top_p
             ).choices[0].message.content
         return processed_output
 
