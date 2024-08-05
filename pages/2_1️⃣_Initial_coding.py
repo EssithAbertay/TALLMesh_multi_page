@@ -81,7 +81,7 @@ def process_file(file_path, model, prompt, model_temperature, model_top_p):
         azure_endpoint = st.session_state.api_keys['Azure']['endpoint']
         client = AzureOpenAI(
             api_key = azure_key,
-            api_version = "2023-12-01-preview",
+            api_version="2024-02-01", # 2023-12-01-preview
             azure_endpoint = azure_endpoint
         )
         processed_output = client.chat.completions.create(

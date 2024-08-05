@@ -33,25 +33,42 @@ def load_data(project_name):
     codes_df = pd.read_csv(os.path.join(codes_folder, latest_codes_file))
     
     # Generate column labels for codes_df
-    num_columns = codes_df.shape[1]
-    column_labels = ['code', 'description', 'merge_explanation'] + [f'quote_{i}' for i in range(1, num_columns - 2)]
-    codes_df.columns = column_labels
+    #num_columns = codes_df.shape[1]
+    #column_labels = ['code', 'description', 'merge_explanation'] + [f'quote_{i}' for i in range(1, num_columns - 2)]
+    #codes_df.columns = column_labels
 
-    return themes_df, codes_df, column_labels
+    return themes_df, codes_df #, column_labels
 
-def process_data(themes_df, codes_df, column_labels):
-    # Initialize empty DataFrame for final theme-codes book
-    final_df = pd.DataFrame(columns=['Theme', 'Description'] + column_labels)
+def process_data(themes_df, codes_df):
+    # Print column names for debugging
+    #print("Themes DataFrame columns:", themes_df.columns)
+    #print("Codes DataFrame columns:", codes_df.columns)
+
+    st.write("Themes")
+    st.write(themes_df)
+    st.write("Merged Codes")
+    st.write(codes_df)
+
+    # Initialize empty DataFrame for final theme-codes book with correct column names
+    final_df = pd.DataFrame(columns=['Theme', 'Theme Description', 'Code', 'Code Description', 'Merge Explanation', 'Quote', 'Source'])
 
     for _, theme_row in themes_df.iterrows():
         theme = theme_row['name']
-        description = theme_row['description']
+        theme_description = theme_row['description']
         code_indices = [int(idx) for idx in theme_row['codes'].strip('[]').split(',')]
         
         for idx in code_indices:
             if idx < len(codes_df):
-                row_data = codes_df.iloc[idx]
-                new_row = pd.Series([theme, description] + list(row_data), index=final_df.columns)
+                code_row = codes_df.iloc[idx]
+                new_row = pd.Series({
+                    'Theme': theme,
+                    'Theme Description': theme_description,
+                    'Code': code_row['code'],
+                    'Code Description': code_row['description'],
+                    'Merge Explanation': code_row['merge_explanation'],
+                    'Quote': code_row.get('quote', code_row.get('source', '')),  # Try 'quote', then 'source' if 'quote' doesn't exist
+                    'Source': code_row.get('source', code_row.get('quote_2', ''))  # Try 'source', then 'quote_2' if 'source' doesn't exist
+                })
                 final_df = pd.concat([final_df, new_row.to_frame().T], ignore_index=True)
 
     return final_df
@@ -63,25 +80,19 @@ def main():
     selected_project = st.selectbox("Select a project:", ["Select a project..."] + projects)
 
     if selected_project != "Select a project...":
-        themes_df, codes_df, column_labels = load_data(selected_project)
+        themes_df, codes_df  = load_data(selected_project)
         
         if themes_df is None or codes_df is None:
             st.error("Error: Required files not found in the project directory.")
         else:
             st.success(f"Files loaded successfully for project: {selected_project}")
             
-            # Process button
             if st.button("Process"):
                 # Process data
-                final_df = process_data(themes_df, codes_df, column_labels)
+                final_df = process_data(themes_df, codes_df)
                 
-                # Get list of all column names except 'Theme' and 'Description'
-                other_columns = [col for col in final_df.columns if col not in ['Theme', 'Description']]
-
-                # Reorder columns
-                final_df = final_df[['Theme', 'Description'] + other_columns]
-
                 # Display the final DataFrame
+                st.write("Expanded Themes & Codes")
                 st.write(final_df)
                 
                 # Save the final DataFrame

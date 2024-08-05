@@ -24,7 +24,63 @@ def extract_json(text):
     if match:
         return match.group(0)
     return None
+def amalgamate_duplicate_codes(df):
+    # Group by 'code' and aggregate other columns
+    amalgamated_df = df.groupby('code').agg({
+        'description': 'first',  # Keep the first description
+        'merge_explanation': 'first',  # Keep the first merge explanation
+        'original_code': lambda x: list(set(x)),  # List of unique original codes
+        'quote': lambda x: list(set(x)),  # List of unique quotes
+        'source': lambda x: list(set(x))  # List of unique sources
+    }).reset_index()
 
+    # Function to flatten lists in cells
+    def flatten_list(cell):
+        if isinstance(cell, list):
+            return ', '.join(map(str, cell))
+        return cell
+
+    # Apply flattening to relevant columns
+    for col in ['original_code', 'quote', 'source']:
+        amalgamated_df[col] = amalgamated_df[col].apply(flatten_list)
+
+    return amalgamated_df
+
+
+def match_reduced_to_original_codes(reduced_df, initial_codes_directory):
+    # Check if reduced_df is a string (file path) or DataFrame
+    if isinstance(reduced_df, str):
+        reduced_df = pd.read_csv(reduced_df)
+    elif not isinstance(reduced_df, pd.DataFrame):
+        raise ValueError("reduced_df must be either a file path or a pandas DataFrame")
+    
+    # Dictionary to store initial codes dataframes
+    initial_codes_dfs = {}
+    
+    # Read all initial codes files
+    for filename in os.listdir(initial_codes_directory):
+        if filename.endswith('.csv'):
+            file_path = os.path.join(initial_codes_directory, filename)
+            initial_codes_dfs[filename] = pd.read_csv(file_path)
+    
+    # Function to find the original code
+    def find_original_code(row):
+        source_file = row['source']
+        quote = row['quote']
+        
+        if source_file in initial_codes_dfs:
+            source_df = initial_codes_dfs[source_file]
+            matching_row = source_df[source_df['quote'] == quote]
+            
+            if not matching_row.empty:
+                return matching_row['code'].values[0]
+        
+        return 'Original code not found'
+    
+    # Apply the function to each row in the reduced codes dataframe
+    reduced_df['original_code'] = reduced_df.apply(find_original_code, axis=1)
+    
+    return reduced_df
 
 def save_reduced_codes(project_name, df):
     reduced_codes_folder = os.path.join(PROJECTS_DIR, project_name, 'reduced_codes')
@@ -34,7 +90,45 @@ def save_reduced_codes(project_name, df):
     df.to_csv(output_file_path, index=False, encoding='utf-8')
     return output_file_path
 
+def process_reduced_codes(reduced_df):
+    # Create a dictionary to store processed codes
+    processed_codes = {}
 
+    # Iterate through the DataFrame
+    for _, row in reduced_df.iterrows():
+        code = row['code']
+        description = row['description']
+        quote = row['quote']
+        source = row['source']
+
+        # If the code is not in the dictionary, add it
+        if code not in processed_codes:
+            processed_codes[code] = {
+                'description': description,
+                'merged_codes': [],  # This will be populated by the LLM
+                'merge_explanation': '',  # This will be populated by the LLM
+                'quotes': [],
+                'sources': []
+            }
+
+        # Add the quote and source to the code's entry
+        processed_codes[code]['quotes'].append(quote)
+        processed_codes[code]['sources'].append(source)
+
+    # Create a new DataFrame from the processed_codes dictionary
+    final_df = pd.DataFrame([
+        {
+            'code': code,
+            'description': data['description'],
+            'merged_codes': ', '.join(data['merged_codes']),
+            'merge_explanation': data['merge_explanation'],
+            'quotes': data['quotes'],
+            'sources': data['sources']
+        }
+        for code, data in processed_codes.items()
+    ])
+
+    return final_df
 # Sequentially analyse each of the initial_code files, recursively reducing duplicate codes. 
 # Added tracking for unique and total codes for saturation metric calculation later on
 def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_top_p):
@@ -75,14 +169,16 @@ def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_t
         azure_endpoint = st.session_state.api_keys['Azure']['endpoint']
         client = AzureOpenAI(
             api_key = azure_key,
-            api_version = "2023-12-01-preview",
+            api_version="2024-02-01", # 2023-12-01-preview
             azure_endpoint = azure_endpoint
         )
         processed_output = client.chat.completions.create(
                 model=azure_model_maps[model],
                 messages = [{"role": "user", "content": prompt}],
                 temperature=0,
+                top_p=model_top_p
             ).choices[0].message.content
+
     
     json_string = extract_json(processed_output)
     if json_string:
@@ -202,19 +298,23 @@ def main():
             st.subheader(":orange[Output]")
             with st.spinner("Reducing codes... depending on the number of initial code files, this could take some time ..."):
                 reduced_df, results_df = process_files(selected_project, selected_files, selected_model, prompt_input, model_temperature, model_top_p)
-                
+                # Messy but works to map initial codes to new reduced codes
+                initial_codes_directory = os.path.join(PROJECTS_DIR, selected_project, 'initial_codes')
+                updated_df = match_reduced_to_original_codes(reduced_df, initial_codes_directory)
+                amalgamated_df = amalgamate_duplicate_codes(updated_df)
+
                 if reduced_df is not None:
                     # Display results
-                    st.write(reduced_df)
+                    st.write(amalgamated_df)
                     
                     # Display intermediate results
                     st.write("Code Reduction Results:")
                     st.write(results_df)
                     
-                    saved_file_path = save_reduced_codes(selected_project, reduced_df)
+                    saved_file_path = save_reduced_codes(selected_project, amalgamated_df)
                     st.success(f"Reduced codes saved to {saved_file_path}")
                     
-                    csv = reduced_df.to_csv(index=False).encode('utf-8')
+                    csv = amalgamated_df.to_csv(index=False).encode('utf-8')
                     st.download_button(
                         label="Download reduced codes",
                         data=csv,
@@ -230,6 +330,7 @@ def main():
                         file_name="code_reduction_results.csv",
                         mime="text/csv"
                     )
+
 
         # View previously processed files
         processed_files = get_processed_files(selected_project, 'reduced_codes')

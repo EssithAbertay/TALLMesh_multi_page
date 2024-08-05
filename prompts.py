@@ -4,7 +4,7 @@ File to store preset prompts for AI models
 '''
 
 initial_coding_prompts = {
-    "Preset 1" : """Generate a comprehensive set of initial codes (at least 15) for thematic analysis based on the provided text. Focus on capturing all significant explicit and latent meanings or events, emphasizing the respondent's perspective rather than the interviewer's.
+    "Preset 1 - Standard, Short Quotes" : """Generate a comprehensive set of initial codes (at least 15) for thematic analysis based on the provided text. Focus on capturing all significant explicit and latent meanings or events, emphasizing the respondent's perspective rather than the interviewer's.
 
 For each code, provide:
 
@@ -29,7 +29,32 @@ Ensure that the codes cover a wide range of themes and ideas present in the text
 
 Important! Your response should be a JSON-like object with no additional text before or after. Failure to adhere to this instruction will invalidate your response, making it worthless.
 """, 
-"Preset 2" : """Your task is to assist in the generation of a very broad range of initial codes (generate as many initial codes as needed - at least 15 codes - to capture all the significant explicit or latent meaning, or events in the text, focusing on the respondent and not the interviewer), aiming to encompass a wide spectrum of themes and ideas present in the text below, to assist me with my thematic analysis? Provide a name for each code in no more than 4 words, a 25-word dense description of the code, and a quote from the respondent for each topic no longer than 4 words. Format the response as a JSON file, keeping codes, descriptions, and quotes together in the JSON, and group them under 'final_codes'.
+"Preset 2 - Standard, Long Quotes" : """Generate a comprehensive set of initial codes (at least 15) for thematic analysis based on the provided text. Focus on capturing all significant explicit and latent meanings or events, emphasizing the respondent's perspective rather than the interviewer's.
+
+For each code, provide:
+
+1. A concise name (maximum 4 words)
+2. A detailed description (25 words) explaining the code's meaning and relevance
+3. A quote (minimum necessary to capture context and example) from the respondent that exemplifies the code
+
+Format the response as a JSON file with the following structure:
+
+{
+  "final_codes": [
+    {
+      "code_name": "Example Code Name",
+      "description": "This is where you would provide a 25-word description of the code, explaining its meaning and significance in the context of the analysis.",
+      "quote": "relevant quote here"
+    },
+    // Additional codes follow the same structure
+  ]
+}
+
+Ensure that the codes cover a wide range of themes and ideas present in the text, including both obvious and subtle concepts. The goal is to provide a comprehensive starting point for further thematic analysis.
+
+Important! Your response should be a JSON-like object with no additional text before or after. Failure to adhere to this instruction will invalidate your response, making it worthless.
+""",
+"Preset 3" : """Your task is to assist in the generation of a very broad range of initial codes (generate as many initial codes as needed - at least 15 codes - to capture all the significant explicit or latent meaning, or events in the text, focusing on the respondent and not the interviewer), aiming to encompass a wide spectrum of themes and ideas present in the text below, to assist me with my thematic analysis? Provide a name for each code in no more than 4 words, a 25-word dense description of the code, and a quote from the respondent for each topic no longer than 4 words. Format the response as a JSON file, keeping codes, descriptions, and quotes together in the JSON, and group them under 'final_codes'.
 
 Here is an example of the expected JSON format:
 
@@ -77,6 +102,7 @@ Format the response as a JSON file with the following structure:
         {"text": "quote text", "source": "source file name"}
       ],
       "merge_explanation": "Explanation of why codes were merged (if applicable)"
+      "original_code": "The original code from which the merged code is derived"
     }
   ]
 }

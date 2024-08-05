@@ -59,6 +59,7 @@ def preprocess_codes(df):
         for code, data in unique_codes.items()
     ])
 
+    #st.write(preprocessed_df)
     return preprocessed_df
 
 # Function to process codes
@@ -195,9 +196,7 @@ def main():
                 if themes_output is not None:
                     themes_df = pd.json_normalize(themes_output['themes'])
                     
-                    with st.expander("Themes, Codes & Descriptions:"):
-                        st.write(processed_df)
-                    st.write("Generated Themes:")
+                    st.write(":orange[Generated Themes:]")
                     for _, theme in themes_df.iterrows():
                         with st.expander(f"{theme['name']}"):
                             st.write(f"Description: {theme['description']}")
@@ -205,6 +204,9 @@ def main():
                             for code_index in theme['codes']:
                                 code_row = processed_df.iloc[code_index]
                                 st.write(f"- [{code_index}] {code_row['code']}: {code_row['description']}")
+                    st.write(":orange[Codes & Descriptions (for reference):]")
+                    with st.expander("Codes & Descriptions:"):
+                        st.write(processed_df)
                 
                     
                     saved_file_path = save_themes(selected_project, themes_df)
