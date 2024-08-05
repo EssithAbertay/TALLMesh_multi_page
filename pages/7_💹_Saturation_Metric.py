@@ -38,8 +38,32 @@ def main():
     
     st.subheader("This version uses the files from initial coding (to derive total codes) and the files from the reduction of codes (unique codes) stored in your project folder.")
 
+    # Project selection
     projects = get_projects()
-    selected_project = st.selectbox("Select a project:", ["Select a project..."] + projects)
+    
+    # Initialize session state for selected project if it doesn't exist
+    if 'selected_project' not in st.session_state:
+        st.session_state.selected_project = "Select a project..."
+
+    # Calculate the index for the selectbox
+    project_options = ["Select a project..."] + projects
+    if st.session_state.selected_project in project_options:
+        index = project_options.index(st.session_state.selected_project)
+    else:
+        index = 0
+
+    # Use selectbox with the session state as the default value
+    selected_project = st.selectbox(
+        "Select a project:", 
+        project_options,
+        index=index,
+        key="project_selector"
+    )
+
+    # Update session state when a new project is selected
+    if selected_project != st.session_state.selected_project:
+        st.session_state.selected_project = selected_project
+        st.rerun()
 
     if selected_project != "Select a project...":
         results_file = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')

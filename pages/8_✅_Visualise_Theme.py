@@ -7,9 +7,37 @@ Created on Tue Mar 26 08:48:38 2024
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from project_utils import get_projects
 
 def main():
     st.header(":orange[Theme-Codes Icicle]")
+
+    # Project selection
+    projects = get_projects()
+    
+    # Initialize session state for selected project if it doesn't exist
+    if 'selected_project' not in st.session_state:
+        st.session_state.selected_project = "Select a project..."
+
+    # Calculate the index for the selectbox
+    project_options = ["Select a project..."] + projects
+    if st.session_state.selected_project in project_options:
+        index = project_options.index(st.session_state.selected_project)
+    else:
+        index = 0
+
+    # Use selectbox with the session state as the default value
+    selected_project = st.selectbox(
+        "Select a project:", 
+        project_options,
+        index=index,
+        key="project_selector"
+    )
+
+    # Update session state when a new project is selected
+    if selected_project != st.session_state.selected_project:
+        st.session_state.selected_project = selected_project
+        st.rerun()
 
     uploaded_file = st.file_uploader("Upload a complete Theme Book", type=["csv"])
     

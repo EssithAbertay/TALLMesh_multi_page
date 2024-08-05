@@ -5,6 +5,8 @@ import os
 PROJECTS_DIR = "projects"
 
 def get_projects():
+    if not os.path.exists(PROJECTS_DIR):
+        os.makedirs(PROJECTS_DIR)
     return [d for d in os.listdir(PROJECTS_DIR) if os.path.isdir(os.path.join(PROJECTS_DIR, d))]
 
 def get_project_files(project_name, folder):

@@ -243,7 +243,6 @@ def convert_df(df):
     return df.to_csv().encode('utf-8')
 
 def main():
-
     # session_state persists through page changes so need to reset the text input message 
     if 'current_prompt' in st.session_state:
         del st.session_state.current_prompt 
@@ -252,7 +251,30 @@ def main():
     st.subheader(":orange[Project & Data Selection]")
     
     projects = get_projects()
-    selected_project = st.selectbox("Select a project:", ["Select a project..."] + projects, label_visibility="hidden")
+    
+    # Initialize session state for selected project if it doesn't exist
+    if 'selected_project' not in st.session_state:
+        st.session_state.selected_project = "Select a project..."
+
+    # Calculate the index for the selectbox
+    project_options = ["Select a project..."] + projects
+    if st.session_state.selected_project in project_options:
+        index = project_options.index(st.session_state.selected_project)
+    else:
+        index = 0
+
+    # Use selectbox with the session state as the default value
+    selected_project = st.selectbox(
+        "Select a project:", 
+        project_options,
+        index=index,
+        key="project_selector"
+    )
+
+    # Update session state when a new project is selected
+    if selected_project != st.session_state.selected_project:
+        st.session_state.selected_project = selected_project
+        st.rerun()
 
     if selected_project != "Select a project...":
         project_files = get_project_files(selected_project, 'initial_codes')
@@ -267,8 +289,6 @@ def main():
                 col1.write(file)
                 file_checkboxes[file] = col2.checkbox(".", key=f"checkbox_{file}", value=select_all, label_visibility="hidden")
         
-
-        #selected_files = [file for file, checked in file_checkboxes.items() if checked]
         selected_files = [os.path.join(PROJECTS_DIR, selected_project, 'initial_codes', file) for file, checked in file_checkboxes.items() if checked]
 
         st.divider()
@@ -289,7 +309,7 @@ def main():
         
         settings_col1, settings_col2 = st.columns([0.5, 0.5])
         with settings_col1:
-            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value), step=0.01, value=1.0)
+            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value), step=0.01, value=0.1)
         with settings_col2:
             model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=1.0)
 

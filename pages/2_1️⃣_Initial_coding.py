@@ -109,18 +109,40 @@ def process_file(file_path, model, prompt, model_temperature, model_top_p):
     # Add handling for Azure if needed
 
 def main():
-
     # session_state persists through page changes so need to reset the text input message 
     if 'current_prompt' in st.session_state:
         del st.session_state.current_prompt 
 
     st.header(":orange[Initial Coding]")
-
     st.subheader(":orange[Project & Data Selection]")
+
     # Project selection
     projects = get_projects()
-    selected_project = st.selectbox("Select a project:", ["Select a project..."] + projects, label_visibility="hidden")
     
+    # Initialize session state for selected project if it doesn't exist
+    if 'selected_project' not in st.session_state:
+        st.session_state.selected_project = "Select a project..."
+
+    # Calculate the index for the selectbox
+    project_options = ["Select a project..."] + projects
+    if st.session_state.selected_project in project_options:
+        index = project_options.index(st.session_state.selected_project)
+    else:
+        index = 0
+
+    # Use selectbox with the session state as the default value
+    selected_project = st.selectbox(
+        "Select a project:", 
+        project_options,
+        index=index,
+        key="project_selector"
+    )
+
+    # Update session state when a new project is selected
+    if selected_project != st.session_state.selected_project:
+        st.session_state.selected_project = selected_project
+        st.rerun()
+
     if selected_project != "Select a project...":
         # File upload
         uploaded_files = st.file_uploader("Upload additional files or select below", type=["txt"], accept_multiple_files=True)
@@ -172,7 +194,7 @@ def main():
         prompt_input = st.text_area("Edit prompt if needed:", value=st.session_state.current_prompt, height=200)
         settings_col1, settings_col2 = st.columns([0.5, 0.5])
         with settings_col1:
-            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value),step=0.01,value=1.0)
+            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value),step=0.01,value=0.1)
 
         with settings_col2:
             model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1),step=0.01,value=1.0)

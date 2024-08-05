@@ -3,6 +3,7 @@ import streamlit as st
 import json
 from api_key_management import manage_api_keys
 import shutil
+from project_utils import get_projects
 
 PROJECTS_DIR = 'projects'
 
@@ -27,11 +28,6 @@ def create_project(project_name):
     subfolders = ['data', 'initial_codes', 'reduced_codes', 'themes', 'refined_themes', 'theme_book']
     for folder in subfolders:
         os.makedirs(os.path.join(project_path, folder), exist_ok=True)
-
-def get_projects():
-    if not os.path.exists(PROJECTS_DIR):
-        os.makedirs(PROJECTS_DIR)
-    return [d for d in os.listdir(PROJECTS_DIR) if os.path.isdir(os.path.join(PROJECTS_DIR, d))]
 
 def save_uploaded_files(uploaded_files, project_name):
     data_folder = os.path.join(PROJECTS_DIR, project_name, 'data')
@@ -100,17 +96,15 @@ def main():
     # Update projects list at the start of each run
     st.session_state.projects = get_projects()
 
-    # Check if a project needs to be deleted
-    if st.session_state.delete_project:
-        remove_project(st.session_state.delete_project)
-        st.rerun()
-    
+    # Initialize selected_project in session state if it doesn't exist
     if 'selected_project' not in st.session_state:
         st.session_state.selected_project = None
 
     # Check if a project needs to be deleted
-    if st.session_state.delete_project:
+    if 'delete_project' in st.session_state and st.session_state.delete_project:
         remove_project(st.session_state.delete_project)
+        st.session_state.delete_project = None
+        st.session_state.selected_project = None
         st.rerun()
 
     # Project creation
@@ -130,7 +124,7 @@ def main():
     # Project selection
     project_options = ["Select a project..."] + st.session_state.projects
     index = 0 if st.session_state.selected_project is None else project_options.index(st.session_state.selected_project)
-    selected_project = st.selectbox("Select a project:", project_options, index=index)
+    selected_project = st.selectbox("Select a project:", project_options, index=index, key="project_selector")
     
     if selected_project != "Select a project...":
         st.session_state.selected_project = selected_project
@@ -144,8 +138,7 @@ def main():
             st.session_state.delete_project = st.session_state.selected_project
             st.rerun()
         delete_button = col3.empty()
-            
-            
+        
         # Display existing files with checkboxes
         try:
             existing_files = get_project_files(st.session_state.selected_project)
@@ -180,23 +173,23 @@ def main():
                 handle_file_upload(uploaded_files, st.session_state.selected_project)
                 st.rerun()
 
-        # Display message if it exists in session state
-        if st.session_state.message:
-            if st.session_state.message_type == "success":
-                st.toast(st.session_state.message, icon="😍")
-            elif st.session_state.message_type == "info":
-                st.toast(st.session_state.message, icon="⚠️")
-            elif st.session_state.message_type == "warning":
-                st.warning(st.session_state.message)
-            elif st.session_state.message_type == "error":
-                st.error(st.session_state.message)
-            
-            # Clear the message after displaying
-            st.session_state.message = None
-            st.session_state.message_type = None
-
     else:
-        st.write("Please select or create a project to continue. ")
+        st.write("Please select or create a project to continue.")
+
+    # Display message if it exists in session state
+    if 'message' in st.session_state and st.session_state.message:
+        if st.session_state.message_type == "success":
+            st.toast(st.session_state.message, icon="😍")
+        elif st.session_state.message_type == "info":
+            st.toast(st.session_state.message, icon="⚠️")
+        elif st.session_state.message_type == "warning":
+            st.warning(st.session_state.message)
+        elif st.session_state.message_type == "error":
+            st.error(st.session_state.message)
+        
+        # Clear the message after displaying
+        st.session_state.message = None
+        st.session_state.message_type = None
 
     # Call API key saving function
     manage_api_keys()

@@ -77,7 +77,30 @@ def main():
     st.header(":orange[Theme-Codes book rebuild]")
 
     projects = get_projects()
-    selected_project = st.selectbox("Select a project:", ["Select a project..."] + projects)
+    
+    # Initialize session state for selected project if it doesn't exist
+    if 'selected_project' not in st.session_state:
+        st.session_state.selected_project = "Select a project..."
+
+    # Calculate the index for the selectbox
+    project_options = ["Select a project..."] + projects
+    if st.session_state.selected_project in project_options:
+        index = project_options.index(st.session_state.selected_project)
+    else:
+        index = 0
+
+    # Use selectbox with the session state as the default value
+    selected_project = st.selectbox(
+        "Select a project:", 
+        project_options,
+        index=index,
+        key="project_selector"
+    )
+
+    # Update session state when a new project is selected
+    if selected_project != st.session_state.selected_project:
+        st.session_state.selected_project = selected_project
+        st.rerun()
 
     if selected_project != "Select a project...":
         themes_df, codes_df  = load_data(selected_project)
@@ -87,29 +110,29 @@ def main():
         else:
             st.success(f"Files loaded successfully for project: {selected_project}")
             
-            if st.button("Process"):
-                # Process data
-                final_df = process_data(themes_df, codes_df)
-                
-                # Display the final DataFrame
-                st.write("Expanded Themes & Codes")
-                st.write(final_df)
-                
-                # Save the final DataFrame
-                output_folder = os.path.join(PROJECTS_DIR, selected_project, 'theme_book')
-                os.makedirs(output_folder, exist_ok=True)
-                output_file = os.path.join(output_folder, f"final_theme_book_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv")
-                final_df.to_csv(output_file, index=False)
-                st.success(f"Final Theme-Codes book saved to: {output_file}")
-                
-                # Download button
-                csv = final_df.to_csv(index=False).encode('utf-8')
-                st.download_button(
-                    label="Download Final Theme-Codes Book",
-                    data=csv,
-                    file_name="final_theme_codes_book.csv",
-                    mime="text/csv"
-                )
+            #if st.button("Process"):
+            # Process data
+            final_df = process_data(themes_df, codes_df)
+            
+            # Display the final DataFrame
+            st.write("Expanded Themes & Codes")
+            st.write(final_df)
+            
+            # Save the final DataFrame
+            output_folder = os.path.join(PROJECTS_DIR, selected_project, 'theme_book')
+            os.makedirs(output_folder, exist_ok=True)
+            output_file = os.path.join(output_folder, f"final_theme_book_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv")
+            final_df.to_csv(output_file, index=False)
+            st.success(f"Final Theme-Codes book saved to: {output_file}")
+            
+            # Download button
+            csv = final_df.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label="Download Final Theme-Codes Book",
+                data=csv,
+                file_name="final_theme_codes_book.csv",
+                mime="text/csv"
+            )
     else:
         st.write("Please select a project to continue.")
 
