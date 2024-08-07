@@ -17,6 +17,7 @@ from azure_model_mapping import azure_model_maps
 
 PROJECTS_DIR = 'projects'
 
+
 def extract_json(text):
     import re
     match = re.search(r'\{[\s\S]*\}', text)
@@ -142,6 +143,61 @@ def main():
         del st.session_state.current_prompt
 
     st.header(":orange[Finding Themes]")
+
+    with st.expander("Instructions"):
+        st.write("""
+        The Finding Themes page is where you identify overarching themes from your reduced codes. This step helps you synthesize your data into meaningful patterns. Here's how to use this page:
+        """)
+
+        st.subheader(":orange[1. Project and File Selection]")
+        st.write("""
+        - Select your project from the dropdown menu.
+        - Once a project is selected, you'll see a list of reduced code files available for processing.
+        - Choose the files you want to analyze. You can select individual files or use the "Select All" checkbox.
+        """)
+
+        st.subheader(":orange[2. LLM Settings]")
+        st.write("""
+        - Choose the AI model you want to use for theme identification.
+        - Select a preset prompt or edit the provided prompt to guide the theme finding process.
+        - Adjust the model temperature and top_p values using the sliders. These parameters influence the AI's creativity and output variability.
+        """)
+
+        st.subheader(":orange[3. Processing and Results]")
+        st.write("""
+        - Click the "Process" button to start finding themes.
+        - The system will analyze the selected reduced code files and generate themes.
+        - Once complete, you'll see:
+        - An expandable section for each generated theme, showing the theme name, description, and associated codes.
+        - A reference section showing all codes and their descriptions used in the analysis.
+        - You can download the generated themes as a CSV file.
+        """)
+
+        st.subheader(":orange[4. Saved Themes]")
+        st.write("""
+        - At the bottom of the page, you'll find an expandable section showing previously generated theme files.
+        - You can view, delete, or download these saved theme files.
+        """)
+
+        st.subheader("Key Features")
+        st.write("""
+        - :orange[Automated theme generation:] The AI identifies patterns across your reduced codes to suggest overarching themes.
+        - :orange[Theme descriptions:] Each theme comes with a detailed description to explain its meaning and relevance.
+        - :orange[Code mapping:] The system shows which codes are associated with each theme, maintaining the connection between your data and the higher-level themes.
+        - :orange[Flexibility:] You can adjust the prompt and model settings to influence how themes are generated and organized.
+        """)
+
+        st.subheader(":orange[Tips]")
+        st.write("""
+        - Review the generated themes carefully. While the AI is helpful, your expertise and understanding of the context are crucial for validating and refining these themes.
+        - :orange[Experiment with different prompts and settings] if you're not satisfied with the initial results. Different approaches can yield different insights.
+        - Consider the number of themes generated. Too few might oversimplify your data, while too many might make it difficult to draw meaningful conclusions.
+        - Use the reference section to understand how individual codes contribute to the larger themes.
+        - Remember that theme generation is an iterative process. You may need to run this step multiple times, adjusting your approach based on the results.
+        """)
+
+        st.info("Finding themes is a crucial step in synthesizing your analysis. It helps you move from detailed codes to broader, more conceptual understanding of your data. Take your time to reflect on the themes and how they relate to your research questions.")
+
     st.subheader(":orange[Project & Data Selection]")
 
     projects = get_projects()
@@ -203,7 +259,7 @@ def main():
         
         settings_col1, settings_col2 = st.columns([0.5, 0.5])
         with settings_col1:
-            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value), step=0.01, value=1.0)
+            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value), step=0.01, value=0.1)
         with settings_col2:
             model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=1.0)
 

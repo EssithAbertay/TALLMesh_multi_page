@@ -14,5 +14,5 @@ def get_project_files(project_name, folder):
     return [f for f in os.listdir(data_folder) if os.path.isfile(os.path.join(data_folder, f))]
 
 def get_processed_files(project_name, folder):
-    initial_codes_folder = os.path.join(PROJECTS_DIR, project_name, folder)
-    return [f for f in os.listdir(initial_codes_folder)]
+    requested_folder = os.path.join(PROJECTS_DIR, project_name, folder)
+    return [f for f in os.listdir(requested_folder)]

@@ -8,11 +8,23 @@ import streamlit as st
 import pandas as pd
 import os
 from api_key_management import manage_api_keys, load_api_keys
-from project_utils import get_projects, get_project_files, get_processed_files
+from project_utils import get_projects, get_project_files, get_processed_files, PROJECTS_DIR
 from azure_model_mapping import azure_model_maps
 from openai import OpenAI, AzureOpenAI
+import json
 
-PROJECTS_DIR = 'projects'
+
+def format_quotes(quotes_json):
+    """
+    Parses the JSON string of quotes, extracts the text,
+    and joins each quote with a newline for better readability.
+    """
+    try:
+        quotes = json.loads(quotes_json)
+        formatted_quotes = "\n".join(quote['text'] for quote in quotes)
+        return formatted_quotes
+    except (json.JSONDecodeError, KeyError, TypeError):
+        return quotes_json  # Return the original if there's an error
 
 def load_data(project_name):
     themes_folder = os.path.join(PROJECTS_DIR, project_name, 'themes')
@@ -44,13 +56,8 @@ def process_data(themes_df, codes_df):
     #print("Themes DataFrame columns:", themes_df.columns)
     #print("Codes DataFrame columns:", codes_df.columns)
 
-    st.write("Themes")
-    st.write(themes_df)
-    st.write("Merged Codes")
-    st.write(codes_df)
-
     # Initialize empty DataFrame for final theme-codes book with correct column names
-    final_df = pd.DataFrame(columns=['Theme', 'Theme Description', 'Code', 'Code Description', 'Merge Explanation', 'Quote', 'Source'])
+    final_df = pd.DataFrame(columns=['Theme', 'Theme Description', 'Code', 'Code Description', 'Merge Explanation', 'Quotes', 'Source'])
 
     for _, theme_row in themes_df.iterrows():
         theme = theme_row['name']
@@ -66,7 +73,7 @@ def process_data(themes_df, codes_df):
                     'Code': code_row['code'],
                     'Code Description': code_row['description'],
                     'Merge Explanation': code_row['merge_explanation'],
-                    'Quote': code_row.get('quote', code_row.get('source', '')),  # Try 'quote', then 'source' if 'quote' doesn't exist
+                    'Quotes': code_row.get('quote', code_row.get('source', '')),  # Try 'quote', then 'source' if 'quote' doesn't exist
                     'Source': code_row.get('source', code_row.get('quote_2', ''))  # Try 'source', then 'quote_2' if 'source' doesn't exist
                 })
                 final_df = pd.concat([final_df, new_row.to_frame().T], ignore_index=True)
@@ -110,20 +117,32 @@ def main():
         else:
             st.success(f"Files loaded successfully for project: {selected_project}")
             
-            #if st.button("Process"):
+            #if st.button("Process"): # redudant, just generate the theme book & other info
             # Process data
             final_df = process_data(themes_df, codes_df)
             
-            # Display the final DataFrame
-            st.write("Expanded Themes & Codes")
+            #Print themes, ondensed code view, everything together
+            st.write("Condensed Themes")
+            st.write(themes_df)
+            st.write("Expanded Themes w/ Codes, Quotes & Sources")
+            final_display_df = final_df.copy()
+            final_display_df['Quotes'] = final_display_df['Quotes'].apply(format_quotes)
             st.write(final_df)
+            with st.expander("Merged Codes (for reference)"):
+                st.write("Merged Codes")
+                st.write(codes_df)
             
             # Save the final DataFrame
-            output_folder = os.path.join(PROJECTS_DIR, selected_project, 'theme_book')
+            output_folder = os.path.join(PROJECTS_DIR, selected_project, 'theme_books')
             os.makedirs(output_folder, exist_ok=True)
-            output_file = os.path.join(output_folder, f"final_theme_book_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv")
-            final_df.to_csv(output_file, index=False)
-            st.success(f"Final Theme-Codes book saved to: {output_file}")
+
+            output_file_condensed = os.path.join(output_folder, f"{selected_project}_condensed_theme_book_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv")
+            themes_df.to_csv(output_file_condensed, index=False)
+
+            output_file_expanded = os.path.join(output_folder, f"{selected_project}_expanded_theme_book_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv")
+            final_df.to_csv(output_file_expanded, index=False)
+
+            st.success(f"Theme books (condensed and expanded) saved to: \n-{output_file_condensed} \n{output_file_expanded}")
             
             # Download button
             csv = final_df.to_csv(index=False).encode('utf-8')
