@@ -5,8 +5,21 @@ import os
 # File to store API keys
 API_KEYS_FILE = 'api_keys.json'
 
+# File to store Azure credentials
+AZURE_SETTINGS_FILE = 'azure_settings.json'
+
+def load_azure_settings():
+    if os.path.exists(AZURE_SETTINGS_FILE):
+        with open(AZURE_SETTINGS_FILE, 'r') as f:
+            return json.load(f)
+    return {}
+
+def get_azure_models():
+    azure_settings = load_azure_settings()
+    return [f"azure_{deployment}" for deployment in azure_settings.get('deployments', [])]
+
 # List of LLM providers
-providers = ['OpenAI', 'Anthropic', 'Azure']
+providers = ['OpenAI', 'Anthropic']
 
 def load_api_keys():
     if os.path.exists(API_KEYS_FILE):
@@ -29,24 +42,9 @@ def manage_api_keys():
     new_provider = st.sidebar.selectbox("Provider", providers)
     new_key = st.sidebar.text_input("API Key", type="password")
     
-    # Handle Azure-specific input
-    if new_provider == 'Azure':
-        new_endpoint = st.sidebar.text_input("API Endpoint")
-    
     if st.sidebar.button("Add API Key"):
         if new_provider and new_key:
-            if new_provider == 'Azure':
-                if new_endpoint:
-                    st.session_state.api_keys[new_provider] = {
-                        'key': new_key,
-                        'endpoint': new_endpoint
-                    }
-                else:
-                    st.sidebar.error("Please enter both API key and endpoint for Azure.")
-                    return
-            else:
-                st.session_state.api_keys[new_provider] = new_key
-            
+            st.session_state.api_keys[new_provider] = new_key
             save_api_keys(st.session_state.api_keys)
             st.sidebar.success(f"API Key for {new_provider} added successfully!")
         else:
@@ -56,15 +54,15 @@ def manage_api_keys():
     st.sidebar.subheader("Saved API Keys")
     for provider, value in st.session_state.api_keys.items():
         col1, col2 = st.sidebar.columns([3, 1])
-        if provider == 'Azure':
-            masked_key = '*' * (len(value['key']) - 3) + value['key'][-3:]
-            col1.text(f"{provider}: {masked_key[-7:]} (Endpoint: {value['endpoint'][:20]}...)")
-        else:
-            masked_key = '*' * (len(value) - 3) + value[-3:]
-            col1.text(f"{provider}: {masked_key[-7:]}")
+        masked_key = '*' * (len(value) - 3) + value[-3:]
+        col1.text(f"{provider}: {masked_key[-7:]}")
         
         if col2.button("❌", key=f"delete_{provider}"):
             del st.session_state.api_keys[provider]
             save_api_keys(st.session_state.api_keys)
             st.sidebar.success(f"API Key for {provider} deleted.")
             st.rerun()
+
+    # Add a link to the Azure settings page
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("[Manage Azure Settings](12_⚙️_Azure_Settings)")

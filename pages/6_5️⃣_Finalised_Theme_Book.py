@@ -83,6 +83,61 @@ def process_data(themes_df, codes_df):
 def main():
     st.header(":orange[Theme-Codes book rebuild]")
 
+    with st.expander("Instructions"):
+        st.write("""
+        The Finalised Theme Book page is where you compile and organize all your themes, codes, and associated data into a comprehensive structure. This step provides a clear overview of your entire analysis. Here's how to use this page:
+        """)
+
+        st.subheader(":orange[1. Project Selection]")
+        st.write("""
+        - Select your project from the dropdown menu.
+        - The system will automatically load the most recent themes and reduced codes files for your project.
+        """)
+
+        st.subheader(":orange[2. Data Processing]")
+        st.write("""
+        - Once you've selected a project, the system will automatically process the data to create your theme book.
+        - This process combines your themes with their associated codes, descriptions, and quotes.
+        - :orange[No additional input is required] - the theme book is generated based on your previous work in the earlier stages.
+        """)
+
+        st.subheader(":orange[3. Viewing Results]")
+        st.write("""
+        - The results are presented in three main sections:
+        1. :orange[Condensed Themes:] A concise view of your themes without the associated codes and quotes.
+        2. :orange[Expanded Themes:] A detailed view including themes, codes, quotes, and sources.
+        3. :orange[Merged Codes:] A reference section showing all your reduced codes.
+        - Each section is displayed in a table format for easy reading and comparison.
+        """)
+
+        st.subheader(":orange[4. Saving and Downloading]")
+        st.write("""
+        - The system automatically saves two versions of your theme book:
+        1. A condensed version with just the themes.
+        2. An expanded version with all details including codes and quotes.
+        - You can download the final theme book as a CSV file using the provided download button.
+        """)
+
+        st.subheader("Key Features")
+        st.write("""
+        - :orange[Automatic compilation:] The system pulls together all your work from previous stages into a coherent structure.
+        - :orange[Multiple views:] You can see your analysis at different levels of detail, from high-level themes to specific quotes.
+        - :orange[Traceability:] The expanded view allows you to trace each theme back to its constituent codes and original data sources.
+        - :orange[Easy export:] You can easily save and share your final analysis as a CSV file.
+        """)
+
+        st.subheader("Tips")
+        st.write("""
+        - Take time to review the expanded themes carefully. This is your opportunity to see how everything fits together.
+        - Use the condensed view for a quick overview, and the expanded view when you need to dive into the details.
+        - :orange[Consider how your themes relate to each other.] Are there any overarching patterns or relationships between themes?
+        - If you notice any inconsistencies or areas that need refinement, you can go back to earlier stages of the analysis and make adjustments.
+        - The final theme book is an excellent resource for writing up your findings or preparing presentations about your analysis.
+        """)
+
+        st.info("The Finalised Theme Book represents the culmination of your thematic analysis. It provides a structured overview of your themes and their grounding in the data, which is crucial for ensuring the validity and reliability of your qualitative research. The following pages make use of these finalised themes for metrics and visualisations")
+
+
     projects = get_projects()
     
     # Initialize session state for selected project if it doesn't exist

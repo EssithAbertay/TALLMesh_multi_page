@@ -126,3 +126,4 @@ tallmesh/
 
 # API keys JSON - using to save time in dev, absolutely not for deployment
 api_keys.json 
+azure_settings.json

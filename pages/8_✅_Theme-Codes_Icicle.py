@@ -10,6 +10,7 @@ import plotly.express as px
 from project_utils import get_projects, PROJECTS_DIR, get_processed_files
 import os
 import json
+from api_key_management import manage_api_keys, load_api_keys
 
 def load_data(project_name):
     themes_folder = os.path.join(PROJECTS_DIR, project_name, 'theme_books')
@@ -121,5 +122,7 @@ def main():
         
         st.plotly_chart(fig, use_container_width=True)
 
+    manage_api_keys()
+    
 if __name__ == "__main__":
     main()

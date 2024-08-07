@@ -11,12 +11,10 @@ import json
 import re
 from openai import OpenAI, AzureOpenAI
 import anthropic
-from api_key_management import manage_api_keys, load_api_keys
+from api_key_management import manage_api_keys, load_api_keys, load_azure_settings, get_azure_models, AZURE_SETTINGS_FILE
 from prompts import initial_coding_prompts
-from project_utils import get_projects, get_project_files, get_processed_files
-from azure_model_mapping import azure_model_maps
-
-PROJECTS_DIR = 'projects'
+from project_utils import get_projects, get_project_files, get_processed_files, PROJECTS_DIR
+#from azure_model_mapping import azure_model_maps # deprecated
 
 # Function to find the JSON in AI responses (OpenAI can be set to json format, but anthropic with higher temp sometimes prefaces json)
 def extract_json(text):
@@ -76,21 +74,35 @@ def process_file(file_path, model, prompt, model_temperature, model_top_p):
         return response.content[0].text
     
 
-    elif model.startswith("azure"): # will need a dict of names : models as azure models share names with gpt models
-        azure_key = st.session_state.api_keys['Azure']['key']
-        azure_endpoint = st.session_state.api_keys['Azure']['endpoint']
+    elif model.startswith("azure_"):
+        azure_settings = load_azure_settings()
+        if not azure_settings:
+            st.error("Azure settings are not configured. Please set them up in the Azure Settings page.")
+            return None
+
+        deployment_name = model.split("azure_")[1]
+        deployment = next((d for d in azure_settings['deployments'] if d['deployment_name'] == deployment_name), None)
+        
+        if not deployment:
+            st.error(f"Selected Azure deployment '{deployment_name}' not found in settings.")
+            return None
+
         client = AzureOpenAI(
-            api_key = azure_key,
-            api_version="2024-02-01", # 2023-12-01-preview
-            azure_endpoint = azure_endpoint
+            api_key=azure_settings['api_key'],
+            api_version="2024-02-01",
+            azure_endpoint=azure_settings['endpoint']
         )
-        processed_output = client.chat.completions.create(
-                model=azure_model_maps[model],
-                messages = [{"role": "user", "content": prompt}],
-                temperature=0,
+        try:
+            processed_output = client.chat.completions.create(
+                model=deployment['deployment_name'],
+                messages=[{"role": "user", "content": full_prompt}],
+                temperature=model_temperature,
                 top_p=model_top_p
             ).choices[0].message.content
-        return processed_output
+            return processed_output
+        except Exception as e:
+            st.error(f"An error occurred while calling the Azure API: {str(e)}")
+            return None
 
 
 
@@ -236,8 +248,12 @@ def main():
         st.subheader(":orange[LLM Settings]")
         
         # Model selection
-        model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5", "azure_model_1"]
+        # Model selection
+        default_models = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
+        azure_models = get_azure_models()
+        model_options = default_models + azure_models
         selected_model = st.selectbox("Select Model", model_options)
+        
 
         # OpenAI & Anthropic Models have different max temperature settings (2 & 1, respectively)
         max_temperature_value = 2.0 if selected_model.startswith('gpt') else 1.0

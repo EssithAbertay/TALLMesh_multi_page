@@ -5,6 +5,7 @@ from pyvis.network import Network
 from project_utils import get_projects, PROJECTS_DIR, get_processed_files
 import os
 import tempfile
+from api_key_management import manage_api_keys, load_api_keys
 
 def load_data(project_name):
     themes_folder = os.path.join(PROJECTS_DIR, project_name, 'theme_books')
@@ -129,6 +130,8 @@ def main():
         st.components.v1.html(mind_map_html, height=600)
 
         st.write("Drag nodes to rearrange. Zoom with mouse wheel. Click nodes to expand/collapse.")
+    
+    manage_api_keys()
 
 if __name__ == "__main__":
     main()

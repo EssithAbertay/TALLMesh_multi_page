@@ -14,7 +14,9 @@ import anthropic
 from api_key_management import manage_api_keys, load_api_keys
 from project_utils import get_projects, get_project_files, get_processed_files, PROJECTS_DIR
 from prompts import reduce_duplicate_codes_prompts
-from azure_model_mapping import azure_model_maps
+#from azure_model_mapping import azure_model_maps
+from api_key_management import manage_api_keys, load_api_keys, load_azure_settings, get_azure_models, AZURE_SETTINGS_FILE
+
 
 #PROJECTS_DIR = 'projects' # should probably set this in a config or something instead of every single page
 
@@ -129,6 +131,7 @@ def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_t
             top_p=model_top_p
         )
         processed_output = response.choices[0].message.content
+
     elif model.startswith("claude"):
         client = anthropic.Anthropic(api_key=load_api_keys().get('Anthropic'))
         response = client.messages.create(
@@ -140,20 +143,35 @@ def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_t
         )
         processed_output = response.content[0].text
 
-    elif model.startswith("azure"): # will need a dict of names : models as azure models share names with gpt models
-        azure_key = st.session_state.api_keys['Azure']['key']
-        azure_endpoint = st.session_state.api_keys['Azure']['endpoint']
+    elif model.startswith("azure_"):
+        azure_settings = load_azure_settings()
+        if not azure_settings:
+            st.error("Azure settings are not configured. Please set them up in the Azure Settings page.")
+            return None
+
+        deployment_name = model.split("azure_")[1]
+        deployment = next((d for d in azure_settings['deployments'] if d['deployment_name'] == deployment_name), None)
+        
+        if not deployment:
+            st.error(f"Selected Azure deployment '{deployment_name}' not found in settings.")
+            return None
+
         client = AzureOpenAI(
-            api_key = azure_key,
-            api_version="2024-02-01", # 2023-12-01-preview
-            azure_endpoint = azure_endpoint
+            api_key=azure_settings['api_key'],
+            api_version="2024-02-01",
+            azure_endpoint=azure_settings['endpoint']
         )
-        processed_output = client.chat.completions.create(
-                model=azure_model_maps[model],
-                messages = [{"role": "user", "content": prompt}],
-                temperature=0,
+        try:
+            processed_output = client.chat.completions.create(
+                model=deployment['deployment_name'],
+                messages=[{"role": "user", "content": full_prompt}],
+                temperature=model_temperature,
                 top_p=model_top_p
             ).choices[0].message.content
+            return processed_output
+        except Exception as e:
+            st.error(f"An error occurred while calling the Azure API: {str(e)}")
+            return None
 
     
     json_string = extract_json(processed_output)
@@ -346,7 +364,10 @@ def main():
         st.divider()
         st.subheader(":orange[LLM Settings]")
 
-        model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5", "azure_model_1"]
+        # Model selection
+        default_models = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
+        azure_models = get_azure_models()
+        model_options = default_models + azure_models
         selected_model = st.selectbox("Select Model", model_options)
 
         max_temperature_value = 2.0 if selected_model.startswith('gpt') else 1.0

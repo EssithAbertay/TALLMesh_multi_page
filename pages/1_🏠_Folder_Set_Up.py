@@ -129,9 +129,13 @@ def main():
 
         st.subheader(":orange[6. API Key Management]")
         st.write("""
-        - In the sidebar, you'll find options to manage your API keys for different AI providers.
+        - In the sidebar (on all pages), you'll find options to manage your API keys for different AI providers.
         - You can add new keys, view existing ones (last few digits only for security), and delete keys as needed.
         """)
+
+        st.info("""
+            **Note:** Azure API calls work a little differently to other providers. To manage Azure API credentials please see the :orange[12_⚙️_Azure_Settings page].
+            """)
 
 
         st.subheader(":orange[Tips]")
