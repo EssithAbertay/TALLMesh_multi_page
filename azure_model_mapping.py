@@ -1,1 +1,0 @@
-azure_model_maps = {"azure-gpt35": "azure-gpt35"}
