@@ -64,5 +64,5 @@ def manage_api_keys():
             st.rerun()
 
     # Add a link to the Azure settings page
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("[Manage Azure Settings](12_⚙️_Azure_Settings)")
+    #st.sidebar.markdown("---")
+    #st.sidebar.markdown("[Manage Azure Settings](12_⚙️_Azure_Settings)")
