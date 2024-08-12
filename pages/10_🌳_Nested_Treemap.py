@@ -109,6 +109,7 @@ def main():
         st.plotly_chart(fig, use_container_width=True)
 
         st.write("Click on the rectangles to zoom in. Double-click to zoom out. Hover for descriptions.")
+        st.write("To return to the original view, click in the top left of the vsisualisation or refresh the page.")
 
     manage_api_keys()
 
