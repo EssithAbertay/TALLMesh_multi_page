@@ -18,6 +18,14 @@ from llm_utils import llm_call
 
 #from azure_model_mapping import azure_model_maps # deprecated
 
+# function to load users own custom prompts
+def load_custom_prompts():
+    try:
+        with open('custom_prompts.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
 # Function to find the JSON in AI responses (OpenAI can be set to json format, but anthropic with higher temp sometimes prefaces json)
 def extract_json(text):
     # Find the first occurrence of a JSON-like structure in response
@@ -194,20 +202,33 @@ def main():
         # OpenAI & Anthropic Models have different max temperature settings (2 & 1, respectively)
         max_temperature_value = 2.0 if selected_model.startswith('gpt') else 1.0
         
-        # Prompt selection and input
-        selected_preset = st.selectbox("Select a preset prompt:", list(initial_coding_prompts.keys()))
+        # Load custom prompts
+        custom_prompts = load_custom_prompts().get('Initial Coding', {})
 
-        if 'current_prompt' not in st.session_state or selected_preset != st.session_state.get('last_selected_preset'):
-            st.session_state.current_prompt = initial_coding_prompts[selected_preset]
-            st.session_state.last_selected_preset = selected_preset
+        # Combine preset and custom prompts
+        all_prompts = {**initial_coding_prompts, **custom_prompts}
 
-        prompt_input = st.text_area("Edit prompt if needed:", value=st.session_state.current_prompt, height=200)
+        # Prompt selection
+        selected_prompt = st.selectbox("Select a prompt:", list(all_prompts.keys()))
+
+        # Load selected prompt values
+        selected_prompt_data = all_prompts[selected_prompt]
+        prompt_input = selected_prompt_data["prompt"]
+        model_temperature = selected_prompt_data["temperature"]
+        model_top_p = selected_prompt_data["top_p"]
+
+        #if 'current_prompt' not in st.session_state or selected_preset != st.session_state.get('last_selected_preset'):
+        #    st.session_state.current_prompt = initial_coding_prompts[selected_preset]
+        #    st.session_state.last_selected_preset = selected_preset
+
+
+        prompt_input = st.text_area("Edit prompt if needed:", value=prompt_input, height=200)
         settings_col1, settings_col2 = st.columns([0.5, 0.5])
         with settings_col1:
-            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value),step=0.01,value=0.1)
+            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value),step=0.01,value=model_temperature)
 
         with settings_col2:
-            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1),step=0.01,value=1.0)
+            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1),step=0.01,value=model_top_p)
 
         if st.button("Process"):
             st.divider()

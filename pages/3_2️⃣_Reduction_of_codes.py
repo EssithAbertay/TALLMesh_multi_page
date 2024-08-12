@@ -22,6 +22,14 @@ from llm_utils import llm_call
 
 #PROJECTS_DIR = 'projects' # should probably set this in a config or something instead of every single page
 
+# function to load users own custom prompts
+def load_custom_prompts():
+    try:
+        with open('custom_prompts.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
 def extract_json(text):
     import re
     match = re.search(r'\{[\s\S]*\}', text)
@@ -114,48 +122,53 @@ def save_reduced_codes(project_name, df, folder):
 def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_top_p):
     combined_codes = pd.concat([df1, df2], ignore_index=True)
     
-    # Ensure 'source' column exists and is populated correctly
+    # Ensure 'source' column exists
     if 'source' not in combined_codes.columns:
         combined_codes['source'] = combined_codes.apply(lambda row: row.name.split('_')[0] + '.csv', axis=1)
 
-    codes_list = [{"code": code, "description": description, "quote": quote, "source": source} 
-                  for code, description, quote, source in zip(combined_codes['code'], combined_codes['description'], combined_codes['quote'], combined_codes['source'])]
+    # Create codes_list, including merge_explanation if it exists
+    codes_list = []
+    for _, row in combined_codes.iterrows():
+        code_dict = {
+            "code": row['code'],
+            "description": row['description'],
+            "quote": row['quote'],
+            "source": row['source']
+        }
+        if 'merge_explanation' in row and pd.notna(row['merge_explanation']):
+            code_dict["merge_explanation"] = row['merge_explanation']
+        codes_list.append(code_dict)
     
     full_prompt = f"{prompt}\n\nCodes:\n{json.dumps(codes_list)}"
     
     processed_output = llm_call(model, full_prompt, model_temperature, model_top_p)
-
-    # Format returned output - should be own function
+    
     json_string = extract_json(processed_output)
     if json_string:
         json_output = json.loads(json_string)
         reduced_codes = json_output['reduced_codes']
         
-        # Create a mapping of original codes to reduced codes
-        code_mapping = {}
-        for reduced_code in reduced_codes:
-            for original_code in reduced_code.get('original_codes', [reduced_code['code']]):
-                code_mapping[original_code] = reduced_code['code']
-        
-        # Create the reduced DataFrame
         reduced_rows = []
         for reduced_code in reduced_codes:
             original_codes = reduced_code.get('original_codes', [reduced_code['code']])
             for original_code in original_codes:
                 original_rows = combined_codes[combined_codes['code'] == original_code]
                 for _, row in original_rows.iterrows():
-                    reduced_rows.append({
+                    new_row = {
                         'code': reduced_code['code'],
                         'description': reduced_code['description'],
                         'merge_explanation': reduced_code.get('merge_explanation', ''),
                         'original_code': original_code,
                         'quote': row['quote'],
                         'source': row['source']
-                    })
+                    }
+                    # Combine new merge explanation with existing one if present
+                    if 'merge_explanation' in row and pd.notna(row['merge_explanation']):
+                        new_row['merge_explanation'] = f"{row['merge_explanation']}; {new_row['merge_explanation']}"
+                    reduced_rows.append(new_row)
         
         reduced_df = pd.DataFrame(reduced_rows)
         
-        # Count total and unique codes correctly
         total_codes = len(combined_codes)
         unique_codes = len(reduced_df['code'].unique())
         
@@ -185,7 +198,7 @@ def process_files(selected_project, selected_files, model, prompt, model_tempera
             total_codes_list.append(cumulative_total)
             unique_codes_list.append(len(df['code'].unique()))
         else:
-            reduced_df, _, _ = compare_and_reduce_codes(reduced_df, df, model, prompt, model_temperature, model_top_p)
+            reduced_df, _, _ = compare_and_reduce_codes(reduced_df, df, model, prompt, model_temperature, model_top_p) 
             total_codes_list.append(cumulative_total)
             unique_codes_list.append(len(reduced_df['code'].unique()))
         
@@ -200,7 +213,6 @@ def process_files(selected_project, selected_files, model, prompt, model_tempera
     results_df.to_csv(os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv'), index=False)
     
     return reduced_df, results_df
-
 
 
 @st.cache_data
@@ -324,19 +336,28 @@ def main():
 
         max_temperature_value = 2.0 if selected_model.startswith('gpt') else 1.0
         
-        selected_preset = st.selectbox("Select a preset prompt:", list(reduce_duplicate_codes_prompts.keys()))
+        # Load custom prompts
+        custom_prompts = load_custom_prompts().get('Reduction of Codes', {})
 
-        if 'current_prompt' not in st.session_state or selected_preset != st.session_state.get('last_selected_preset'):
-            st.session_state.current_prompt = reduce_duplicate_codes_prompts[selected_preset]
-            st.session_state.last_selected_preset = selected_preset
+        # Combine preset and custom prompts
+        all_prompts = {**reduce_duplicate_codes_prompts, **custom_prompts}
 
-        prompt_input = st.text_area("Edit prompt if needed:", value=st.session_state.current_prompt, height=200)
+        # Prompt selection
+        selected_prompt = st.selectbox("Select a prompt:", list(all_prompts.keys()))
+
+        # Load selected prompt values
+        selected_prompt_data = all_prompts[selected_prompt]
+        prompt_input = selected_prompt_data["prompt"]
+        model_temperature = selected_prompt_data["temperature"]
+        model_top_p = selected_prompt_data["top_p"]
+
+        prompt_input = st.text_area("Edit prompt if needed:", value=prompt_input, height=200)
         
         settings_col1, settings_col2 = st.columns([0.5, 0.5])
         with settings_col1:
-            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value), step=0.01, value=0.1)
+            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value), step=0.01, value=model_temperature)
         with settings_col2:
-            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=1.0)
+            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=model_top_p)
 
         if st.button("Process"):
             st.divider()

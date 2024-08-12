@@ -19,6 +19,13 @@ from llm_utils import llm_call
 
 PROJECTS_DIR = 'projects'
 
+# function to load users own custom prompts
+def load_custom_prompts():
+    try:
+        with open('custom_prompts.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
 
 def extract_json(text):
     import re
@@ -220,19 +227,28 @@ def main():
 
         max_temperature_value = 2.0 if selected_model.startswith('gpt') else 1.0
 
-        selected_preset = st.selectbox("Select a preset prompt:", list(finding_themes_prompts.keys()))
+        # Load custom prompts
+        custom_prompts = load_custom_prompts().get('Finding Themes', {})
 
-        if 'current_prompt' not in st.session_state or selected_preset != st.session_state.get('last_selected_preset'):
-            st.session_state.current_prompt = finding_themes_prompts[selected_preset]
-            st.session_state.last_selected_preset = selected_preset
+        # Combine preset and custom prompts
+        all_prompts = {**finding_themes_prompts, **custom_prompts}
 
-        prompt_input = st.text_area("Edit prompt if needed:", value=st.session_state.current_prompt, height=200)
+        # Prompt selection
+        selected_prompt = st.selectbox("Select a prompt:", list(all_prompts.keys()))
+
+        # Load selected prompt values
+        selected_prompt_data = all_prompts[selected_prompt]
+        prompt_input = selected_prompt_data["prompt"]
+        model_temperature = selected_prompt_data["temperature"]
+        model_top_p = selected_prompt_data["top_p"]
+
+        prompt_input = st.text_area("Edit prompt if needed:", value=prompt_input, height=200)
         
         settings_col1, settings_col2 = st.columns([0.5, 0.5])
         with settings_col1:
-            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value), step=0.01, value=0.1)
+            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value), step=0.01, value=model_temperature)
         with settings_col2:
-            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=1.0)
+            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=model_top_p)
 
         
 
