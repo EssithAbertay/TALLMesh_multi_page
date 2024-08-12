@@ -104,7 +104,7 @@ We welcome contributions to TALLMesh! Please follow these steps to contribute:
 
 ## License
 
-This software is available under the GNU-GPL license. See the LICENSE file for more details.
+TBC
 
 ## Acknowledgements
 
