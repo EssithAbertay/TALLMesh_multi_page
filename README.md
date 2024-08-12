@@ -90,7 +90,7 @@ This project is based on research conducted by Prof. Stefano De Paoli and Dr. Da
 ## Configuration
 
 1. API Keys: Use the sidebar in the application to manage API keys for different LLM providers.
-2. Azure Settings: If using Azure, configure the deployment settings in the application.
+2. Azure Settings: If using Azure, configure the deployment settings in the application (there is a dedicated page for Azure settings)
 
 ## Contributing
 
