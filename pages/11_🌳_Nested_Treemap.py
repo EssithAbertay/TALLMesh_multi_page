@@ -86,17 +86,17 @@ def main():
         treemap_data = prepare_treemap_data(themes_df, codes_df)
 
         fig = px.treemap(
-            treemap_data,
-            path=['Theme', 'Reduced Code', 'Initial Code', 'Quote'],
-            values='Value',
-            hover_data=['Theme Description', 'Reduced Code Description'],
-            color='Theme',
-            color_continuous_scale='RdBu',
+        treemap_data,
+        path=['Theme', 'Reduced Code', 'Initial Code', 'Quote'],
+        values='Value',
+        hover_data=['Theme Description', 'Reduced Code Description'],
+        color='Theme',
+        color_continuous_scale='RdBu',
         )
 
         fig.update_traces(
             textinfo="label",
-            textfont=dict(size=14),
+            textfont=dict(size=20),  
             hovertemplate='<b>%{label}</b><br>Value: %{value}<br>Description: %{customdata[0]}<extra></extra>'
         )
 

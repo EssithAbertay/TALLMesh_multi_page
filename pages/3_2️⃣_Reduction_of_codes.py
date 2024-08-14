@@ -8,21 +8,13 @@ Created on Fri Mar  1 14:30:28 2024
 import os
 import streamlit as st
 import pandas as pd
-import json # got rid of ast
-from openai import OpenAI, AzureOpenAI
-import anthropic
+import json
 from api_key_management import manage_api_keys, load_api_keys
 from project_utils import get_projects, get_project_files, get_processed_files, PROJECTS_DIR
 from prompts import reduce_duplicate_codes_prompts
-#from azure_model_mapping import azure_model_maps
 from api_key_management import manage_api_keys, load_api_keys, load_azure_settings, get_azure_models, AZURE_SETTINGS_FILE
 from llm_utils import llm_call
 
-
-
-#PROJECTS_DIR = 'projects' # should probably set this in a config or something instead of every single page
-
-# function to load users own custom prompts
 def load_custom_prompts():
     try:
         with open('custom_prompts.json', 'r') as f:
@@ -49,7 +41,6 @@ def format_quotes(quotes_json):
     except (json.JSONDecodeError, KeyError, TypeError):
         return quotes_json  # Return the original if there's an error
 
-# Merge rows with duplicate codes, retaining separarte quotes and sources...
 def amalgamate_duplicate_codes(df):
     # Group by 'code' and aggregate other columns
     amalgamated_df = df.groupby('code').agg({
@@ -71,7 +62,6 @@ def amalgamate_duplicate_codes(df):
         amalgamated_df[col] = amalgamated_df[col].apply(flatten_list)
 
     return amalgamated_df
-
 
 def match_reduced_to_original_codes(reduced_df, initial_codes_directory):
     # Check if reduced_df is a string (file path) or DataFrame
@@ -116,30 +106,19 @@ def save_reduced_codes(project_name, df, folder):
     df.to_csv(output_file_path, index=False, encoding='utf-8')
     return output_file_path
 
-
-# Sequentially analyse each of the initial_code files, recursively reducing duplicate codes. 
-# Added tracking for unique and total codes for saturation metric calculation later on
 def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_top_p):
     combined_codes = pd.concat([df1, df2], ignore_index=True)
     
-    # Ensure 'source' column exists
-    if 'source' not in combined_codes.columns:
-        combined_codes['source'] = combined_codes.apply(lambda row: row.name.split('_')[0] + '.csv', axis=1)
-
-    # Create codes_list, including merge_explanation if it exists
-    codes_list = []
-    for _, row in combined_codes.iterrows():
-        code_dict = {
+    # Create a simplified codes_list with only code and description
+    simplified_codes_list = [
+        {
             "code": row['code'],
-            "description": row['description'],
-            "quote": row['quote'],
-            "source": row['source']
+            "description": row['description']
         }
-        if 'merge_explanation' in row and pd.notna(row['merge_explanation']):
-            code_dict["merge_explanation"] = row['merge_explanation']
-        codes_list.append(code_dict)
+        for _, row in combined_codes.iterrows()
+    ]
     
-    full_prompt = f"{prompt}\n\nCodes:\n{json.dumps(codes_list)}"
+    full_prompt = f"{prompt}\n\nCodes:\n{json.dumps(simplified_codes_list)}"
     
     processed_output = llm_call(model, full_prompt, model_temperature, model_top_p)
     
@@ -148,24 +127,26 @@ def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_t
         json_output = json.loads(json_string)
         reduced_codes = json_output['reduced_codes']
         
-        reduced_rows = []
+        # Create a mapping of original codes to reduced codes
+        code_mapping = {}
         for reduced_code in reduced_codes:
-            original_codes = reduced_code.get('original_codes', [reduced_code['code']])
-            for original_code in original_codes:
-                original_rows = combined_codes[combined_codes['code'] == original_code]
-                for _, row in original_rows.iterrows():
-                    new_row = {
-                        'code': reduced_code['code'],
-                        'description': reduced_code['description'],
-                        'merge_explanation': reduced_code.get('merge_explanation', ''),
-                        'original_code': original_code,
-                        'quote': row['quote'],
-                        'source': row['source']
-                    }
-                    # Combine new merge explanation with existing one if present
-                    if 'merge_explanation' in row and pd.notna(row['merge_explanation']):
-                        new_row['merge_explanation'] = f"{row['merge_explanation']}; {new_row['merge_explanation']}"
-                    reduced_rows.append(new_row)
+            for original_code in reduced_code.get('original_codes', [reduced_code['code']]):
+                code_mapping[original_code] = reduced_code
+        
+        # Apply the mapping to the original combined_codes DataFrame
+        reduced_rows = []
+        for _, row in combined_codes.iterrows():
+            if row['code'] in code_mapping:
+                reduced_code = code_mapping[row['code']]
+                new_row = {
+                    'code': reduced_code['code'],
+                    'description': reduced_code['description'],
+                    'merge_explanation': reduced_code.get('merge_explanation', ''),
+                    'original_code': row['code'],
+                    'quote': row['quote'],
+                    'source': row['source']
+                }
+                reduced_rows.append(new_row)
         
         reduced_df = pd.DataFrame(reduced_rows)
         
@@ -177,7 +158,6 @@ def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_t
         st.warning("No valid JSON found in the response")
         return None, None, None
 
-# Process files and include a progress bar so users feel in the loop
 def process_files(selected_project, selected_files, model, prompt, model_temperature, model_top_p):
     reduced_df = None
     total_codes_list = []
@@ -213,7 +193,6 @@ def process_files(selected_project, selected_files, model, prompt, model_tempera
     results_df.to_csv(os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv'), index=False)
     
     return reduced_df, results_df
-
 
 @st.cache_data
 def convert_df(df):
@@ -279,8 +258,6 @@ def main():
         """)
 
         st.info("Code reduction is a critical step in refining your analysis. It helps to consolidate your findings and prepare for the identification of overarching themes in the next stage.")
-
-
 
     st.subheader(":orange[Project & Data Selection]")
     
@@ -368,7 +345,6 @@ def main():
                 # Messy but works to map initial codes to new reduced codes. revisit this
                 initial_codes_directory = os.path.join(PROJECTS_DIR, selected_project, 'initial_codes')
                 updated_df = match_reduced_to_original_codes(reduced_df, initial_codes_directory) # Needed for visualisations later on as it matches reduced code - initial code - quote(s)
-                #print(updated_df)
                 amalgamated_df = amalgamate_duplicate_codes(updated_df)
                 amalgamated_df_for_display = amalgamated_df.copy()
                 amalgamated_df_for_display['quote'] = amalgamated_df_for_display['quote'].apply(format_quotes)
@@ -403,7 +379,6 @@ def main():
                         mime="text/csv"
                     )
 
-
         # View previously processed files
         processed_files = get_processed_files(selected_project, 'reduced_codes')
         with st.expander("Saved Reduced Codes", expanded=False):
@@ -429,8 +404,6 @@ def main():
 
     else:
         st.write("Please select a project to continue. If you haven't set up a project yet, head over to the '🏠 Folder Set Up' page to get started.")
-
-    
 
     manage_api_keys()
 
