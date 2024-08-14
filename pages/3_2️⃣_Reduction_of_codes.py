@@ -36,7 +36,7 @@ def format_quotes(quotes_json):
     """
     try:
         quotes = json.loads(quotes_json)
-        formatted_quotes = "\n".join(quote['text'] for quote in quotes)
+        formatted_quotes = "\n".join(f"{quote['text']} (Source: {quote['source']})" for quote in quotes)
         return formatted_quotes
     except (json.JSONDecodeError, KeyError, TypeError):
         return quotes_json  # Return the original if there's an error
@@ -47,19 +47,18 @@ def amalgamate_duplicate_codes(df):
         'description': 'first',
         'merge_explanation': 'first',
         'original_code': lambda x: list(set(x)),
-        'quote': lambda x: json.dumps([{'text': q, 'source': s} for q, s in zip(x, df.loc[x.index, 'source'])]),
+        'quote': lambda x: [{'text': q, 'source': s} for q, s in zip(x, df.loc[x.index, 'source'])],
         'source': lambda x: list(set(x))  # Keep this for backward compatibility
     }).reset_index()
 
-    # Function to flatten lists in cells
-    def flatten_list(cell):
-        if isinstance(cell, list):
-            return ', '.join(map(str, cell))
-        return cell
+    # Convert original_code list to JSON string
+    amalgamated_df['original_code'] = amalgamated_df['original_code'].apply(json.dumps)
+    
+    # Convert quote list to JSON string
+    amalgamated_df['quote'] = amalgamated_df['quote'].apply(json.dumps)
 
-    # Apply flattening to relevant columns
-    for col in ['original_code', 'quote', 'source']:
-        amalgamated_df[col] = amalgamated_df[col].apply(flatten_list)
+    # Convert source list to comma-separated string
+    amalgamated_df['source'] = amalgamated_df['source'].apply(lambda x: ', '.join(x))
 
     return amalgamated_df
 
@@ -197,6 +196,18 @@ def process_files(selected_project, selected_files, model, prompt, model_tempera
 @st.cache_data
 def convert_df(df):
     return df.to_csv().encode('utf-8')
+
+def format_original_codes(original_codes):
+    try:
+        # Try to parse as JSON
+        codes = json.loads(original_codes)
+        if isinstance(codes, list):
+            return ', '.join(codes)
+        else:
+            return original_codes
+    except json.JSONDecodeError:
+        # If it's not valid JSON, return the original string
+        return original_codes
 
 def main():
     # session_state persists through page changes so need to reset the text input message 
@@ -342,22 +353,24 @@ def main():
             with st.spinner("Reducing codes... depending on the number of initial code files, this could take some time ..."):
                 reduced_df, results_df = process_files(selected_project, selected_files, selected_model, prompt_input, model_temperature, model_top_p)
 
-                # Messy but works to map initial codes to new reduced codes. revisit this
+                # Match reduced codes to initial codes
                 initial_codes_directory = os.path.join(PROJECTS_DIR, selected_project, 'initial_codes')
-                updated_df = match_reduced_to_original_codes(reduced_df, initial_codes_directory) # Needed for visualisations later on as it matches reduced code - initial code - quote(s)
+                updated_df = match_reduced_to_original_codes(reduced_df, initial_codes_directory)
                 amalgamated_df = amalgamate_duplicate_codes(updated_df)
                 amalgamated_df_for_display = amalgamated_df.copy()
                 amalgamated_df_for_display['quote'] = amalgamated_df_for_display['quote'].apply(format_quotes)
+                amalgamated_df_for_display['original_code'] = amalgamated_df_for_display['original_code'].apply(format_original_codes)
 
                 if reduced_df is not None:
                     # Display results
+                    st.write("Reduced Codes:")
                     st.write(amalgamated_df_for_display)
                     
                     # Display intermediate results
                     st.write("Code Reduction Results:")
                     st.write(results_df)
                     
-                    save_reduced_codes(selected_project, updated_df, 'expanded_reduced_codes') # we need this view for visualisations later
+                    save_reduced_codes(selected_project, updated_df, 'expanded_reduced_codes')
 
                     saved_file_path = save_reduced_codes(selected_project, amalgamated_df, 'reduced_codes')
                     st.success(f"Reduced codes saved to {saved_file_path}")
@@ -392,6 +405,7 @@ def main():
                 
                 df = pd.read_csv(os.path.join(PROJECTS_DIR, selected_project, 'reduced_codes', processed_file))
                 df['quote'] = df['quote'].apply(format_quotes)
+                df['original_code'] = df['original_code'].apply(format_original_codes)
                 st.write(df)
                 
                 csv = df.to_csv(index=False).encode('utf-8')
