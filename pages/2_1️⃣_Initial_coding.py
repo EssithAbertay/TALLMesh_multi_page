@@ -15,8 +15,10 @@ from api_key_management import manage_api_keys, load_api_keys, load_azure_settin
 from prompts import initial_coding_prompts
 from project_utils import get_projects, get_project_files, get_processed_files, PROJECTS_DIR
 from llm_utils import llm_call
+import logging
 
-#from azure_model_mapping import azure_model_maps # deprecated
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # function to load users own custom prompts
 def load_custom_prompts():
@@ -54,15 +56,56 @@ def save_initial_codes(project_name, file_name, df):
     df.to_csv(output_file_path, index=False, encoding='utf-8')
     return output_file_path
 
+def split_text(text, max_chunk_size=50000):
+    """Split the text into chunks of approximately max_chunk_size characters."""
+    logger.info("Starting to split text into chunks.")
+    
+    chunks = []
+    current_chunk = ""
+    
+    logger.info(f"Using max_chunk_size: {max_chunk_size} characters.")
+    
+    sentences = re.split(r'(?<=[.!?])\s+', text)
+    logger.info(f"Total number of sentences to process: {len(sentences)}")
+
+    for i, sentence in enumerate(sentences):
+        if len(current_chunk) + len(sentence) < max_chunk_size:
+            current_chunk += sentence + " "
+        else:
+            chunks.append(current_chunk.strip())
+            logger.info(f"Chunk {len(chunks)} created with size {len(current_chunk.strip())} characters.")
+            current_chunk = sentence + " "
+            logger.info(f"Starting a new chunk with sentence {i+1}.")
+    
+    if current_chunk:
+        chunks.append(current_chunk.strip())
+        logger.info(f"Final chunk created with size {len(current_chunk.strip())} characters.")
+    
+    logger.info(f"Total number of chunks created: {len(chunks)}")
+    return chunks
+
 def process_file(file_path, model, prompt, model_temperature, model_top_p):
     # Specify encoding to handle potential UnicodeDecodeError
     with open(file_path, 'r', encoding='utf-8') as file:
         content = file.read()
     
-    full_prompt = f"{prompt}\n\nFile Content:\n{content}"
+    chunks = split_text(content)
+    all_codes = []
     
-    return llm_call(model, full_prompt, model_temperature, model_top_p)
+    for i, chunk in enumerate(chunks):
+        chunk_prompt = f"{prompt}\n\nFile Content (Part {i+1}/{len(chunks)}):\n{chunk}"
+        chunk_response = llm_call(model, chunk_prompt, model_temperature, model_top_p)
         
+        json_string = extract_json(chunk_response)
+        if json_string:
+            json_output = json.loads(json_string)
+            all_codes.extend(json_output.get('final_codes', []))
+        else:
+            st.warning(f"No valid JSON found in the response for chunk {i+1}")
+    
+    # Combine all codes from different chunks
+    combined_output = {'final_codes': all_codes}
+    return json.dumps(combined_output)
 
 def main():
     # session_state persists through page changes so need to reset the text input message 
@@ -192,13 +235,11 @@ def main():
         st.subheader(":orange[LLM Settings]")
         
         # Model selection
-        # Model selection
         default_models = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
         azure_models = get_azure_models()
         model_options = default_models + azure_models
         selected_model = st.selectbox("Select Model", model_options)
         
-
         # OpenAI & Anthropic Models have different max temperature settings (2 & 1, respectively)
         max_temperature_value = 2.0 if selected_model.startswith('gpt') else 1.0
         
@@ -216,11 +257,6 @@ def main():
         prompt_input = selected_prompt_data["prompt"]
         model_temperature = selected_prompt_data["temperature"]
         model_top_p = selected_prompt_data["top_p"]
-
-        #if 'current_prompt' not in st.session_state or selected_preset != st.session_state.get('last_selected_preset'):
-        #    st.session_state.current_prompt = initial_coding_prompts[selected_preset]
-        #    st.session_state.last_selected_preset = selected_preset
-
 
         prompt_input = st.text_area("Edit prompt if needed:", value=prompt_input, height=200)
         settings_col1, settings_col2 = st.columns([0.5, 0.5])
@@ -240,30 +276,25 @@ def main():
                         file_path = os.path.join(PROJECTS_DIR, selected_project, 'data', file)
                         try:
                             processed_output = process_file(file_path, selected_model, prompt_input, model_temperature, model_top_p)
-                            json_string = extract_json(processed_output)
-                            if json_string:
-                                json_output = json.loads(json_string)
-                                df = pd.json_normalize(json_output['final_codes'])
-                                df.columns = ['code', 'description', 'quote']
-                                
-                                with st.expander(f"Processed Output for {file}:", expanded=True):
-                                    st.write(df)
-                                
-                                    # Save initial codes
-                                    saved_file_path = save_initial_codes(selected_project, file, df)
-                                    st.success(f"Initial codes saved to {saved_file_path}")
-                                
-                                    # Add download button for each file's results
-                                    csv = df.to_csv(index=False).encode('utf-8')
-                                    st.download_button(
-                                        label=f"Download initial codes for {str(os.path.splitext(file)[0])}",
-                                        data=csv,
-                                        file_name=f"{str(os.path.splitext(file)[0])}_initial_codes.csv",
-                                        mime="text/csv"
-                                    )
-                            else:
-                                st.warning(f"No valid JSON found in the response for {file}")
-                                st.text(processed_output)
+                            json_output = json.loads(processed_output)
+                            df = pd.json_normalize(json_output['final_codes'])
+                            df.columns = ['code', 'description', 'quote']
+                            
+                            with st.expander(f"Processed Output for {file}:", expanded=True):
+                                st.write(df)
+                            
+                                # Save initial codes
+                                saved_file_path = save_initial_codes(selected_project, file, df)
+                                st.success(f"Initial codes saved to {saved_file_path}")
+                            
+                                # Add download button for each file's results
+                                csv = df.to_csv(index=False).encode('utf-8')
+                                st.download_button(
+                                    label=f"Download initial codes for {str(os.path.splitext(file)[0])}",
+                                    data=csv,
+                                    file_name=f"{str(os.path.splitext(file)[0])}_initial_codes.csv",
+                                    mime="text/csv"
+                                )
                             
                         except (ValueError, json.JSONDecodeError) as e:
                             st.warning(f"Error processing {file}: {e}")
