@@ -10,7 +10,7 @@ from openai import AzureOpenAI
 import pandas as pd
 import ast
 from api_key_management import manage_api_keys
-from azure_model_mapping import azure_model_maps
+
 
 client = openai
 
