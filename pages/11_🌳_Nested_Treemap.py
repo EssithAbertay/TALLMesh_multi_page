@@ -39,7 +39,7 @@ def prepare_treemap_data(themes_df, codes_df):
         for _, code_row in relevant_codes.iterrows():
             initial_code = code_row['original_code']
             quote = code_row['quote']
-            source = code_row['source']
+            #source = code_row['source']
             
             treemap_data.append({
                 'Theme': theme,
@@ -48,7 +48,6 @@ def prepare_treemap_data(themes_df, codes_df):
                 'Reduced Code Description': reduced_code_description,
                 'Initial Code': initial_code,
                 'Quote': quote,
-                'Source': source,
                 'Value': 1
             })
     
@@ -57,7 +56,7 @@ def prepare_treemap_data(themes_df, codes_df):
 def main():
     st.header(":orange[Nested Treemap Visualization]")
 
-    st.subheader(":orange[Structure: Theme > Reduced Codes > Initial Code > Quote > Source]")
+    st.subheader(":orange[Structure: Theme > Reduced Codes > Initial Code > Quote]")
 
     projects = get_projects()
     if 'selected_project' not in st.session_state:
@@ -88,7 +87,7 @@ def main():
 
         fig = px.treemap(
             treemap_data,
-            path=['Theme', 'Reduced Code', 'Initial Code', 'Quote', 'Source'],
+            path=['Theme', 'Reduced Code', 'Initial Code', 'Quote'],
             values='Value',
             hover_data=['Theme Description', 'Reduced Code Description'],
             color='Theme',
@@ -96,7 +95,8 @@ def main():
         )
 
         fig.update_traces(
-            textinfo="label+value",
+            textinfo="label",
+            textfont=dict(size=14),
             hovertemplate='<b>%{label}</b><br>Value: %{value}<br>Description: %{customdata[0]}<extra></extra>'
         )
 

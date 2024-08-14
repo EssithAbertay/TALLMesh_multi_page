@@ -34,9 +34,12 @@ def create_graph(data, min_common_codes):
         if common >= min_common_codes:
             edges.append((theme1, theme2, common))
     
+    if not edges:
+        return None
+
     output_dot = "digraph {\n"
     for edge in edges:
-        output_dot += f'\t"{edge[0]}" -> "{edge[1]}" [label="Common Codes: {edge[2]}" penwidth={edge[2]} dir=none]\n'
+        output_dot += f'\t"{edge[0]}" -> "{edge[1]}" [label="Common Codes: {edge[2]}" penwidth={max(1, edge[2])} dir=none]\n'
     output_dot += "}"
     
     return output_dot
@@ -70,15 +73,18 @@ def main():
             st.error("No theme data available for the selected project.")
             return
 
-        min_common_codes = st.slider("Minimum Common Codes", min_value=1, max_value=10, value=1)
+        min_common_codes = st.slider("Minimum Common Codes", min_value=0, max_value=10, value=0)
 
         graph_dot = create_graph(themes_df, min_common_codes)
         
-        st.graphviz_chart(graph_dot)
-        
-        st.write("This graph shows connections between themes based on their shared codes. "
-                 "The thickness of the lines represents the number of common codes. "
-                 "Adjust the 'Minimum Common Codes' slider to filter connections.")
+        if graph_dot is None:
+            st.warning("No connections found with the current minimum common codes. Try lowering the threshold.")
+        else:
+            st.graphviz_chart(graph_dot)
+            
+            st.write("This graph shows connections between themes based on their shared codes. "
+                     "The thickness of the lines represents the number of common codes. "
+                     "Adjust the 'Minimum Common Codes' slider to filter connections.")
 
     manage_api_keys()
 

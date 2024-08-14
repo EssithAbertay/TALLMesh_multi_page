@@ -90,14 +90,14 @@ Here is an example of the expected JSON format:
 reduce_duplicate_codes_prompts = {
     "Preset 1": {"prompt":"""Analyze the following list of codes and their descriptions. Identify and merge any duplicate or highly similar codes. For each set of merged codes, provide:
 
-1. A concise name for the merged code (maximum 4 words)
-2. A detailed description (25 words) explaining the merged code's meaning and relevance
-3. A brief explanation (max 50 words) of why these codes were merged
-4. A list of the original code names that were merged
+1. Important! A concise name for the merged code (maximum 4 words)
+2. Important! A detailed description (25 words) explaining the merged code's meaning and relevance
+3. Important! A brief explanation (max 50 words) of why these codes were merged
+4. Important! A list of the original code names that were merged
 
-If a code already has a merge explanation, incorporate it into the new explanation.
+Important! If a code already has a merge explanation, incorporate it into the new explanation.
 
-For unique codes that are not merged, keep them as they are.
+Important! For unique codes that are not merged, keep them as they are.
 
 Format the response as a JSON file with the following structure:
 
@@ -120,11 +120,35 @@ Important! Your response should be a JSON-like object with no additional text be
 
 
 
-finding_themes_prompts = {"Preset 1: Basic Theme Generation": {"prompt":"""Analyze the provided list of codes and generate themes that capture the main ideas and patterns in the data. For each theme:
+finding_themes_prompts = {"Preset 1: Basic Theme Generation (Overlap Allowed)": {"prompt":"""Analyze the provided list of codes and generate themes that capture the main ideas and patterns in the data. For each theme:
 
 1. Provide a concise theme name (maximum 5 words)
 2. Write a detailed theme description (50-75 words) explaining the theme's meaning and relevance
-3. List the codes (by index number) that belong to this theme
+3. List the codes (by index number) that are associated with this theme
+
+Important! It is okay for themes to have shared codes, this will facilitate an evaluation of higher order concepts.
+
+Format the response as a JSON file with the following structure:
+
+{
+  "themes": [
+    {
+      "name": "Theme Name",
+      "description": "Detailed description of the theme...",
+      "codes": [1, 4, 7, 12]
+    }
+  ]
+}
+
+Important! Your response should be a JSON-like object with no additional text before or after.""",
+        "temperature": 0.00,
+        "top_p": 0.1
+    },
+    "Preset 2: Basic Theme Generation (No Overlap)": {"prompt":"""Analyze the provided list of codes and generate themes that capture the main ideas and patterns in the data. For each theme:
+
+1. Provide a concise theme name (maximum 5 words)
+2. Write a detailed theme description (50-75 words) explaining the theme's meaning and relevance
+3. List the codes (by index number) that are associated with this theme
 
 Aim to create unique themes that collectively represent the entire dataset. Ensure that each theme is distinct and coherent.
 
