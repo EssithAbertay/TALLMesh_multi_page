@@ -2,56 +2,98 @@ import streamlit as st
 import os
 import chardet
 import fitz  # PyMuPDF
+from docx import Document
+from striprtf.striprtf import rtf_to_text
+import logging
 from project_utils import get_projects
 
 PROJECTS_DIR = 'projects'
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def detect_encoding(file_content):
     result = chardet.detect(file_content)
     return result['encoding']
 
 def convert_pdf_to_txt(pdf_file, output_path):
-    document = fitz.open(stream=pdf_file.read(), filetype="pdf")
-    text = ""
+    try:
+        document = fitz.open(stream=pdf_file.read(), filetype="pdf")
+        text = ""
 
-    for page_num in range(len(document)):
-        page = document[page_num]
-        text += page.get_text()
+        for page_num in range(len(document)):
+            page = document[page_num]
+            text += page.get_text()
 
-    with open(output_path, 'w', encoding='utf-8') as txt_file:
-        txt_file.write(text)
+        with open(output_path, 'w', encoding='utf-8') as txt_file:
+            txt_file.write(text)
+    except Exception as e:
+        logger.error(f"Error converting PDF to text: {str(e)}")
+        raise
+
+def convert_docx_to_txt(docx_file, output_path):
+    try:
+        doc = Document(docx_file)
+        text = "\n".join([paragraph.text for paragraph in doc.paragraphs])
+        
+        with open(output_path, 'w', encoding='utf-8') as txt_file:
+            txt_file.write(text)
+    except Exception as e:
+        logger.error(f"Error converting DOCX to text: {str(e)}")
+        raise
+
+def convert_rtf_to_txt(rtf_content, output_path):
+    try:
+        text = rtf_to_text(rtf_content)
+        
+        with open(output_path, 'w', encoding='utf-8') as txt_file:
+            txt_file.write(text)
+    except Exception as e:
+        logger.error(f"Error converting RTF to text: {str(e)}")
+        raise
 
 def convert_to_txt(file, project_name):
     file_extension = os.path.splitext(file.name)[1].lower()
     file_name = os.path.splitext(file.name)[0] + '.txt'
     file_path = os.path.join(PROJECTS_DIR, project_name, 'data', file_name)
 
-    if file_extension == '.pdf':
-        convert_pdf_to_txt(file, file_path)
-    else:
-        file_content = file.read()
-        encoding = detect_encoding(file_content)
+    try:
+        if file_extension == '.pdf':
+            convert_pdf_to_txt(file, file_path)
+        elif file_extension == '.docx':
+            convert_docx_to_txt(file, file_path)
+        elif file_extension == '.rtf':
+            rtf_content = file.read().decode('utf-8')
+            convert_rtf_to_txt(rtf_content, file_path)
+        else:
+            file_content = file.read()
+            encoding = detect_encoding(file_content)
 
-        # Use 'utf-8' as default if encoding detection fails
-        if encoding is None:
-            encoding = 'utf-8'
+            # Use 'utf-8' as default if encoding detection fails
+            if encoding is None:
+                encoding = 'utf-8'
 
-        try:
-            # Attempt to decode the content using the detected encoding
-            decoded_content = file_content.decode(encoding)
-        except UnicodeDecodeError:
-            # If decoding fails, try with 'utf-8' as a fallback
             try:
-                decoded_content = file_content.decode('utf-8')
+                # Attempt to decode the content using the detected encoding
+                decoded_content = file_content.decode(encoding)
             except UnicodeDecodeError:
-                # If 'utf-8' also fails, use 'latin-1' which can decode any byte string
-                decoded_content = file_content.decode('latin-1')
+                # If decoding fails, try with 'utf-8' as a fallback
+                try:
+                    decoded_content = file_content.decode('utf-8')
+                except UnicodeDecodeError:
+                    # If 'utf-8' also fails, use 'latin-1' which can decode any byte string
+                    decoded_content = file_content.decode('latin-1')
 
-        # Write the content to a new .txt file with UTF-8 encoding
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(decoded_content)
+            # Write the content to a new .txt file with UTF-8 encoding
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(decoded_content)
 
-    return file_name
+        logger.info(f"Successfully converted {file.name} to {file_name}")
+        return file_name
+    except Exception as e:
+        logger.error(f"Error converting {file.name}: {str(e)}")
+        raise
 
 def get_project_files(project_name):
     data_folder = os.path.join(PROJECTS_DIR, project_name, 'data')
@@ -69,7 +111,7 @@ def main():
         3. The app will automatically convert the files to .txt format with UTF-8 encoding.
         4. You can view the list of converted files below the uploader.
         
-        Note: This tool supports various file formats and automatically detects the original encoding to ensure accurate conversion.
+        Note: This tool supports various file formats including PDF, DOCX, RTF, and other text formats. It automatically detects the original encoding to ensure accurate conversion.
         """)
 
     # Project selection
@@ -86,10 +128,14 @@ def main():
             st.write("Converting files...")
             converted_files = []
             for file in uploaded_files:
-                converted_file = convert_to_txt(file, selected_project)
-                converted_files.append(converted_file)
+                try:
+                    converted_file = convert_to_txt(file, selected_project)
+                    converted_files.append(converted_file)
+                    st.success(f"Successfully converted {file.name} to {converted_file}")
+                except Exception as e:
+                    st.error(f"Error converting {file.name}: {str(e)}")
             
-            st.success(f"Successfully converted {len(converted_files)} file(s) to .txt format.")
+            st.success(f"Successfully converted {len(converted_files)} out of {len(uploaded_files)} file(s) to .txt format.")
         
         # Display existing files
         st.subheader("Existing files in the project:")

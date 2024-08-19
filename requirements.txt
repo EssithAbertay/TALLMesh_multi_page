@@ -25,6 +25,7 @@ cryptography==43.0.0
 cycler==0.12.1
 decorator==5.1.1
 distro==1.9.0
+docx==0.2.4
 docx2txt==0.8
 ebcdic==1.1.1
 etelemetry==0.3.1
