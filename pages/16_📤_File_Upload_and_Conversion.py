@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import chardet
+import fitz  # PyMuPDF
 from project_utils import get_projects
 
 PROJECTS_DIR = 'projects'
@@ -9,33 +10,47 @@ def detect_encoding(file_content):
     result = chardet.detect(file_content)
     return result['encoding']
 
+def convert_pdf_to_txt(pdf_file, output_path):
+    document = fitz.open(stream=pdf_file.read(), filetype="pdf")
+    text = ""
+
+    for page_num in range(len(document)):
+        page = document[page_num]
+        text += page.get_text()
+
+    with open(output_path, 'w', encoding='utf-8') as txt_file:
+        txt_file.write(text)
+
 def convert_to_txt(file, project_name):
-    file_content = file.read()
-    encoding = detect_encoding(file_content)
-    
-    # Use 'utf-8' as default if encoding detection fails
-    if encoding is None:
-        encoding = 'utf-8'
-    
-    try:
-        # Attempt to decode the content using the detected encoding
-        decoded_content = file_content.decode(encoding)
-    except UnicodeDecodeError:
-        # If decoding fails, try with 'utf-8' as a fallback
-        try:
-            decoded_content = file_content.decode('utf-8')
-        except UnicodeDecodeError:
-            # If 'utf-8' also fails, use 'latin-1' which can decode any byte string
-            decoded_content = file_content.decode('latin-1')
-    
-    # Create the file path
+    file_extension = os.path.splitext(file.name)[1].lower()
     file_name = os.path.splitext(file.name)[0] + '.txt'
     file_path = os.path.join(PROJECTS_DIR, project_name, 'data', file_name)
-    
-    # Write the content to a new .txt file with UTF-8 encoding
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(decoded_content)
-    
+
+    if file_extension == '.pdf':
+        convert_pdf_to_txt(file, file_path)
+    else:
+        file_content = file.read()
+        encoding = detect_encoding(file_content)
+
+        # Use 'utf-8' as default if encoding detection fails
+        if encoding is None:
+            encoding = 'utf-8'
+
+        try:
+            # Attempt to decode the content using the detected encoding
+            decoded_content = file_content.decode(encoding)
+        except UnicodeDecodeError:
+            # If decoding fails, try with 'utf-8' as a fallback
+            try:
+                decoded_content = file_content.decode('utf-8')
+            except UnicodeDecodeError:
+                # If 'utf-8' also fails, use 'latin-1' which can decode any byte string
+                decoded_content = file_content.decode('latin-1')
+
+        # Write the content to a new .txt file with UTF-8 encoding
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(decoded_content)
+
     return file_name
 
 def get_project_files(project_name):
@@ -56,7 +71,7 @@ def main():
         
         Note: This tool supports various file formats and automatically detects the original encoding to ensure accurate conversion.
         """)
-    
+
     # Project selection
     projects = get_projects()
     selected_project = st.selectbox("Select a project:", ["Select a project..."] + projects)

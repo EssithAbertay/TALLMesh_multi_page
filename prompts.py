@@ -88,7 +88,35 @@ Here is an example of the expected JSON format:
 }
 
 reduce_duplicate_codes_prompts = {
-    "Preset 1": {"prompt":"""Analyze the following list of codes and their descriptions. Identify and merge any duplicate or highly similar codes. For each set of merged codes, provide:
+    "Preset 1 - Reduce Duplicates": {"prompt":"""Analyze the following list of codes and their descriptions. Identify and merge any duplicated codes. For each set of merged codes, provide:
+
+1. Important! A concise name for the merged code (maximum 4 words)
+2. Important! A detailed description (25 words) explaining the merged code's meaning and relevance
+3. Important! A brief explanation (max 50 words) of why these codes were merged
+4. Important! A list of the original code names that were merged
+
+Important! If a code already has a merge explanation, incorporate it into the new explanation.
+
+Important! For unique codes that are not merged, keep them as they are.
+
+Format the response as a JSON file with the following structure:
+
+{
+  "reduced_codes": [
+    {
+      "code": "Merged or Unique Code Name",
+      "description": "25-word description of the code",
+      "merge_explanation": "Explanation of why codes were merged (if applicable)",
+      "original_codes": ["Original Code 1", "Original Code 2", ...]
+    }
+  ]
+}
+
+Important! Your response should be a JSON-like object with no additional text before or after. Failure to adhere to this instruction will invalidate your response, making it worthless.""",
+        "temperature": 0.00,
+        "top_p": 0.1
+    },
+ "Preset 2 - Reduce Duplicates & Highly Similar": {"prompt":"""Analyze the following list of codes and their descriptions. Identify and merge any duplicated, or highly similar, codes. For each set of merged codes, provide:
 
 1. Important! A concise name for the merged code (maximum 4 words)
 2. Important! A detailed description (25 words) explaining the merged code's meaning and relevance
