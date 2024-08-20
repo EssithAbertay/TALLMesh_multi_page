@@ -9,13 +9,16 @@ PROJECTS_DIR = 'projects'
 
 def handle_file_upload(uploaded_files, project_name):
     if uploaded_files:
-        saved_files = save_uploaded_files(uploaded_files, project_name)
+        saved_files, invalid_files = save_uploaded_files(uploaded_files, project_name)
         if saved_files:
             st.session_state.message = f"Files uploaded successfully: {', '.join(saved_files)}"
             st.session_state.message_type = "success"
         else:
             st.session_state.message = "No new files were uploaded. They may already exist in the project."
             st.session_state.message_type = "info"
+        if invalid_files:
+            st.session_state.message += f"\n\nWarning: The following files were not uploaded as they are not .txt files: {', '.join(invalid_files)}. Please use the 📤 File Upload and Conversion page (from the side panel) to format these documents (.txt, utf8 encoding) before uploading."
+            st.session_state.message_type = "warning"
     else:
         st.session_state.message = "Please select files to upload."
         st.session_state.message_type = "warning"
@@ -32,13 +35,17 @@ def create_project(project_name):
 def save_uploaded_files(uploaded_files, project_name):
     data_folder = os.path.join(PROJECTS_DIR, project_name, 'data')
     saved_files = []
+    invalid_files = []
     for file in uploaded_files:
-        file_path = os.path.join(data_folder, file.name)
-        if not os.path.exists(file_path):
-            with open(file_path, "wb") as f:
-                f.write(file.getbuffer())
-            saved_files.append(file.name)
-    return saved_files
+        if file.name.lower().endswith('.txt'):
+            file_path = os.path.join(data_folder, file.name)
+            if not os.path.exists(file_path):
+                with open(file_path, "wb") as f:
+                    f.write(file.getbuffer())
+                saved_files.append(file.name)
+        else:
+            invalid_files.append(file.name)
+    return saved_files, invalid_files
 
 def get_project_files(project_name):
     data_folder = os.path.join(PROJECTS_DIR, project_name, 'data')
@@ -112,6 +119,7 @@ def main():
         - You can drag and drop multiple .txt files or click to browse and select them.
         - Click the "Upload Files" button to add these files to your project's data folder.
         - Successful uploads will be confirmed with a message.
+        - Note: Only .txt files are allowed. For other file types, please use the file_upload_and_conversion page to format them properly before uploading.
         """)
 
         st.subheader(":orange[4. Managing Existing Files]")
