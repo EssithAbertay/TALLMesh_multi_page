@@ -46,24 +46,32 @@ This project is based on research conducted by Prof. Stefano De Paoli and Dr. Da
 
 1. Clone the repository:
 
+   ```
    git clone https://github.com/flipflop4/TALLMesh_multi_page.git 
    cd tallmesh_multi_page
-   
+   ```
+
 2. Create a virtual environment:
 
+   ```
    python -m venv venv
    source venv/bin/activate  # On Windows use venv\Scripts\activate
-   
+   ```
+
 3. Install the required packages:
 
+   ```
    pip install -r requirements.txt
-   
+   ```
+
 ## Usage
 
 1. Start the Streamlit app:
 
+   ```
    streamlit run Thematic_Analysis_LLMs.py
-   
+   ```
+
 2. Follow the on-screen instructions to:
    - Set up a new project
    - Upload and manage your data files
@@ -74,18 +82,16 @@ This project is based on research conducted by Prof. Stefano De Paoli and Dr. Da
 ## Project Structure
 
 - `Thematic_Analysis_LLMs.py`: Main entry point for the Streamlit application
-- `1_🏠_Folder_Set_Up.py`: Project and file management
+- `1_🏠_Project_Set_Up.py`: Project and file management
 - `2_1️⃣_Initial_coding.py`: Initial coding phase
 - `3_2️⃣_Reduction_of_codes.py`: Code reduction and consolidation
 - `4_3️⃣_Finding_Themes.py`: Theme identification
-- `5_4️⃣_Refining_Themes.py`: Theme refinement
-- `6_5️⃣_Finalised_Theme_Book.py`: Final theme book generation
-- `7_💹_Saturation_Metric.py`: Calculation of saturation metrics
-- `8_✅_Theme-Codes_Icicle.py`: Icicle chart visualization
-- `9_✳️_Thematic_Network_Map.py`: Thematic network visualization
-- `api_key_management.py`: Management of API keys for LLM providers
-- `project_utils.py`: Utility functions for project management
-- `prompts.py`: Predefined prompts for different analysis phases
+- `5_4️⃣_Finalised_Theme_Book.py`: Final theme book generation
+- `6_💹_Saturation_Metric.py`: Calculation of saturation metrics
+- `7_🧊_Theme-Codes_Icicle.py`: Icicle chart visualization
+- `10_🔗_Thematic_Overlap_Map.py`: Thematic network visualization
+- `14_📌_Guide.py`: User guide
+- `15_📢_Prompt Settings.py`: Prompt configuration settings
 
 ## Configuration
 
