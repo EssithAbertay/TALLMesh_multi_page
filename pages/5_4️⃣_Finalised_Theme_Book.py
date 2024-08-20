@@ -3,66 +3,91 @@
 Created on Fri Mar  1 13:29:16 2024
 
 @author: Stefano De Paoli - s.depaoli@abertay.ac.uk
+
+This script implements the Finalised Theme Book page of the TALLMesh multi-page application.
+It allows users to compile and organize all themes, codes, and associated data into a comprehensive structure,
+providing a clear overview of the entire qualitative analysis process.
 """
+
+# Import necessary libraries
 import streamlit as st
 import pandas as pd
 import os
-from api_key_management import manage_api_keys, load_api_keys
-from project_utils import get_projects, get_project_files, get_processed_files, PROJECTS_DIR
-from openai import OpenAI, AzureOpenAI
 import json
-
+from api_key_management import manage_api_keys, load_api_keys
+from project_utils import get_projects, get_projects, get_project_files, get_processed_files, PROJECTS_DIR
+from openai import OpenAI, AzureOpenAI
 
 def format_quotes(quotes_json):
     """
     Parses the JSON string of quotes, extracts the text,
     and joins each quote with a newline for better readability.
+    
+    Args:
+    quotes_json (str): A JSON string containing quote information.
+    
+    Returns:
+    str: A formatted string of quotes, each on a new line.
     """
     try:
         quotes = json.loads(quotes_json)
         formatted_quotes = "\n".join(quote['text'] for quote in quotes)
         return formatted_quotes
     except (json.JSONDecodeError, KeyError, TypeError):
-        return quotes_json  # Return the original if there's an error
+        # Return the original string if there's an error in parsing or formatting
+        return quotes_json
 
 def load_data(project_name):
+    """
+    Loads the most recent themes and reduced codes files for a given project.
+    
+    Args:
+    project_name (str): The name of the project to load data for.
+    
+    Returns:
+    tuple: A tuple containing two pandas DataFrames (themes_df, codes_df) or (None, None) if files are not found.
+    """
+    # Define paths for themes and codes folders
     themes_folder = os.path.join(PROJECTS_DIR, project_name, 'themes')
     codes_folder = os.path.join(PROJECTS_DIR, project_name, 'reduced_codes')
     
     # Get the most recent themes file
     themes_files = get_processed_files(project_name, 'themes')
     if not themes_files:
-        return None, None, None
+        return None, None
     latest_themes_file = max(themes_files, key=lambda f: os.path.getmtime(os.path.join(themes_folder, f)))
     themes_df = pd.read_csv(os.path.join(themes_folder, latest_themes_file))
     
     # Get the most recent reduced codes file
     codes_files = get_processed_files(project_name, 'reduced_codes')
     if not codes_files:
-        return None, None, None
+        return None, None
     latest_codes_file = max(codes_files, key=lambda f: os.path.getmtime(os.path.join(codes_folder, f)))
     codes_df = pd.read_csv(os.path.join(codes_folder, latest_codes_file))
     
-    # Generate column labels for codes_df
-    #num_columns = codes_df.shape[1]
-    #column_labels = ['code', 'description', 'merge_explanation'] + [f'quote_{i}' for i in range(1, num_columns - 2)]
-    #codes_df.columns = column_labels
-
-    return themes_df, codes_df #, column_labels
+    return themes_df, codes_df
 
 def process_data(themes_df, codes_df):
-    # Print column names for debugging
-    #print("Themes DataFrame columns:", themes_df.columns)
-    #print("Codes DataFrame columns:", codes_df.columns)
-
+    """
+    Processes the themes and codes data to create a final theme-codes book.
+    
+    Args:
+    themes_df (pandas.DataFrame): DataFrame containing theme data.
+    codes_df (pandas.DataFrame): DataFrame containing code data.
+    
+    Returns:
+    pandas.DataFrame: A processed DataFrame combining themes, codes, and associated information.
+    """
     # Initialize empty DataFrame for final theme-codes book with correct column names
     final_df = pd.DataFrame(columns=['Theme', 'Theme Description', 'Code', 'Code Description', 'Merge Explanation', 'Quotes', 'Source'])
 
+    # Iterate through each theme and its associated codes
     for _, theme_row in themes_df.iterrows():
         theme = theme_row['name']
         theme_description = theme_row['description']
         code_indices = [int(idx) for idx in theme_row['codes'].strip('[]').split(',')]
         
+        # For each code associated with the theme, create a new row in the final DataFrame
         for idx in code_indices:
             if idx < len(codes_df):
                 code_row = codes_df.iloc[idx]
@@ -80,8 +105,12 @@ def process_data(themes_df, codes_df):
     return final_df
 
 def main():
+    """
+    Main function to run the Streamlit application for the Finalised Theme Book page.
+    """
     st.header(":orange[Theme-Codes book rebuild]")
 
+    # Display instructions in an expandable section
     with st.expander("Instructions"):
         st.write("""
         The Finalised Theme Book page is where you compile and organize all your themes, codes, and associated data into a comprehensive structure. This step provides a clear overview of your entire analysis. Here's how to use this page:
@@ -136,7 +165,7 @@ def main():
 
         st.info("The Finalised Theme Book represents the culmination of your thematic analysis. It provides a structured overview of your themes and their grounding in the data, which is crucial for ensuring the validity and reliability of your qualitative research. The following pages make use of these finalised themes for metrics and visualisations")
 
-
+    # Get list of projects and handle project selection
     projects = get_projects()
     
     # Initialize session state for selected project if it doesn't exist
@@ -164,24 +193,26 @@ def main():
         st.rerun()
 
     if selected_project != "Select a project...":
-        themes_df, codes_df  = load_data(selected_project)
+        # Load data for the selected project
+        themes_df, codes_df = load_data(selected_project)
         
         if themes_df is None or codes_df is None:
             st.error("Error: Required files not found in the project directory.")
         else:
             st.success(f"Files loaded successfully for project: {selected_project}")
             
-            #if st.button("Process"): # redudant, just generate the theme book & other info
-            # Process data
+            # Process data to create the final theme-codes book
             final_df = process_data(themes_df, codes_df)
             
-            #Print themes, ondensed code view, everything together
+            # Display various views of the data
             st.write("Condensed Themes")
             st.write(themes_df)
+            
             st.write("Expanded Themes w/ Codes, Quotes & Sources")
             final_display_df = final_df.copy()
             final_display_df['Quotes'] = final_display_df['Quotes'].apply(format_quotes)
             st.write(final_df)
+            
             with st.expander("Merged Codes (for reference)"):
                 st.write("Merged Codes")
                 st.write(codes_df)
@@ -190,15 +221,17 @@ def main():
             output_folder = os.path.join(PROJECTS_DIR, selected_project, 'theme_books')
             os.makedirs(output_folder, exist_ok=True)
 
+            # Save condensed theme book
             output_file_condensed = os.path.join(output_folder, f"{selected_project}_condensed_theme_book_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv")
             themes_df.to_csv(output_file_condensed, index=False)
 
+            # Save expanded theme book
             output_file_expanded = os.path.join(output_folder, f"{selected_project}_expanded_theme_book_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv")
             final_df.to_csv(output_file_expanded, index=False)
 
             st.success(f"Theme books (condensed and expanded) saved to: \n-{output_file_condensed} \n{output_file_expanded}")
             
-            # Download button
+            # Provide download button for the final theme-codes book
             csv = final_df.to_csv(index=False).encode('utf-8')
             st.download_button(
                 label="Download Final Theme-Codes Book",
@@ -209,8 +242,8 @@ def main():
     else:
         st.write("Please select a project to continue.")
 
+    # Manage API keys (this function is imported from api_key_management module)
     manage_api_keys()
 
 if __name__ == "__main__":
     main()
-
