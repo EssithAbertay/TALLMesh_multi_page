@@ -3,19 +3,29 @@
 Created on Fri Mar  1 14:30:28 2024
 
 @author: Stefano De Paoli - s.depaoli@abertay.ac.uk
+
+This script is part of the TALLMesh multi-page application for qualitative data analysis.
+It focuses on the reduction of initial codes generated in the previous step of the analysis process.
+The main purpose is to refine and consolidate codes, identifying patterns and reducing redundancy.
 """
 
 import os
 import streamlit as st
 import pandas as pd
 import json
-from api_key_management import manage_api_keys, load_api_keys
+import re
+from api_key_management import manage_api_keys, load_api_keys, load_azure_settings, get_azure_models, AZURE_SETTINGS_FILE
 from project_utils import get_projects, get_project_files, get_processed_files, PROJECTS_DIR
 from prompts import reduce_duplicate_codes_prompts
-from api_key_management import manage_api_keys, load_api_keys, load_azure_settings, get_azure_models, AZURE_SETTINGS_FILE
 from llm_utils import llm_call
 
 def load_custom_prompts():
+    """
+    Load custom prompts from a JSON file.
+    
+    Returns:
+        dict: A dictionary of custom prompts, or an empty dictionary if the file is not found.
+    """
     try:
         with open('custom_prompts.json', 'r') as f:
             return json.load(f)
@@ -23,16 +33,27 @@ def load_custom_prompts():
         return {}
 
 def extract_json(text):
-    import re
+    """
+    Extract a JSON object from a string.
+    
+    Args:
+        text (str): The input string containing a JSON object.
+    
+    Returns:
+        str: The extracted JSON string, or None if no JSON object is found.
+    """
     match = re.search(r'\{[\s\S]*\}', text)
-    if match:
-        return match.group(0)
-    return None
+    return match.group(0) if match else None
 
 def format_quotes(quotes_json):
     """
-    Parses the JSON string of quotes, extracts the text,
-    and joins each quote with a newline for better readability.
+    Parse and format a JSON string of quotes for better readability.
+    
+    Args:
+        quotes_json (str): A JSON string containing quote information.
+    
+    Returns:
+        str: A formatted string with each quote on a new line, or the original string if parsing fails.
     """
     try:
         quotes = json.loads(quotes_json)
@@ -42,6 +63,15 @@ def format_quotes(quotes_json):
         return quotes_json  # Return the original if there's an error
 
 def amalgamate_duplicate_codes(df):
+    """
+    Combine duplicate codes in a DataFrame, merging their associated information.
+    
+    Args:
+        df (pd.DataFrame): The input DataFrame containing code information.
+    
+    Returns:
+        pd.DataFrame: A new DataFrame with amalgamated code information.
+    """
     # Group by 'code' and aggregate other columns
     amalgamated_df = df.groupby('code').agg({
         'description': 'first',
@@ -51,18 +81,24 @@ def amalgamate_duplicate_codes(df):
         'source': lambda x: list(set(x))  # Keep this for backward compatibility
     }).reset_index()
 
-    # Convert original_code list to JSON string
+    # Convert columns to appropriate string formats
     amalgamated_df['original_code'] = amalgamated_df['original_code'].apply(json.dumps)
-    
-    # Convert quote list to JSON string
     amalgamated_df['quote'] = amalgamated_df['quote'].apply(json.dumps)
-
-    # Convert source list to comma-separated string
     amalgamated_df['source'] = amalgamated_df['source'].apply(lambda x: ', '.join(x))
 
     return amalgamated_df
 
 def match_reduced_to_original_codes(reduced_df, initial_codes_directory):
+    """
+    Match reduced codes to their original codes by comparing quotes.
+    
+    Args:
+        reduced_df (pd.DataFrame or str): The reduced codes DataFrame or path to the CSV file.
+        initial_codes_directory (str): Path to the directory containing initial codes CSV files.
+    
+    Returns:
+        pd.DataFrame: The reduced codes DataFrame with matched original codes.
+    """
     # Check if reduced_df is a string (file path) or DataFrame
     if isinstance(reduced_df, str):
         reduced_df = pd.read_csv(reduced_df)
@@ -98,6 +134,17 @@ def match_reduced_to_original_codes(reduced_df, initial_codes_directory):
     return reduced_df
 
 def save_reduced_codes(project_name, df, folder):
+    """
+    Save the reduced codes DataFrame to a CSV file in the specified project folder.
+    
+    Args:
+        project_name (str): The name of the project.
+        df (pd.DataFrame): The DataFrame containing reduced codes.
+        folder (str): The subfolder name to save the file in.
+    
+    Returns:
+        str: The path of the saved CSV file.
+    """
     reduced_codes_folder = os.path.join(PROJECTS_DIR, project_name, folder)
     os.makedirs(reduced_codes_folder, exist_ok=True)
     
@@ -106,6 +153,20 @@ def save_reduced_codes(project_name, df, folder):
     return output_file_path
 
 def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_top_p):
+    """
+    Compare and reduce codes from two DataFrames using an AI model.
+    
+    Args:
+        df1 (pd.DataFrame): The first DataFrame containing codes.
+        df2 (pd.DataFrame): The second DataFrame containing codes.
+        model (str): The name of the AI model to use.
+        prompt (str): The prompt to guide the AI in code reduction.
+        model_temperature (float): The temperature setting for the AI model.
+        model_top_p (float): The top_p setting for the AI model.
+    
+    Returns:
+        tuple: A tuple containing the reduced DataFrame, total codes count, and unique codes count.
+    """
     combined_codes = pd.concat([df1, df2], ignore_index=True)
     
     # Create a simplified codes_list with only code and description
@@ -158,6 +219,20 @@ def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_t
         return None, None, None
 
 def process_files(selected_project, selected_files, model, prompt, model_temperature, model_top_p):
+    """
+    Process multiple files to reduce codes and track the reduction process.
+    
+    Args:
+        selected_project (str): The name of the selected project.
+        selected_files (list): A list of file paths to process.
+        model (str): The name of the AI model to use.
+        prompt (str): The prompt to guide the AI in code reduction.
+        model_temperature (float): The temperature setting for the AI model.
+        model_top_p (float): The top_p setting for the AI model.
+    
+    Returns:
+        tuple: A tuple containing the final reduced DataFrame and a DataFrame of reduction results.
+    """
     reduced_df = None
     total_codes_list = []
     unique_codes_list = []
@@ -195,27 +270,44 @@ def process_files(selected_project, selected_files, model, prompt, model_tempera
 
 @st.cache_data
 def convert_df(df):
+    """
+    Convert a DataFrame to a CSV string.
+    
+    Args:
+        df (pd.DataFrame): The input DataFrame.
+    
+    Returns:
+        bytes: The DataFrame as a CSV string encoded in UTF-8.
+    """
     return df.to_csv().encode('utf-8')
 
 def format_original_codes(original_codes):
+    """
+    Format the original codes string for display.
+    
+    Args:
+        original_codes (str): A string representation of original codes.
+    
+    Returns:
+        str: A formatted string of original codes.
+    """
     try:
-        # Try to parse as JSON
         codes = json.loads(original_codes)
-        if isinstance(codes, list):
-            return ', '.join(codes)
-        else:
-            return original_codes
+        return ', '.join(codes) if isinstance(codes, list) else original_codes
     except json.JSONDecodeError:
-        # If it's not valid JSON, return the original string
         return original_codes
 
 def main():
-    # session_state persists through page changes so need to reset the text input message 
+    """
+    The main function that sets up the Streamlit interface for code reduction.
+    """
+    # Reset the text input message in session_state
     if 'current_prompt' in st.session_state:
         del st.session_state.current_prompt 
 
     st.header(":orange[Reduction of Codes]")
 
+    # Instructions expander
     with st.expander("Instructions"):
         st.write("""
         The Reduction of Codes page is where you refine and consolidate the initial codes generated in the previous step. This process helps to identify patterns and reduce redundancy in your coding. Here's how to use this page:
@@ -301,6 +393,7 @@ def main():
     if selected_project != "Select a project...":
         project_files = get_project_files(selected_project, 'initial_codes')
         
+        # File selection expander
         with st.expander("Select files to process", expanded=True):
             col1, col2 = st.columns([0.9, 0.1])
             select_all = col2.checkbox("Select All", value=True)
@@ -341,12 +434,14 @@ def main():
 
         prompt_input = st.text_area("Edit prompt if needed:", value=prompt_input, height=200)
         
+        # Model settings
         settings_col1, settings_col2 = st.columns([0.5, 0.5])
         with settings_col1:
             model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value), step=0.01, value=model_temperature)
         with settings_col2:
             model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=model_top_p)
 
+        # Process button
         if st.button("Process"):
             st.divider()
             st.subheader(":orange[Output]")
@@ -370,11 +465,12 @@ def main():
                     st.write("Code Reduction Results:")
                     st.write(results_df)
                     
+                    # Save reduced codes
                     save_reduced_codes(selected_project, updated_df, 'expanded_reduced_codes')
-
                     saved_file_path = save_reduced_codes(selected_project, amalgamated_df, 'reduced_codes')
                     st.success(f"Reduced codes saved to {saved_file_path}")
                     
+                    # Download buttons for reduced codes and results
                     csv = amalgamated_df.to_csv(index=False).encode('utf-8')
                     st.download_button(
                         label="Download reduced codes",
@@ -383,7 +479,6 @@ def main():
                         mime="text/csv"
                     )
                     
-                    # Save intermediate results
                     results_csv = results_df.to_csv(index=False).encode('utf-8')
                     st.download_button(
                         label="Download code reduction results",
@@ -414,7 +509,7 @@ def main():
                     data=csv,
                     file_name=processed_file,
                     mime="text/csv"
-            )
+                )
 
     else:
         st.write("Please select a project to continue. If you haven't set up a project yet, head over to the '🏠 Folder Set Up' page to get started.")

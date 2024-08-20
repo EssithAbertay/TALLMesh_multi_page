@@ -3,24 +3,33 @@
 Created on Fri Feb  2 15:16:46 2024
 
 @author: Stefano De Paoli - s.depaoli@abertay.ac.uk
+
+This script is part of the TALLMesh project and focuses on finding themes from reduced codes.
+It provides a Streamlit interface for users to process their coded data and generate themes using AI models.
 """
+
+# Import necessary libraries
 import streamlit as st
 from openai import OpenAI, AzureOpenAI
 import pandas as pd
-import json # replacing ast
-from api_key_management import manage_api_keys, load_api_keys
-from project_utils import get_projects, get_project_files, get_processed_files
+import json
 import os
-from prompts import finding_themes_prompts
 import anthropic
-#from azure_model_mapping import azure_model_maps
 from api_key_management import manage_api_keys, load_api_keys, load_azure_settings, get_azure_models, AZURE_SETTINGS_FILE
+from project_utils import get_projects, get_project_files, get_processed_files
+from prompts import finding_themes_prompts
 from llm_utils import llm_call
 
+# Constants
 PROJECTS_DIR = 'projects'
 
-# function to load users own custom prompts
 def load_custom_prompts():
+    """
+    Load user-defined custom prompts from a JSON file.
+    
+    Returns:
+        dict: A dictionary of custom prompts, or an empty dict if the file is not found.
+    """
     try:
         with open('custom_prompts.json', 'r') as f:
             return json.load(f)
@@ -28,35 +37,42 @@ def load_custom_prompts():
         return {}
 
 def extract_json(text):
+    """
+    Extract a JSON object from a string using regex.
+    
+    Args:
+        text (str): The input string containing a JSON object.
+    
+    Returns:
+        str: The extracted JSON string, or None if no JSON object is found.
+    """
     import re
     match = re.search(r'\{[\s\S]*\}', text)
-    if match:
-        return match.group(0)
-    return None
+    return match.group(0) if match else None
 
-# reduction of codes leaves duplicate codes and descriptions (intended but becomes problematic when identifying similar codes)
 def preprocess_codes(df):
-    # Create a dictionary to store unique codes
+    """
+    Preprocess the codes dataframe to remove duplicates and combine quotes and sources.
+    
+    Args:
+        df (pandas.DataFrame): The input dataframe containing codes, descriptions, quotes, and sources.
+    
+    Returns:
+        pandas.DataFrame: A preprocessed dataframe with unique codes and combined quotes and sources.
+    """
     unique_codes = {}
 
-    # Iterate through the DataFrame
+    # Iterate through the DataFrame to collect unique codes and their associated data
     for _, row in df.iterrows():
         code = row['code']
-        description = row['description']
-        quote = row['quote']
-        source = row['source']
-
-        # If the code is not in the dictionary, add it
         if code not in unique_codes:
             unique_codes[code] = {
-                'description': description,
+                'description': row['description'],
                 'quotes': [],
                 'sources': []
             }
-
-        # Add the quote and source to the code's entry
-        unique_codes[code]['quotes'].append(quote)
-        unique_codes[code]['sources'].append(source)
+        unique_codes[code]['quotes'].append(row['quote'])
+        unique_codes[code]['sources'].append(row['source'])
 
     # Create a new DataFrame from the unique_codes dictionary
     preprocessed_df = pd.DataFrame([
@@ -69,38 +85,57 @@ def preprocess_codes(df):
         for code, data in unique_codes.items()
     ])
 
-    #st.write(preprocessed_df)
     return preprocessed_df
 
-# Function to process codes
 def process_codes(selected_files, model, prompt, model_temperature, model_top_p):
-    all_codes = []
-    for file in selected_files:
-        df = pd.read_csv(file)
-        all_codes.append(df)
+    """
+    Process the selected code files to find themes using an AI model.
     
-    # Combine all DataFrames
+    Args:
+        selected_files (list): List of file paths to process.
+        model (str): The AI model to use for processing.
+        prompt (str): The prompt to guide the AI in finding themes.
+        model_temperature (float): The temperature setting for the AI model.
+        model_top_p (float): The top_p setting for the AI model.
+    
+    Returns:
+        tuple: A tuple containing the processed output (dict) and the preprocessed dataframe.
+    """
+    # Combine all selected files into a single DataFrame
+    all_codes = [pd.read_csv(file) for file in selected_files]
     combined_df = pd.concat(all_codes, ignore_index=True)
     
-    # Preprocess the combined df
+    # Preprocess the combined DataFrame
     preprocessed_df = preprocess_codes(combined_df)
     
-    # Create the codes list for the prompt
+    # Create a list of codes for the prompt
     codes_list = [f"[{i}]: {row['code']}: {row['description']}" for i, (_, row) in enumerate(preprocessed_df.iterrows())]
     
+    # Construct the full prompt
     full_prompt = f"{prompt}\n\nCodes:\n{', '.join(codes_list)}"
     
+    # Process the codes using the AI model
     processed_output = llm_call(model, full_prompt, model_temperature, model_top_p)
     
+    # Extract and parse the JSON response
     json_string = extract_json(processed_output)
-
     if json_string:
         return json.loads(json_string), preprocessed_df
     else:
         st.warning("No valid JSON found in the response")
         return None
-    
+
 def save_themes(project_name, df):
+    """
+    Save the generated themes to a CSV file in the project's themes folder.
+    
+    Args:
+        project_name (str): The name of the current project.
+        df (pandas.DataFrame): The dataframe containing the generated themes.
+    
+    Returns:
+        str: The path to the saved themes file.
+    """
     themes_folder = os.path.join(PROJECTS_DIR, project_name, 'themes')
     os.makedirs(themes_folder, exist_ok=True)
     
@@ -110,15 +145,28 @@ def save_themes(project_name, df):
 
 @st.cache_data
 def convert_df(df):
+    """
+    Convert a dataframe to a CSV string for downloading.
+    
+    Args:
+        df (pandas.DataFrame): The dataframe to convert.
+    
+    Returns:
+        bytes: The CSV-encoded dataframe as bytes.
+    """
     return df.to_csv().encode('utf-8')
 
 def main():
-    # session_state persists through page changes so need to reset the text input message 
+    """
+    The main function that sets up the Streamlit interface and handles user interactions.
+    """
+    # Reset the current prompt in the session state
     if 'current_prompt' in st.session_state:
         del st.session_state.current_prompt
 
     st.header(":orange[Finding Themes]")
 
+    # Display instructions in an expandable section
     with st.expander("Instructions"):
         st.write("""
         The Finding Themes page is where you identify overarching themes from your reduced codes. This step helps you synthesize your data into meaningful patterns. Here's how to use this page:
@@ -175,20 +223,14 @@ def main():
 
     st.subheader(":orange[Project & Data Selection]")
 
+    # Get available projects and handle project selection
     projects = get_projects()
-    
-    # Initialize session state for selected project if it doesn't exist
     if 'selected_project' not in st.session_state:
         st.session_state.selected_project = "Select a project..."
 
-    # Calculate the index for the selectbox
     project_options = ["Select a project..."] + projects
-    if st.session_state.selected_project in project_options:
-        index = project_options.index(st.session_state.selected_project)
-    else:
-        index = 0
+    index = project_options.index(st.session_state.selected_project) if st.session_state.selected_project in project_options else 0
 
-    # Use selectbox with the session state as the default value
     selected_project = st.selectbox(
         "Select a project:", 
         project_options,
@@ -202,6 +244,7 @@ def main():
         st.rerun()
 
     if selected_project != "Select a project...":
+        # Get and display project files for selection
         project_files = get_project_files(selected_project, 'reduced_codes')
         
         with st.expander("Select files to process", expanded=True):
@@ -250,12 +293,11 @@ def main():
         with settings_col2:
             model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=model_top_p)
 
-        
-
         if st.button("Process"):
             st.divider()
             st.subheader(":orange[Output]")
             with st.spinner("Finding themes... please wait..."):
+                # Process the selected files and display results
                 themes_output, processed_df = process_codes(selected_files, selected_model, prompt_input, model_temperature, model_top_p)
                 
                 if themes_output is not None:
@@ -273,7 +315,7 @@ def main():
                     with st.expander("Codes & Descriptions:"):
                         st.write(processed_df)
                 
-                    
+                    # Save and offer download of themes
                     saved_file_path = save_themes(selected_project, themes_df)
                     st.success(f"Themes saved to {saved_file_path}")
                     
@@ -285,7 +327,7 @@ def main():
                         mime="text/csv"
                     )
 
-        # View previously processed files
+        # Display previously processed files
         processed_files = get_processed_files(selected_project, 'themes')
         with st.expander("Saved Themes", expanded=False):
             for processed_file in processed_files:
@@ -310,6 +352,7 @@ def main():
     else:
         st.write("Please select a project to continue. If you haven't set up a project yet, head over to the '🏠 Folder Set Up' page to get started.")
 
+    # Manage API keys
     manage_api_keys()
 
 if __name__ == "__main__":
