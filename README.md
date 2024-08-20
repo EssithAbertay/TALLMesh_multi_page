@@ -88,10 +88,14 @@ This project is based on research conducted by Prof. Stefano De Paoli and Dr. Da
 - `4_3️⃣_Finding_Themes.py`: Theme identification
 - `5_4️⃣_Finalised_Theme_Book.py`: Final theme book generation
 - `6_💹_Saturation_Metric.py`: Calculation of saturation metrics
-- `7_🧊_Theme-Codes_Icicle.py`: Icicle chart visualization
-- `10_🔗_Thematic_Overlap_Map.py`: Thematic network visualization
+- `7_🔗_Thematic_Overlap_Map.py`: Thematic network visualization
+- `8_🧊_Theme-Codes_Icicle.py`: Icicle chart visualization
+- `9_🕸️_Spider_Diagram.py`: Spider diagram visualisation
+- `11_🌳_Nested_Treemap.py`: Nested treemap visualisation
+- `12_💡_Resources.py`: Overview of Thematic Analysis & Comparison
+- `13_⚙️_Azure_Settings.py`: Manage Azure API credentials
 - `14_📌_Guide.py`: User guide
-- `15_📢_Prompt Settings.py`: Prompt configuration settings
+- `15_📢_Prompt Settings.py`: Prompt configuration settings p
 
 ## Configuration
 
