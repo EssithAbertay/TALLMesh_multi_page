@@ -1,3 +1,23 @@
+"""
+File Upload and Conversion Module
+
+This module provides functionality for uploading various file types and converting them to .txt format
+with appropriate encoding. It supports PDF, DOCX, RTF, and other text formats.
+
+The main features include:
+1. File upload through Streamlit interface
+2. Automatic file format detection and conversion
+3. Encoding detection for text files
+4. Project-based file management
+
+Dependencies:
+- streamlit: for creating the web interface
+- PyMuPDF (fitz): for handling PDF files
+- python-docx: for handling DOCX files
+- striprtf: for handling RTF files
+- chardet: for detecting file encodings
+"""
+
 import streamlit as st
 import os
 import chardet
@@ -7,17 +27,37 @@ from striprtf.striprtf import rtf_to_text
 import logging
 from project_utils import get_projects
 
+# Constants
 PROJECTS_DIR = 'projects'
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def detect_encoding(file_content):
+def detect_encoding(file_content: bytes) -> str:
+    """
+    Detect the encoding of the given file content.
+
+    Args:
+        file_content (bytes): The content of the file as bytes.
+
+    Returns:
+        str: The detected encoding, or None if detection fails.
+    """
     result = chardet.detect(file_content)
     return result['encoding']
 
-def convert_pdf_to_txt(pdf_file, output_path):
+def convert_pdf_to_txt(pdf_file, output_path: str) -> None:
+    """
+    Convert a PDF file to a text file.
+
+    Args:
+        pdf_file: The PDF file object.
+        output_path (str): The path where the output text file will be saved.
+
+    Raises:
+        Exception: If there's an error during the conversion process.
+    """
     try:
         document = fitz.open(stream=pdf_file.read(), filetype="pdf")
         text = ""
@@ -32,7 +72,17 @@ def convert_pdf_to_txt(pdf_file, output_path):
         logger.error(f"Error converting PDF to text: {str(e)}")
         raise
 
-def convert_docx_to_txt(docx_file, output_path):
+def convert_docx_to_txt(docx_file, output_path: str) -> None:
+    """
+    Convert a DOCX file to a text file.
+
+    Args:
+        docx_file: The DOCX file object.
+        output_path (str): The path where the output text file will be saved.
+
+    Raises:
+        Exception: If there's an error during the conversion process.
+    """
     try:
         doc = Document(docx_file)
         text = "\n".join([paragraph.text for paragraph in doc.paragraphs])
@@ -43,7 +93,17 @@ def convert_docx_to_txt(docx_file, output_path):
         logger.error(f"Error converting DOCX to text: {str(e)}")
         raise
 
-def convert_rtf_to_txt(rtf_content, output_path):
+def convert_rtf_to_txt(rtf_content: str, output_path: str) -> None:
+    """
+    Convert RTF content to a text file.
+
+    Args:
+        rtf_content (str): The content of the RTF file.
+        output_path (str): The path where the output text file will be saved.
+
+    Raises:
+        Exception: If there's an error during the conversion process.
+    """
     try:
         text = rtf_to_text(rtf_content)
         
@@ -53,7 +113,23 @@ def convert_rtf_to_txt(rtf_content, output_path):
         logger.error(f"Error converting RTF to text: {str(e)}")
         raise
 
-def convert_to_txt(file, project_name):
+def convert_to_txt(file, project_name: str) -> str:
+    """
+    Convert an uploaded file to a text file with appropriate encoding.
+
+    This function handles various file formats including PDF, DOCX, RTF, and other text formats.
+    It automatically detects the encoding for text files to ensure accurate conversion.
+
+    Args:
+        file: The uploaded file object.
+        project_name (str): The name of the project where the file will be saved.
+
+    Returns:
+        str: The name of the converted text file.
+
+    Raises:
+        Exception: If there's an error during the conversion process.
+    """
     file_extension = os.path.splitext(file.name)[1].lower()
     file_name = os.path.splitext(file.name)[0] + '.txt'
     file_path = os.path.join(PROJECTS_DIR, project_name, 'data', file_name)
@@ -68,11 +144,7 @@ def convert_to_txt(file, project_name):
             convert_rtf_to_txt(rtf_content, file_path)
         else:
             file_content = file.read()
-            encoding = detect_encoding(file_content)
-
-            # Use 'utf-8' as default if encoding detection fails
-            if encoding is None:
-                encoding = 'utf-8'
+            encoding = detect_encoding(file_content) or 'utf-8'
 
             try:
                 # Attempt to decode the content using the detected encoding
@@ -95,11 +167,26 @@ def convert_to_txt(file, project_name):
         logger.error(f"Error converting {file.name}: {str(e)}")
         raise
 
-def get_project_files(project_name):
+def get_project_files(project_name: str) -> list:
+    """
+    Get a list of files in the project's data folder.
+
+    Args:
+        project_name (str): The name of the project.
+
+    Returns:
+        list: A list of filenames in the project's data folder.
+    """
     data_folder = os.path.join(PROJECTS_DIR, project_name, 'data')
     return [f for f in os.listdir(data_folder) if os.path.isfile(os.path.join(data_folder, f))]
 
 def main():
+    """
+    Main function to run the Streamlit app for file upload and conversion.
+
+    This function sets up the Streamlit interface, handles file uploads,
+    manages file conversions, and displays the results to the user.
+    """
     st.header(":orange[File Upload and Conversion]")
     
     with st.expander("Instructions"):

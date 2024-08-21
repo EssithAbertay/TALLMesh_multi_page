@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Feb  2 15:16:46 2024
+Saturation Metric Analysis Module
 
+This module provides functionality for analyzing and visualizing the saturation
+of qualitative coding in research projects. It calculates and displays various
+metrics related to code saturation, including the Information Tracking Score (ITS),
+rolling ITS, and rate of change.
+
+Created on Fri Feb  2 15:16:46 2024
 @author: Stefano De Paoli - s.depaoli@abertay.ac.uk
 """
-# -*- coding: utf-8 -*-
 
 import streamlit as st
 import pandas as pd
@@ -15,15 +20,46 @@ from plotly.subplots import make_subplots
 from api_key_management import manage_api_keys
 from project_utils import get_projects, get_project_files, get_processed_files
 
+# Constants
 PROJECTS_DIR = 'projects'
 
 def calculate_rolling_its(unique_counts, total_counts):
+    """
+    Calculate the rolling Information Tracking Score (ITS) for each file.
+
+    Args:
+    unique_counts (list): Cumulative count of unique codes for each file.
+    total_counts (list): Cumulative count of total codes for each file.
+
+    Returns:
+    list: Rolling ITS values for each file.
+    """
     return [round(u / t, 3) for u, t in zip(unique_counts, total_counts)]
 
 def calculate_rate_of_change(its_values):
+    """
+    Calculate the rate of change in ITS values between consecutive files.
+
+    Args:
+    its_values (list): List of ITS values for each file.
+
+    Returns:
+    list: Rate of change in ITS values, with 0 as the first element.
+    """
     return [0] + [its_values[i] - its_values[i-1] for i in range(1, len(its_values))]
 
 def bootstrap_its(unique_counts, total_counts, n_iterations=1000):
+    """
+    Perform bootstrap analysis to calculate confidence interval for ITS.
+
+    Args:
+    unique_counts (list): Cumulative count of unique codes for each file.
+    total_counts (list): Cumulative count of total codes for each file.
+    n_iterations (int): Number of bootstrap iterations to perform.
+
+    Returns:
+    tuple: Lower and upper bounds of the 95% confidence interval.
+    """
     its_values = []
     for _ in range(n_iterations):
         indices = np.random.choice(len(unique_counts), len(unique_counts), replace=True)
@@ -33,6 +69,16 @@ def bootstrap_its(unique_counts, total_counts, n_iterations=1000):
     return np.percentile(its_values, [2.5, 97.5])
 
 def find_elbow_point(x, y):
+    """
+    Find the elbow point in a curve using the maximum distance method.
+
+    Args:
+    x (list): X-coordinates of the curve points.
+    y (list): Y-coordinates of the curve points.
+
+    Returns:
+    int: Index of the elbow point.
+    """
     nPoints = len(x)
     allCoord = np.vstack((x, y)).T
     firstPoint = allCoord[0]
@@ -46,7 +92,39 @@ def find_elbow_point(x, y):
     idxOfBestPoint = np.argmax(distToLine)
     return idxOfBestPoint
 
+def create_saturation_plot(unique_counts, total_counts, rolling_its, rate_of_change):
+    """
+    Create a plotly figure for visualizing saturation metrics.
+
+    Args:
+    unique_counts (list): Cumulative count of unique codes for each file.
+    total_counts (list): Cumulative count of total codes for each file.
+    rolling_its (list): Rolling ITS values for each file.
+    rate_of_change (list): Rate of change in ITS values for each file.
+
+    Returns:
+    plotly.graph_objs._figure.Figure: The created plotly figure.
+    """
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+    fig.add_trace(go.Scatter(x=list(range(1, len(unique_counts) + 1)), y=unique_counts, mode='lines+markers', name='Unique Codes'))
+    fig.add_trace(go.Scatter(x=list(range(1, len(total_counts) + 1)), y=total_counts, mode='lines+markers', name='Total Codes'))
+    fig.add_trace(go.Scatter(x=list(range(1, len(rolling_its) + 1)), y=rolling_its, mode='lines+markers', name='Rolling ITS', yaxis='y2'))
+    fig.add_trace(go.Scatter(x=list(range(1, len(rate_of_change) + 1)), y=rate_of_change, mode='lines+markers', name='Rate of Change', yaxis='y2'))
+
+    fig.update_layout(
+        title='Codes, ITS, and Rate of Change',
+        xaxis_title='File Index',
+        yaxis_title='Code Count',
+        yaxis2_title='ITS / Rate of Change'
+    )
+
+    return fig
+
 def main():
+    """
+    Main function to run the Streamlit app for saturation metric analysis.
+    """
     st.header(":orange[Measure saturation]")
     
     st.write("See our paper on saturation and LLMs (https://arxiv.org/pdf/2401.03239) for more information.")
@@ -101,32 +179,19 @@ def main():
                 saturation_threshold = st.slider("Set saturation threshold", 0.0, 1.0, 0.05, 0.01)
                 saturation_point = next((i for i, its in enumerate(rolling_its) if its >= 1 - saturation_threshold), len(rolling_its))
 
-                # Create plot
-                fig = make_subplots(specs=[[{"secondary_y": True}]])
-
-                fig.add_trace(go.Scatter(x=list(range(1, len(unique_counts) + 1)), y=unique_counts, mode='lines+markers', name='Unique Codes'))
-                fig.add_trace(go.Scatter(x=list(range(1, len(total_counts) + 1)), y=total_counts, mode='lines+markers', name='Total Codes'))
-                fig.add_trace(go.Scatter(x=list(range(1, len(rolling_its) + 1)), y=rolling_its, mode='lines+markers', name='Rolling ITS', yaxis='y2'))
-                fig.add_trace(go.Scatter(x=list(range(1, len(rate_of_change) + 1)), y=rate_of_change, mode='lines+markers', name='Rate of Change', yaxis='y2'))
-
-                fig.update_layout(
-                    title='Codes, ITS, and Rate of Change',
-                    xaxis_title='File Index',
-                    yaxis_title='Code Count',
-                    yaxis2_title='ITS / Rate of Change'
-                )
-
+                # Create and display plot
+                fig = create_saturation_plot(unique_counts, total_counts, rolling_its, rate_of_change)
                 st.plotly_chart(fig)
 
-                # Calculate confidence interval
+                # Calculate and display confidence interval
                 confidence_interval = bootstrap_its(unique_counts, total_counts)
                 st.write(f"95% Confidence Interval for ITS: {confidence_interval}")
 
-                # Find elbow point
+                # Find and display elbow point
                 elbow_point = find_elbow_point(range(len(rolling_its)), rolling_its)
                 st.write(f"Suggested saturation point (elbow method): File {elbow_point + 1}")
 
-                # Summary statistics
+                # Display summary statistics
                 st.subheader("Summary Statistics")
                 st.write(f"Total number of files processed: {len(total_counts)}")
                 st.write(f"Final number of unique codes: {unique_counts[-1]}")
