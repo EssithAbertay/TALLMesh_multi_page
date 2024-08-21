@@ -96,7 +96,7 @@ reduce_duplicate_codes_prompts = {
 4. Important! A list of ALL original code names, including those that were not merged. Every input code must be accounted for in the output. 
 
 Important! If a code already has a merge explanation, incorporate it into the new explanation.
-
+Important! Ensure that the 'original_codes' list for each reduced code includes ALL relevant original codes, even if it's just one code that wasn't merged, or codes with the exact same name.
 Important! For unique codes that are not merged, keep them as they are.
 
 The codes to analyze are provided in the following format:
@@ -114,6 +114,8 @@ Format the response as a JSON file with the following structure:
     }
   ]
 }
+                                     
+
 
 Important! Your response should be a JSON-like object with no additional text before or after. Failure to adhere to this instruction will invalidate your response, making it worthless.""",
         "temperature": 0.00,

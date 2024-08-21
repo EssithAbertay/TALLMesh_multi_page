@@ -149,6 +149,8 @@ def process_chunks(model, prompt_template, codes, model_temperature, model_top_p
     chunked_codes = chunk_codes(codes, chunk_size)
     reduced_codes = []
     original_code_set = set(code['code'] for code in codes)
+    processed_original_codes = set()
+    missing_codes = {}
 
     for chunk in chunked_codes:
         chunk_prompt = prompt_template.replace("{codes}", json.dumps(chunk))
@@ -157,19 +159,40 @@ def process_chunks(model, prompt_template, codes, model_temperature, model_top_p
         if chunk_result:
             try:
                 chunk_reduced_codes = json.loads(chunk_result)['reduced_codes']
-                reduced_codes.extend(chunk_reduced_codes)
+                for reduced_code in chunk_reduced_codes:
+                    original_codes = set(reduced_code.get('original_codes', [reduced_code['code']]))
+                    processed_original_codes.update(original_codes)
+                    reduced_codes.append(reduced_code)
             except (json.JSONDecodeError, KeyError) as e:
                 logger.error(f"Error processing chunk result: {str(e)}")
-                # Retry logic can be added here
+                # Add retry logic here if needed
                 continue
+        
+        # Check for missing codes after each chunk
+        current_missing_codes = original_code_set - processed_original_codes
+        for code in chunk:
+            if code['code'] in current_missing_codes:
+                missing_codes[code['code']] = {'description': code['description'], 'quote': code['quote']}
 
-    # Validation step
-    processed_original_codes = set()
-    for code in reduced_codes:
-        processed_original_codes.update(code.get('original_codes', [code['code']]))
-    
-    missing_codes = original_code_set - processed_original_codes
+    # Process missing codes
     if missing_codes:
-        logger.warning(f"Missing original codes: {missing_codes}")
+        logger.warning(f"Processing {len(missing_codes)} missing codes")
+        missing_codes_chunk = [{'code': k, **v} for k, v in missing_codes.items()]
+        missing_prompt = prompt_template.replace("{codes}", json.dumps(missing_codes_chunk))
+        missing_result = llm_call(model, missing_prompt, model_temperature, model_top_p)
+        
+        if missing_result:
+            try:
+                missing_reduced_codes = json.loads(missing_result)['reduced_codes']
+                reduced_codes.extend(missing_reduced_codes)
+                for code in missing_reduced_codes:
+                    processed_original_codes.update(code.get('original_codes', [code['code']]))
+            except (json.JSONDecodeError, KeyError) as e:
+                logger.error(f"Error processing missing codes: {str(e)}")
+
+    # Final check
+    final_missing_codes = original_code_set - processed_original_codes
+    if final_missing_codes:
+        logger.warning(f"Still missing codes after final processing: {final_missing_codes}")
 
     return reduced_codes

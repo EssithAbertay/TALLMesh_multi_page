@@ -80,12 +80,13 @@ def amalgamate_duplicate_codes(df):
     amalgamated_df = df.groupby('code').agg({
         'description': 'first',
         'merge_explanation': 'first',
-        'original_code': lambda x: list(x),  # Changed from set() to list()
+        'original_code': lambda x: list(x),  # Changed from set() to list(), test
         'quote': lambda x: [{'text': q, 'source': s} for q, s in zip(x, df.loc[x.index, 'source'])],
         'source': lambda x: list(x)
     }).reset_index()
 
-    amalgamated_df['original_code'] = amalgamated_df['original_code'].apply(lambda x: json.dumps(list(set(x))))  # Ensure unique but keep as list
+    #amalgamated_df['original_code'] = amalgamated_df['original_code'].apply(lambda x: json.dumps(list(set(x))))  # Ensure unique but keep as list
+    amalgamated_df['original_code'] = amalgamated_df['original_code'].apply(lambda x: json.dumps(list(x)))
     amalgamated_df['quote'] = amalgamated_df['quote'].apply(json.dumps)
     amalgamated_df['source'] = amalgamated_df['source'].apply(lambda x: ', '.join(set(x)))
 
@@ -172,17 +173,16 @@ def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_t
     """
     combined_codes = pd.concat([df1, df2], ignore_index=True)
     
-    # Create a simplified codes_list with only code and description
-    simplified_codes_list = [
+    codes_list = [
         {
             "code": row['code'],
-            "description": row['description']
+            "description": row['description'],
+            "quote": row['quote']
         }
         for _, row in combined_codes.iterrows()
     ]
     
-    # Process codes in chunks
-    reduced_codes = process_chunks(model, prompt, simplified_codes_list, model_temperature, model_top_p)
+    reduced_codes = process_chunks(model, prompt, codes_list, model_temperature, model_top_p)
 
     if not reduced_codes:
         logger.error("Failed to process any chunks successfully")
@@ -203,6 +203,18 @@ def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_t
                 'code': reduced_code['code'],
                 'description': reduced_code['description'],
                 'merge_explanation': reduced_code.get('merge_explanation', ''),
+                'original_code': row['code'],
+                'quote': row['quote'],
+                'source': row['source']
+            }
+            reduced_rows.append(new_row)
+        else:
+            logger.warning(f"Code not found in mapping: {row['code']}")
+            # Add the original code as-is if it's not in the mapping
+            new_row = {
+                'code': row['code'],
+                'description': row['description'],
+                'merge_explanation': '',
                 'original_code': row['code'],
                 'quote': row['quote'],
                 'source': row['source']
