@@ -8,9 +8,6 @@ The module includes:
 3. Additional features and considerations specific to the app
 4. API key management functionality
 
-Author: Your Name
-Date: Current Date
-Version: 1.0
 """
 
 import streamlit as st

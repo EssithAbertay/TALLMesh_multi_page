@@ -18,6 +18,10 @@ from api_key_management import manage_api_keys, load_api_keys, load_azure_settin
 from project_utils import get_projects, get_project_files, get_processed_files, PROJECTS_DIR
 from prompts import reduce_duplicate_codes_prompts
 from llm_utils import llm_call
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def load_custom_prompts():
     """
@@ -182,9 +186,13 @@ def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_t
     
     processed_output = llm_call(model, full_prompt, model_temperature, model_top_p)
     
-    json_string = extract_json(processed_output)
-    if json_string:
-        json_output = json.loads(json_string)
+    if processed_output is None:
+        logger.error("LLM call failed to produce a valid output")
+        st.error("Failed to process codes. Please try again or adjust your settings.")
+        return None, None, None
+
+    try:
+        json_output = json.loads(processed_output)
         reduced_codes = json_output['reduced_codes']
         
         # Create a mapping of original codes to reduced codes
@@ -214,8 +222,9 @@ def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_t
         unique_codes = len(reduced_df['code'].unique())
         
         return reduced_df, total_codes, unique_codes
-    else:
-        st.warning("No valid JSON found in the response")
+    except (json.JSONDecodeError, KeyError) as e:
+        logger.error(f"Error processing LLM output: {str(e)}")
+        st.error(f"Error processing LLM output: {str(e)}. Please try again or adjust your settings.")
         return None, None, None
 
 def process_files(selected_project, selected_files, model, prompt, model_temperature, model_top_p):
@@ -252,7 +261,10 @@ def process_files(selected_project, selected_files, model, prompt, model_tempera
             total_codes_list.append(cumulative_total)
             unique_codes_list.append(len(df['code'].unique()))
         else:
-            reduced_df, _, _ = compare_and_reduce_codes(reduced_df, df, model, prompt, model_temperature, model_top_p) 
+            reduced_df, _, _ = compare_and_reduce_codes(reduced_df, df, model, prompt, model_temperature, model_top_p)
+            if reduced_df is None:
+                st.error(f"Failed to process file {file}. Skipping to the next file.")
+                continue
             total_codes_list.append(cumulative_total)
             unique_codes_list.append(len(reduced_df['code'].unique()))
         
@@ -448,15 +460,15 @@ def main():
             with st.spinner("Reducing codes... depending on the number of initial code files, this could take some time ..."):
                 reduced_df, results_df = process_files(selected_project, selected_files, selected_model, prompt_input, model_temperature, model_top_p)
 
-                # Match reduced codes to initial codes
-                initial_codes_directory = os.path.join(PROJECTS_DIR, selected_project, 'initial_codes')
-                updated_df = match_reduced_to_original_codes(reduced_df, initial_codes_directory)
-                amalgamated_df = amalgamate_duplicate_codes(updated_df)
-                amalgamated_df_for_display = amalgamated_df.copy()
-                amalgamated_df_for_display['quote'] = amalgamated_df_for_display['quote'].apply(format_quotes)
-                amalgamated_df_for_display['original_code'] = amalgamated_df_for_display['original_code'].apply(format_original_codes)
-
                 if reduced_df is not None:
+                    # Match reduced codes to initial codes
+                    initial_codes_directory = os.path.join(PROJECTS_DIR, selected_project, 'initial_codes')
+                    updated_df = match_reduced_to_original_codes(reduced_df, initial_codes_directory)
+                    amalgamated_df = amalgamate_duplicate_codes(updated_df)
+                    amalgamated_df_for_display = amalgamated_df.copy()
+                    amalgamated_df_for_display['quote'] = amalgamated_df_for_display['quote'].apply(format_quotes)
+                    amalgamated_df_for_display['original_code'] = amalgamated_df_for_display['original_code'].apply(format_original_codes)
+
                     # Display results
                     st.write("Reduced Codes:")
                     st.write(amalgamated_df_for_display)
@@ -486,6 +498,8 @@ def main():
                         file_name="code_reduction_results.csv",
                         mime="text/csv"
                     )
+                else:
+                    st.error("Failed to reduce codes. Please check the logs for more information and try again.")
 
         # View previously processed files
         processed_files = get_processed_files(selected_project, 'reduced_codes')

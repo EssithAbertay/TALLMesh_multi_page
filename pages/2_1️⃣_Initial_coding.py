@@ -28,14 +28,6 @@ def load_custom_prompts():
     except FileNotFoundError:
         return {}
 
-# Function to find the JSON in AI responses (OpenAI can be set to json format, but anthropic with higher temp sometimes prefaces json)
-def extract_json(text):
-    # Find the first occurrence of a JSON-like structure in response
-    match = re.search(r'\{[\s\S]*\}', text)
-    if match:
-        return match.group(0)
-    return None
-
 def save_uploaded_files(uploaded_files, project_name):
     data_folder = os.path.join(PROJECTS_DIR, project_name, 'data')
     saved_files = []
@@ -56,14 +48,14 @@ def save_initial_codes(project_name, file_name, df):
     df.to_csv(output_file_path, index=False, encoding='utf-8')
     return output_file_path
 
-def split_text(text, max_chunk_size=50000):
-    """Split the text into chunks of approximately max_chunk_size characters."""
+def split_text(text, max_chunk_size=50000, overlap=1000):
+    """Split the text into chunks of approximately max_chunk_size characters with overlap."""
     logger.info("Starting to split text into chunks.")
     
     chunks = []
     current_chunk = ""
     
-    logger.info(f"Using max_chunk_size: {max_chunk_size} characters.")
+    logger.info(f"Using max_chunk_size: {max_chunk_size} characters with {overlap} characters overlap.")
     
     sentences = re.split(r'(?<=[.!?])\s+', text)
     logger.info(f"Total number of sentences to process: {len(sentences)}")
@@ -74,8 +66,10 @@ def split_text(text, max_chunk_size=50000):
         else:
             chunks.append(current_chunk.strip())
             logger.info(f"Chunk {len(chunks)} created with size {len(current_chunk.strip())} characters.")
-            current_chunk = sentence + " "
-            logger.info(f"Starting a new chunk with sentence {i+1}.")
+            # Start the new chunk with the overlap from the previous chunk
+            overlap_start = max(0, len(current_chunk) - overlap)
+            current_chunk = current_chunk[overlap_start:] + sentence + " "
+            logger.info(f"Starting a new chunk with sentence {i+1}, including {overlap} characters of overlap.")
     
     if current_chunk:
         chunks.append(current_chunk.strip())
@@ -96,12 +90,21 @@ def process_file(file_path, model, prompt, model_temperature, model_top_p):
         chunk_prompt = f"{prompt}\n\nFile Content (Part {i+1}/{len(chunks)}):\n{chunk}"
         chunk_response = llm_call(model, chunk_prompt, model_temperature, model_top_p)
         
-        json_string = extract_json(chunk_response)
-        if json_string:
-            json_output = json.loads(json_string)
-            all_codes.extend(json_output.get('final_codes', []))
-        else:
-            st.warning(f"No valid JSON found in the response for chunk {i+1}")
+        if chunk_response is None:
+            logger.error(f"Failed to process chunk {i+1}/{len(chunks)}")
+            continue
+
+        try:
+            json_output = json.loads(chunk_response)
+            if isinstance(json_output, dict) and 'final_codes' in json_output:
+                all_codes.extend(json_output['final_codes'])
+            else:
+                logger.warning(f"Unexpected JSON structure in chunk {i+1}")
+        except json.JSONDecodeError:
+            logger.error(f"Failed to parse JSON in response for chunk {i+1}")
+    
+    if not all_codes:
+        raise ValueError("No valid codes were extracted from any chunks")
     
     # Combine all codes from different chunks
     combined_output = {'final_codes': all_codes}
@@ -296,9 +299,9 @@ def main():
                                     mime="text/csv"
                                 )
                             
-                        except (ValueError, json.JSONDecodeError) as e:
-                            st.warning(f"Error processing {file}: {e}")
-                            st.text(processed_output)
+                        except Exception as e:
+                            st.error(f"Error processing {file}: {str(e)}")
+                            logger.error(f"Error processing {file}: {str(e)}", exc_info=True)
                         progress = (i + 1) / len(selected_files)
                         prog_bar.progress(progress)
                         

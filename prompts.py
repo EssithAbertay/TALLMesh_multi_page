@@ -12,7 +12,7 @@ For each code, provide:
 2. A detailed description (25 words) explaining the code's meaning and relevance
 3. A quote (minimum necessary to capture context and example) from the respondent that exemplifies the code
 
-Format the response as a JSON file with the following structure:
+Important! Format the response as a JSON file with the following structure:
 
 {
   "final_codes": [

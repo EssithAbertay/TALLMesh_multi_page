@@ -5,6 +5,8 @@ from api_key_management import load_api_keys, load_azure_settings
 import time
 import random
 import logging
+import json
+import re
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -15,6 +17,20 @@ def exponential_backoff(attempt, max_attempts=5, base_delay=5, max_delay=120):
     delay = min(base_delay * (2 ** attempt) + random.uniform(0, 0.5 * (2 ** attempt)), max_delay)
     logger.info(f"Backing off for {delay:.2f} seconds (attempt {attempt + 1}/{max_attempts})")
     time.sleep(delay)
+
+def extract_json(text):
+    try:
+        # First, try to parse the entire text as JSON
+        return json.loads(text)
+    except json.JSONDecodeError:
+        # If that fails, try to find a JSON-like structure
+        match = re.search(r'\{[\s\S]*\}', text)
+        if match:
+            try:
+                return json.loads(match.group(0))
+            except json.JSONDecodeError:
+                return None
+    return None
 
 def llm_call(model, full_prompt, model_temperature, model_top_p):
     max_attempts = 5
@@ -34,13 +50,18 @@ def llm_call(model, full_prompt, model_temperature, model_top_p):
             elif model.startswith("claude"):
                 client = anthropic.Anthropic(api_key=load_api_keys().get('Anthropic'))
                 response = client.messages.create(
-                    model="claude-3-sonnet-20240620",
-                    max_tokens=1500,
+                    model="claude-3-5-sonnet-20240620",
+                    max_tokens=8192,
                     temperature=model_temperature,
                     top_p=model_top_p,
                     messages=[{"role": "user", "content": full_prompt}]
                 )
-                return response.content[0].text
+                content = response.content[0].text
+                json_content = extract_json(content)
+                if json_content is None:
+                    logger.warning(f"Failed to extract valid JSON from Claude's response. Raw content: {content}")
+                    raise ValueError("Failed to extract valid JSON from Claude's response")
+                return json.dumps(json_content)
 
             elif model.startswith("azure_"):
                 azure_settings = load_azure_settings()
@@ -60,13 +81,18 @@ def llm_call(model, full_prompt, model_temperature, model_top_p):
                     api_version="2024-02-01",
                     azure_endpoint=azure_settings['endpoint']
                 )
-                processed_output = client.chat.completions.create(
+                response = client.chat.completions.create(
                     model=deployment['deployment_name'],
                     messages=[{"role": "user", "content": full_prompt}],
                     temperature=model_temperature,
                     top_p=model_top_p
-                ).choices[0].message.content
-                return processed_output
+                )
+                content = response.choices[0].message.content
+                json_content = extract_json(content)
+                if json_content is None:
+                    logger.warning(f"Failed to extract valid JSON from Azure's response. Raw content: {content}")
+                    raise ValueError("Failed to extract valid JSON from Azure's response")
+                return json.dumps(json_content)
 
             else:
                 st.error(f"Unsupported model type: {model}")
@@ -76,6 +102,14 @@ def llm_call(model, full_prompt, model_temperature, model_top_p):
             if hasattr(e, 'status_code') and e.status_code == 429:
                 logger.info(f"Rate limit error (429) hit... backing off gracefully (attempt {attempt + 1}/{max_attempts})")
                 exponential_backoff(attempt)
+            elif isinstance(e, ValueError) and "Failed to extract valid JSON" in str(e):
+                logger.warning(f"JSON extraction failed (attempt {attempt + 1}/{max_attempts}): {str(e)}")
+                if attempt < max_attempts - 1:
+                    logger.info("Retrying with the same prompt...")
+                    time.sleep(2)  # Short delay before retrying
+                else:
+                    logger.error("Max attempts reached for JSON extraction")
+                    return None
             else:
                 logger.error(f"Unexpected error occurred: {str(e)}")
                 st.error(f"An unexpected error occurred: {str(e)}")
