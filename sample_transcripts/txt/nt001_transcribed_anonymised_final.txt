@@ -1,0 +1,790 @@
+﻿nt_001
+
+
+I: Great, okay so [um] great then to kick us off let me just clean up my desktop 
+here. Okay so kick us off can you just tell me a bit about your role at your 
+organisation?
+
+R: Yeah, sure, yep, yep so my title is the [deputy R&D director] at [NHS trust] so I 
+oversee all of the research at [the hospital] and we also provide joint research office 
+function between the [academic institution] and [the trust]. So, manage the R&D 
+function so all of the governance, finance, grants that kind of thing. Plus, the delivery 
+function so all of the research nurses, the clinical research facility and the non-
+clinical delivery team, so data managers, co-ordinators.  So, sort of all of that brought 
+together is the Directorate.  We also oversee the [research organisation] which is 
+across [the university] and [the Trust]. So, manage about 150 staff across that 
+function and all of the research activity that happens across the [academic research 
+organisation] and [NHS trust].
+
+I: Great so there’s there’s just to make sure I’m clear so I don’t ask dumb 
+questions later on, the there’s also [university] research that would be outside 
+of your purview as well, just some of it is within
+
+R: Yeah.
+
+I: Yeah okay.
+
+R: Yeah, yeah yes so, we mana-, we would oversee all of the clinical research.
+
+I: Yeah, oh so everything clinical at [University] would be through, okay.
+
+R: Just the [academic research organisation].
+
+I: Oh, just the [academic research organisation] gotcha.
+
+R: Yeah.
+
+I: And then and I assume the portfolio of research you manage would include 
+both CTIMPS and non-CTIMPS or just CTIMPS generally?
+
+R: Yeah both
+
+I: Both, yeah.
+
+R: Yeah, absolutely both.
+
+I: Both great and so how long have you worked in this area?
+
+R: So at [NHS trust], I’ve been there since [late] 2018 so about two and a half years.  
+Before that, I was at [a different NHS Trust] for a couple of years. So, NHS R&D for 
+probably four and a half to five years.
+
+I: Great yeah and if you want, if there’s, you’ll see with some of the questions I 
+ask if there’s any comparisons or any, you know, things you’ve learned from 
+one place or compared to a different place, if you want to draw on your 
+previous experience, I’m happy to hear about that as well.
+
+R: Okay, sure.
+
+I: And so can you talk about just a bit how the trials transparency sort of like, 
+you know, how registration and reporting functions operate at your 
+organisation. Just a little bit how the structure is? 
+
+R: Yeah, yeah, sure sure I mean obviously it doesn’t always follow exactly the same 
+path.  It sort of depends on the nature of the research but broadly speaking we have 
+a registration function within the R&D team and that’s across the [academic research 
+organisation and NHS Trust] where a researcher completes the registration form.  
+The registration form includes, gives us basically the information that we need in 
+terms of signposting to different teams so if we’re likely to be the sponsor of that 
+research obviously it goes to our sort of sponsor assessment function.  If we’re a 
+host, if we’re just a site for piece of research then it goes just to that governance 
+team.  It also looks at all the costs that are gonna be involved in that piece of 
+research and links in with the Finance team. If it’s going to be using some of our 
+facilities like our clinical research facility or any of our imaging facilities or our 
+manufacturing, it just basically is all, everything in one place and then all of the 
+functions kind of come out from there so we would signpost to everywhere else. 
+If somebody, if a researcher is applying for funding to, like a grant to run that piece of 
+research then they would also register the grant application at that stage.  So 
+sometimes it’s already, we already know a piece of research is taking place and 
+sometimes we know that it’s a piece of research that’s planned that might not take 
+place if the funding isn’t, isn’t there so it sort of all the governance around what the 
+pipeline looks like.
+If a researcher is ready to go with a piece of research if it’s got a grant, a grant 
+behind it or it’s got funding behind it, then it would go to our governance team who 
+would work with the researcher to submit the if we’re the sponsor, to submit the 
+IRAS application, work through all of the steps including information governance so 
+any other kind for regulatory requirements we need to do internally and obviously 
+then when we get that approval we work with them to confirm capacity and capability 
+to the governance team.  If they’re relying on other departments then that’s obviously 
+a complex process in terms of getting all of those approvals.
+
+If a piece of research comes in and it’s not funded so it hasn’t been through an 
+external peer review, we have a slightly parallel process where we do our own 
+internal peer review and that’s a committee called our [committee name]. Just stop 
+me if I’m going too fast or you need any clarification?
+
+I: Oh no this is fine, yeah, no this is great.
+
+R: Okay and then and it’s just, it’s just an extra layer to protect the organisation in 
+terms of, you know, the trial design. ‘Is it kind if the right thing?’ blah, blah blah 
+before it goes off for ethics etc. And then, yeah so then once the trial is approved 
+and we’ve confirmed capacity and capability then we would work with the 
+investigator to see run the trial, if it’s recruiting participants depending on what the 
+requirements are if this is a CTIMP and it’s got and we’re the sponsor then they’ll all 
+sort of reporting requirements etc.  We manage all of that with them and then 
+through to kind of trial closure reporting, archiving, publication etc. 
+
+I: So where in that process that you just described sort of like the, you know, 
+the multi-step process would like so understanding that this process has 
+changed a bit with Brexit and CTIMPS and all that
+
+R: Yeah.
+
+I: We can into more detail later about how that’s impacted any of your, any of 
+your, you know, procedures and how you’ve coped with that.
+
+R: Yeah, yes.
+
+I: But sort of where does the actual like registration function fall like and where 
+does that responsibility sit like in that, you know, does it sit with the trial team 
+itself and then, you know, your team just supports that or is there someone in 
+your team who’s helping, actively helping people manage their registration, 
+you know, to make sure that it shows up on previously, you know, gets, makes 
+its way to the EUCTR or now maybe ISRCTN, clinicaltrials.gov or sort of 
+whichever whatever one’s being used?
+
+R: Yeah, so [um] so we would that is usually a PI responsibility. So when we confirm 
+capacity and capability with a PI it’s part of the process is that we would say that is 
+their responsibility to register the study on the relevant in the relevant places. So, 
+obviously, as you just said. Would also if it’s an NIHR portfolio study then obviously 
+there’s a reporting requirement to the NIHR in terms of making sure that the details 
+are up to date and recording recruitment and that sort of thing through our, the 
+various systems and databases that we have.  So, we would normally outlay, outline 
+those responsibilities of the PI when we say it’s okay to go ahead and then but then 
+that doesn’t always mean it happens obviously, [laughs] I wish it was that simple. 
+[laughs] 
+So certainly, for the, obviously our main responsibility here is for where we’re the 
+sponsor because if we’re not the sponsor then it’s not our responsibility to ensure 
+that that’s the reporting is, and the registration is all is all happening. Where we are 
+the sponsor, then somebody in the governance team would keep a regular eye on 
+whether those registrations have been uploaded, whether they’re updated etc and 
+would routinely contact study teams to say, you need to update your record or you 
+need to put that record on you need to update that it’s closed etc.
+
+I: So there is, so you, so there’s a step in process just to make sure I’m 
+understanding, so there’s a step in the process bef-, would this be before trial 
+kick-off, like is there someone making sure like oh you haven’t done your 
+registration yet, you need to do this before you can enrol, like is there anyone 
+sort of making sure at that level or is it more ambiguous than that?
+
+R: No because it’s not, it’s not so much of a regulatory condition from our point of 
+view when we confirm the go ahead. 
+
+I: Yeah.
+
+R: So, we would say, ‘We are confirming that you can go ahead on the basis that 
+you do x, y and z.’  As far as I’m concerned generally that’s us pushing the 
+responsibility to the PI or not even pushing it but informing the PI that is their 
+responsibility.  From then it’s not, it’s not the R&D Officer’s responsibility to ensure 
+it’s happened.  Obviously, that is what we try to do, and we try to pick that up if that’s 
+not, if that’s not happened but we would be saying this is conditional on you doing 
+these things and assuming that that’s then happened.  It’s rare actually that they 
+haven’t done, then gone away and done the things they need to do, certainly at the 
+beginning.  It’s more difficult to chase up where they haven’t updated the records 
+and that kind of thing.
+
+I: Yeah, so that’s also interesting and something I wanted to touch back on, so 
+it sounds like there is some capacity for like ongoing nudging of people to 
+make sure their entries are up to date and things like that is that-?
+
+R: Yeah, I mean it’s a bit, it depends on the pressures within the system at the time. 
+So sometimes, yeah we do try to build that in regularly and we’d have sort of alerts 
+that the team would, would go out and do some of that chasing but it’s not always 
+obviously the top priority on the list of things to do in terms of sponsor’s responsibility 
+so sometimes that’s more ad hoc than other times and it sort of depends on the type 
+of trial as well how much we push it.
+
+I: Do you have any indication now with the with the and you might not, you 
+might not know to this level of detail but do you have any indication with the 
+movement away from the EUCTR and sort of automatic registration where 
+your, I assume, you know, this only just happened in January so you might not 
+have too many trials that have gone through this process yet but do you get a 
+sense whether people are going towards the ISRCTN or towards 
+clinicaltrials.gov or is there just no no preference?
+
+R: Not really I mean clinicaltrials.gov is the default really.
+
+I: Okay.
+
+R: So, I would assume that that’s the way we would go.
+
+I: Yeah.
+
+R: To be honest but-.
+
+I: But it sounds like the PI has some agency
+
+R: Yeah.
+
+I: deciding what’s best for them, yeah.
+
+R: Yeah, yeah and it depends on the it depends on the trial because it depends, we 
+quite often have, we would quite often work on multi-, you know, multi-country trials 
+where [the Trust] is the only UK site and that’s just the sort of nature of the specialist 
+stuff that we do or sometimes we’ll be the only centre because it’s the only place that 
+accepts those kind of patients. So, it sort of depends a little bit on the trial and where 
+the impact of the results of the trial will be most if you know what I mean?
+
+I: Yeah.
+
+R: So, if there’s a kind of European, real European kind of focus on the outcome of 
+the trial because it’s being done in other European Centres then obviously that 
+makes a difference if we don’t think it is or there’s a more of a US based and it’ll be 
+going for sort of regulation through FDA or something like that, then we would do it 
+maybe in that way.
+
+I:  So, and then so do you have resources internally like available like to 
+support -- so if I’m a new investigator and I’m doing maybe my first trial or my 
+first PI and I’m trying like I might not have any idea about how to register, do 
+you have any sort of resources or training available internally for folks like 
+that?
+
+R: Yeah, we do, we try and support as much as we possibly can. We would sign-, 
+potentially signpost to either sort of mentor type, you know, more experienced to 
+establish researchers or speciality leads to support. Quite often new researchers are 
+doing PhDs and so therefore they have a supervisor and a team around them and so 
+we quite often rely on that network that they have to support them.  We wouldn’t be 
+able, we wouldn’t necessarily have the resource to walk everybody through all of the 
+processes.
+
+I: Yeah.
+
+R: We hope to build in that sort of sustainability within teams because otherwise you, 
+we’re inventing the wheel every time. But yeah we will always help if we agree to 
+take on sponsorship for a study then we will, we will help but it’s a it’s a drawing a 
+fine line between what we’ve got the resource to help with and what’s the PI’s 
+responsibility and they will still have to do but to be honest that’s not usually a 
+problem with junior kind of less experienced researchers because they’re very, they’ll 
+want to do the right thing and they want to take, it’s more the, more established 
+researchers who feel like it’s slightly low level stuff that somebody else should do for 
+them and that’s where we’re having to say, “No, actually this is clinical input that you 
+need to provide and you need to fill in this box,” and yeah.  
+
+I: Yeah, do you find that oftentimes it’ll be someone else on the study team, 
+once again, you might not have vision to this but is it like a trial manager or 
+someone like that who might be the person who manages that responsibility?
+
+R: Yeah, I mean it varies.  I’d I’d love to be in a position where we had sufficient 
+resource that there was sort of that level of support for every trial which there isn’t 
+but sometimes it would be a Research Fellow, sometimes it might be a Research 
+Nurse or Coordinator.  It sort of really depends on the nature of the individual. 
+
+I: Individual research.
+
+R: Yeah, and that, we don’t have, we don’t tend to sponsor very many multicentre 
+trials at [the NHS Trust] because we don’t have the infrastructure for the sort of trial 
+management side of things or the monitoring. So, we do do some but we would, we 
+don’t have a large team of trial managers and monitors and that sort of thing so we 
+tend to try to push that responsibility out to the study team as much as possible.  
+
+I: Sure so so what, I’m gonna go back real quick so one question I like to ask 
+just to change things slightly before we get back into some more wonky 
+policy-type stuff is, you know, in your, if you were to describe in your own 
+words what is the value of, of like what is the reason for registering, trial 
+registration and requirements to report results, you know, what is, what 
+function are those serving in your own words, you know, how would you 
+describe the value or lack of value or whatever you think about those 
+responsibilities?
+
+R: Yeah, no that’s a really good point. I mean ultimately, I think it is, it’s just, it’s the 
+principal of kind of good clinical practice and good governance around having robust 
+records and reports of studies and that that is transparent and available. I think that’s 
+really important just from a governance point of view because if you don’t sort of 
+have that principle around everything that we do you could start asking lots of 
+questions about lots of things that are going on and I think, even if the, the individual 
+detail on a study isn’t necessarily relevant or important or anybody’s really looking at 
+it, it’s more of a principal around we conduct everything that we do according to this 
+really high standard and it’s the principle by which we treat patients who are taking 
+part in these studies.  
+I think from a participant point of view, it’s really important that they, participant’s sign 
+up to research, understanding that that is the framework that we’re working in so that 
+they, there is an understanding and awareness of the contribution that they’re 
+making and it’s not something that’s going into a black hole. Obviously one of the 
+really big difficulties is keeping trial participants informed of things that are happening 
+on trials without them sort of having to interpret scientific papers and knowing what 
+their contribution was so I think it’s really important to be able to say, there is at least 
+somewhere where all of this information is held.  
+I think it’s also really useful from a sort of UK sort of research base point of view to 
+have somewhere where we know what’s actually going on in terms of the amount of 
+research and the nature of the research that we do and this is one really important 
+mechanism for that along with the NIHR portfolio because otherwise the UK 
+government it would find it much more difficult to sort of measure return on 
+investment and how much patient benefit is being achieved from the UK science 
+base.
+
+I: Mhm great so does [your institutions] …what you imagine is the expectation 
+for registration and then, you know, I say reporting I’m generally talking about 
+putting results on a registry but it could mean, I could also mean, I don’t know 
+if you also have like expectations in place that the results end up, like that you 
+get involved in how publication gets managed for your studies as well. So you 
+can feel free to sort of touch on either of those aspects of reporting but like to 
+what extent are those expectations built into like the SOPs and stuff of the 
+organisation?
+
+R: Yeah, so it depends whether it’s a kind of regulatory requirement or a funding 
+requirement or where it’s this is best practice and something we recommend. So, if 
+it’s a reporting or regulatory requirement then absolutely those elements are written 
+into our SOPs in terms of reporting and we have a reporting SOP so that’s, that’s 
+there.  In terms of where we think best practice and guidance then we would, what 
+we try to rely on is a good working relationship with investigator in the study team. Of 
+course that doesn’t always mean that they’re going to tell us when they’re about to 
+publish some sort of results, whether that’s interim data or end of trial data and we 
+usually get this at the last minute so we don’t necessarily always have the 
+opportunity to intervene in terms of the target audiences and making the most of 
+those kind of stories but that’s a, that’s kind of the holy grail aspiration which is not 
+unique to, to what we’re doing but then we would, if we do have enough time to 
+intervene in that, then obviously we would be able to work with the investigator to 
+think about how to best disseminate those those outcomes or make sure that the 
+data are represented as you say in in the right place.
+
+I: Yeah have you run into specific instances in your, you know, career either 
+here or your prior work/job here people sort of weren’t making things available 
+on like reasonable timeframes and you need to like, you don’t need to be 
+specific about a specific job or if someone’s really lagging and they’ve done a 
+trial and even if it’s terminated early, like it had something wrong and they 
+have to get the results out there somewhere but they’re not too jazzed about it 
+or maybe they’ve been rejected from some journals and they’re sort of not feel 
+very motivated or they got busy, you know, any of the multitude of reasons, 
+have you dealt with those before?
+
+R: Yeah, yeah and that’s sometimes tricky.  I would say it’s the exception rather than 
+the rule.
+
+I: Yeah.
+
+R: There are only a few cases of where that’s really an issue.  Sometimes there’s a 
+bit of a lag and you sort of have to say, “Come on, you really need to get this done 
+and it does eventually happen after a bit of chasing but there’s only really, I’ve only 
+really come across a handful of examples of where you really can’t get anything, get 
+anything done and then we’ve sort of relied on our co-escalation processes in terms 
+of who’s responsible for the individual, who do they report to that kind of thing and 
+we’ve used those channels but it’s very rare.
+
+I: Yeah.
+
+R: Usually an investigator understands that and you’re not trying to sell them 
+something that, but you’re right sometimes motivations or whatever might be difficult 
+and if you’ve spent a lot of time and energy investing in a study and perhaps your 
+out-, the outcome of the study is not what you were hoping for your patients then of 
+course that’s a difficult message and sometimes they need some support with how to 
+get that message out and how to move on and make the most of that data, so yeah.
+
+I: So who so who is the people like in your, you know, in your office broadly 
+that are, so like you’ve mentioned there is support for people doing that, and 
+then there’s also support for like following up just to, you know, if someone’s 
+sort of dragging their feet on requirements, whether they be registration or 
+things like this what like who, where does that responsibility sit, like who is 
+actually working like other roles, like what is, what role is that?
+
+R: Yes, so it would normally be in our clinical trials team.  So we have, the team 
+that’s responsible for all of this is our governance clinical trials and contracts team 
+and it would normally be our clinical trials team so we would normally have a clinical 
+trials what we would call a Clinical Trials Manager but it won’t necessarily always do 
+all of the functions of the classic trial manager in a CTU type function but it does 
+similar things around reporting and then we have a junior member of staff supporting 
+them as well who does a lot of the sort of chasing and keeps all the records 
+maintained so that any one time we could pull off a report of exactly that, you know, 
+where everything’s up to. 
+
+I: Mhm so in terms of like how things operate at the Trust, so you’ve been 
+there for almost like three, three four years you said, so sort of have these 
+policies and focuses sort of evolved in your time being there and if so like how 
+have they changed over over time?
+
+R: Yeah, I mean I generally I would say the reporting function hasn’t really changed.  
+What’s changed a little bit is the culture in terms of making it clear what’s a PI 
+responsibility because I think there has been, well I think there’s more, certainly 
+more pressure on the central R&D team. There are many more projects the last year 
+obviously the number of projects to do with Covid has absolutely you know, gone 
+crazy so we actually maybe we have in the past done some of the responsibilities or 
+roles, you know, roles and tasks for people where we’ve had the capacity to do that 
+so I think that cultural, there has been a bit of a cultural shift in in us sort of saying 
+actually this is a PI responsibility and ensuring that the sort of people responsible for 
+our researchers, like, their Heads of Department etc also support us with that and 
+our medical director would get involved so that if there are any issues of the PI not 
+taking their responsibility that’s not necessarily something that we would deal with in 
+R&D but I would be able to escalate that through the appropriate channels you know, 
+it’s something if they agree to take on then they need to do that.  So, I think that sort 
+of culture of who’s responsible has maybe changed a bit.
+
+I: And what do you think that like the way that this, the way you have things 
+structured now and you can compare this to, you know, any previous 
+experiences or experiences you see at other institutions, like what do you 
+think is, you know, valuable and works well from the way you currently operate 
+and like what could be potentially be done better?  Like is there anything you 
+wish would, that you’re looking to change or improve or build upon you know, 
+moving forward or that you’re thinking about?
+
+R: Yeah, I mean lots. [laughter] Always room for growth isn’t there. I think we’ve had 
+a core team in place for a long time and we haven’t really reviewed for a long time 
+the structure and function of that team in terms of, ‘Do we have the right size and 
+shape? Do we have the right roles and the right levels?’ Things have changed a lot 
+in terms of the regulation, you know, so it only gets more complicated in terms of the 
+reporting requirements, the data requirements, you know, that kind of thing. So we 
+do want to do a big piece of work around have we actually got that right because I 
+think at the moment what we’re trying to do is just struggle through . I want to 
+reinforce more of that culture of the PI and the relationship between the PI and the 
+research office and really make, the Holy Grail would be that that’s consistent. It’s 
+not consistent at the moment because you’ve got some PIs will shout louder than 
+others and they might get, it might work out differently which isn’t ideal so I think 
+definitely resource. In terms of the sort of processes and the robust governance that 
+we have actually, I think it’s really strong.  It often comes across as bureaucratic, but 
+I think that’s the NHS generally.  I don’t think that’s necessarily specific to this and, 
+as I said, at the beginning it’s, it’s so important to have that robust framework around 
+everything we do that I don’t necessarily want to take that away but I would like to 
+obviously streamline as much as we possibly can some of that bureaucracy and as 
+things move more digital, more online, you know, there’s much more we can do 
+around e-consent and, you know, confirm using databases to do some of our kind of 
+regulatory stuff rather than lots of paper trails and kind of things so I think making 
+things more efficient, reviewing the capacity of the team and the site sort of structure 
+and continuing to develop that culture where the PI is really clear on their 
+responsibilities would be my kind of three things that I want to work on. 
+
+I: Great and [um] so essentially sort of through your position is a little bit 
+unique in that you have vision on a NHS Trust and a University function even 
+though it’s all clinical.  Is there any sort of differences, like is there any 
+differences in working on the people who are operating on the Trust side 
+versus on the, you know, Academic/University side?
+
+R: Yeah, I mean just because you’ve got two organisations with slightly different 
+processes.  I think that’s the only real reason.  I mean the motivation and drivers for 
+research is slightly different. In the University, the researchers are employed to do 
+research [er] especially the [academic research organisation] because there isn’t a 
+lot of undergraduate teaching. There is sort of post-graduate teaching but it’s not, 
+sometimes in universities you get that pressure that, you know, the primary function 
+is teaching, and researchers is like additional activity. For, generally, for researchers 
+in the [academic research organisation] research is their primary function, that’s what 
+they’re employed to do.  
+In the hospital, they’re employed to be clinicians and treat patients and they have full 
+clinical workloads and so there is always that balance between, you know, if you’re a 
+substantive employee of the Trust then you’re probably, you, you’re going to find it 
+harder to carve out time for research. If you’re a substantive employee of the 
+University, then you wonder why nobody did what you want them to do yesterday.  
+So, there’s a bit of a, there’s that balance definitely.
+
+I: Okay.
+
+R: But it’s thinking about how to build a culture where you develop clinical academic 
+careers across the two areas and thinking about that balance of time to do academic 
+work if you’re a clinician and clinical work if you’re an academic and trying to build 
+those sort of teams and think about the right kind of structures and sometimes a PI 
+doesn’t necessarily need to do everything themselves as in they need to take 
+responsibility but we were also thinking about, you know, Advanced Nurse 
+Practitioner roles and Fellow roles and trying to get other people involved in that so 
+that it’s not all, all on the Principal Investigator where they’ve got a busy clinical load.
+
+I: Mhm right so I’m interested about also, so you’ve been working in this space 
+I think it sounds like long enough that you’ve sort of experienced some of 
+these, we’ll call them like events or like things that have impacted the 
+transparency space over the past we’ll say like, you know, decade-ish or so. 
+So like I’d be interested to hear, so we’ve talked a bit about Brexit already and 
+how, I’ll just go down this little list and then we can start and then we can do 
+some -- How has Brexit, like has Brexit done a big change, has that changed 
+much of anything or can I, think NIHR processes have largely remained the 
+same is that correct?
+
+R: Yeah, that’s right, yeah.
+
+I: Yeah.
+
+R: So we haven’t seen a big change of the regulation yet. We may do.
+
+I: Yep.
+
+R: So, sort of waiting to see how that pans out. At the moment, no it hasn’t changed 
+anything really.  The only thing that has changed is where we actively taking part in 
+research and part of that research requires certain, I don’t know accreditation of a 
+facility for example which previously came under the European Legislation and all of 
+a sudden doesn’t and then that’s kind of, we can’t even though it was the same 
+yesterday and it was fine, it’s now today not fine and suddenly we can’t treat this 
+patient and that’s, it’s those kind of things which you, are blindsiding us a little bit. 
+But I think once the regulators kind of work through that and we’re still working with 
+the MHRA and the Human Tissue Authority as well is quite often involved in sort of 
+accrediting some of those things for us then I think we’ll be okay. But otherwise we 
+haven’t seen a major change in terms of Brexit yet. Obviously, I think it’s too early 
+days.
+
+I: Yeah.
+
+R: It’s only, we’re only seeing ad hoc issues with, you know, border control and 
+things just like everyone else but not, not-,
+
+I: Yeah, yeah but nothing really to like, yeah.
+
+R: Not regulations and reporting yet, no.
+
+I: So and then these two kind of go together a little bit but sort of like what has 
+been the influence of, if any, of the AllTrials campaign and then also 
+subsequently the House of Commons sort of like inquiry and looking, well they 
+look at reporting and sent letters things like that, you know, what was the 
+response like to those sort of things? This organisation of some of that might 
+have been at your past organisation but yeah what did that sort of look like?
+
+R: Yeah interesting so not all of the data that came back to us from those processes 
+were reliable which was interesting so it’s kind of picked up a few discrepancies in 
+terms of how perhaps different groups are accessing those data because we had a 
+few sort of say this trial hasn’t been updated and it had maybe like clinicaltrials.gov 
+or EudraCT but what I, what I find with these and this is a really classic example is it 
+was, there was a lot of momentum around it at the time and obviously we, we had to 
+respond, It was a high level kind of enquiry and we did and it did give us the 
+momentum to make some things happen that we perhaps, people had been 
+dragging their feet a little bit on but, you know, now that’s gone I feel like it was like, 
+oh this is like the worse thing, we need to fix this right now. We’re gonna send high 
+level letters. Everyone’s gonna get involved. It’s gonna come from Treasury blah 
+blah and then, now there isn’t any of that pressure anymore but surely, it's just as 
+bad as it was probably. So yeah sort of take these things with a slight pinch of salt 
+because it does seem, you, you kind of get, it’s a flavour of the month. Somebody 
+somewhere has gone, ‘Oh we’re not reporting properly, let’s do an enquiry. Oh, the 
+enquiry’s found we’re not reporting properly so let’s put loads of pressure on these 
+organisations to get the records straight. Okay there is a bit of activity, but it hasn’t 
+changed the culture in that we’re now going forward, going to have perfect records.’
+
+I: Yeah.
+
+R:  So I wouldn’t be surprised if we had another enquiry and did another exercise 
+that we probably find ourselves in a rather similar position. 
+
+I: Interesting so you don’t think, so while you said it sort of like it was an 
+impetus for some sort of change like change process improvement, it sounds 
+like the durability of that might not quite be what people might hope for?
+
+R: Yeah, I think that’s my feeling. I think from, I can, obviously I can only speak from 
+the organisations I’ve been involved in,
+
+I: Of course.
+
+R:  but I think this already so high on our agenda to do this and to do it right that yes 
+there were a couple of missing records that this sort of gave us a bit but maybe there 
+are organisations that didn’t think it was so important and they’ve had a slightly 
+different experience and managed to use that to put maybe leverage, additional 
+resource I don’t know but for us it more a case and sometimes I think those 
+campaigns can do some damage internally in terms of these kind of letters get 
+written to Chief Executives of organisations who are managing a big portfolio across 
+a complex organisation, don’t necessarily fully understand the research process 
+that’s why they have an R&D Department and then they almost get the impression 
+that somebody in their organisation hasn’t done something right without knowing the 
+full context of the landscape so I do worry about some of these things that go directly 
+to CEOs of Trusts in terms of what kind of reputation, how that comes across 
+reputationally to them in terms of their, their role in the bigger picture, in terms of 
+research so, yeah.
+
+I: Yeah, interesting so you’d think, so like yeah, because it’s interesting to 
+think like, you know, how much are those Trust CEOs who obviously have a 
+lot of responsibility and a lot of overseeing tons of things like how much are 
+thinking about these sort of functions of the research practice at their 
+institution and 
+
+R: Yeah.
+
+I: Yeah, I assume it’s highly variable between Trusts but it might, there’s lots to 
+consider and there’s lots to worry about it and it might not always be-,
+
+R: Yeah.
+
+I: And then last thing, has there been any sort of movement or thought about 
+the, like HRA Make It Public, like as they move forward like it seems like some 
+processes might be changing or improving as a result of that, has that like 
+spurned anything yet or is it still sort of in a holding waiting pattern and see 
+what happens there?
+
+R: Yeah, I think we need to see what happens.  I’m worried, I am worried about the 
+investment in the HRA not being replicated in the investment in R&D or in delivery 
+because I think what we’ve seen during Covid is it’s amazing we could approve 
+projects so quickly and get them through ethical committee so quickly but that hasn’t 
+always meant that it’s the most robust of processes and my feeling is that the ones 
+that have picked up the mess, well not the mess but the problems are the sites and 
+actually that’s, there isn’t investment into R&D.  It doesn’t really come through the 
+Clinical Research Networks.  It doesn’t come through central resources, 
+infrastructure funds have all basically gone away.  There’s no funding for that 
+anymore but yet the amount of reporting and the amount of kind of responsibility at 
+that level seems to get more. So even though the HRA say they’ve pulled everything 
+centrally and and they’re issuing approval and we’re confirming capacity and 
+capability, actually that hasn’t changed, that hasn’t changed what the Trust need to 
+do as much as HRA sort of said that they would, if you see what I mean, especially 
+from a sponsor point of view.  If it’s, if you’re a site then fine, you know, you, you 
+understand that you accept HRA have approved something and the sponsors taken 
+certain responsibilities, okay you can go ahead.  But as a sponsor there’s an awful 
+lot still that you would need to do at site kind of organisation level that the HRA is not 
+doing or not doing particularly robustly and it’s just meant we’ve had to submit more 
+amendments to studies because things have been overlooked when things have 
+gone through too quickly for example and that’s again putting the responsibility back 
+on the site and the sponsor to redo the paperwork etc. So, I am worried that there’s a 
+it’s not quite even, the investment that’s going into the HRA and the investment that’s 
+going into site level isn’t matching at the moment, so I do worry about that. 
+
+I: Yeah, so to connect a few threads of things that you’ve talked about. So like, 
+it sounds to me like increased sort of oversight and requirement from the HRA 
+sort of beefing up these procedures making some of these processes for say, 
+registration or feeding back lay summaries or results or things like that more 
+robust sort of shifts, so you’ve talked a lot about the balance between what’s a 
+PI responsibility and what’s a sponsorship R&D office responsibility and those 
+increased regulations may tip the balance back towards the offices without a 
+requisite increase in capacity or resource to handle that?
+R: Yeah.
+
+I: Is that correct?
+
+R: That’s exactly how it works.
+
+I: Yeah.
+
+R: Exactly it, yeah. 
+
+I: Yeah, okay just wanted to make sure I was connecting those threads 
+correctly. 
+
+R: No, that’s great, yeah.
+
+I: Ah great, okay, excellent and then so in terms of so like when these things 
+happen or when even more mundane sort of like when things are changing 
+like, if a change happens or if there’s opportunities to learn or talk to other 
+people in your area throughout the country about like best practice, do you 
+have outlets that you turn to for that, like so are there, are there any 
+organisations or mailing lists or anything like that where you, that you found 
+useful to sort of, you know, learn from and learn about the newest requirement 
+or best practices from?
+
+R: Yeah definitely, I mean we tend to rely on the sort of national networks around the 
+R&D forum and the UK RD community obviously as a teaching hospital we have 
+been part of the University Hospitals Association for some time, so there are these 
+kind of networks that we share intelligence with.  At more sort of local level within the 
+Clinical Research Network then organisations do work together if nothing else to at 
+least sort of say, “How is this affecting you?” How have you dealt with this change in 
+regulation, or this change in in whatever I mean usually, you know, not enough 
+resource, not enough this, this is difficult blah blah blah but at least you kind of know 
+that you’re on the same page.  I think with all the challenges we’ve had recently with 
+relating to the pandemic in terms of that massive increased workload both new 
+projects and having to amend everything and pausing and re-starting it’s been really 
+helpful to the teams doing those functions to know how the rest of the NHS is 
+managing the same situation.  Actually we, we’re quite far ahead in [the NHS Trust] 
+in terms of not stopping a lot of stuff but it’s, those teams have been under pressure 
+but being able to talk to other organisations and being able to pass that message 
+back actually they’re doing really well in terms of our patients that is happening, so 
+yeah I think those networks are really important, definitely.
+
+I: Yeah, it sounds like they’ve been helpful. Like you have learned, and you do 
+learn and feed, feedback in and take from, yeah.
+
+R: Definitely and we do, obv-, we are, we are also fortunate in that we have [specific 
+types of research facilities] so they have their networks as well in terms of other 
+[research facilities] and, you know, there’s quite a power, there is, there is much 
+more momentum around R&D community I think in the UK now in terms of, you 
+know, there’s annual meetings and that kind of thing happening so there, there are, 
+there are more opportunities to lobby for change and have discussions with NHS 
+England or HRA or whoever us, are implementing those changes so.
+
+I: Mhm
+
+R: Yeah.
+
+I: And I’m interested like so you obviously your office is managing a subset of 
+a University's and then the NHS Trust side but I’m wondering like do you, are 
+you aware of or do you see like I’m very interested in sort of the difference 
+between the NHS, things at the Trust level and things which you have spoken 
+somewhat to already and things at the University level. For things like 
+resource, you spoke a little bit earlier about time resource being one 
+difference, just based on the incentives and the jobs what people are doing. 
+From like a more like overarching like you know, managing that do you, do you 
+feel like it is different working in the NHS compared to some of your 
+colleagues who might be working solely in more academic clinical capacities?  
+Like, like how do those pressures and resource distributions and stuff like, are 
+there differences there or do you think it’s largely like, largely the same kind of 
+just slightly different problems but it’s largely the same, you know, speaking 
+very generally here?
+
+R: Yeah, I would say very, yeah, slightly different problems but largely the same 
+cultural issues.
+
+I: Yeah.
+
+R: Yeah so, before I worked in NHS, I worked in University Research Management 
+before, you know, the most of, the rest of my career so I can directly compare the 
+two. I think it’s the same thing, the problems come down to sort of personalities, 
+multiple pressures, different motivations of individuals motivations of organisations. 
+It’s all, it’s the same kind of fundamental barriers but slightly different depending on 
+the exact thing that you’re dealing with, yeah.
+
+I: Yeah, but like yeah, okay so you don’t, you don’t, like look longingly at your 
+academic colleag-, you colleagues or anything go, ‘oh they have it easy.’ No, 
+it’s not like that at all [laughs]. 
+
+R: Yeah, and I think the NHS and Universities are measured in quite different ways 
+by the government in terms of their success. So, for research, Universities are 
+measured in terms of the performance by their outputs largely in terms of quality of 
+the publications, you know, PhDs that kind of thing. So the currency is more sort of 
+papers, grants, doctoral degrees etc. Whereas, for NHS in research it’s much more 
+about patient recruitment, patient benefit, you know, number of new treatments going 
+into clinical practice.  So, there’s, that’s quite a different landscape and so you can 
+obviously get pulled between the two if you’re working at that interface. Because it’s 
+the kind of absolute trick is to try to get those two things to marry and that doesn’t 
+always happen. So yeah, the different, different kind of pressures and I think that you 
+can completely understand why there’s then sometimes a, sometimes they have to 
+play off against each other a bit and that causes conflict.
+
+I: Great so that, I think that’s pretty much it for my sort of like set questions 
+then I usually just like to ask, you know, is there anything else that you’d like 
+to expand on or that I, you were thinking about that you’d like to say that didn’t 
+quite get asked or that you were planning on me to ask, just sort of any final 
+thoughts or anything like that?
+
+R: Not really, I thi-, I suppose the only thing that is still a bit of an unknown really is 
+how we can better at communicating the outcomes of research to patients because 
+that’s difficult and in a way for us it’s slightly easier because we tend to be doing 
+more small, small number, early phase studies where we’ve only got, you know, 
+we’ve only got a few participants. We know these families, they come and take part 
+in the trial for a number of years, you know, as follow-on studies and so where we’ve 
+got those relationships, that just happens anyway because they basically they live 
+here and so [laughs] we work with them all the time but I think for a lot of large scale 
+studies where you’re enrolling participants, they perhaps don’t see the benefit even 
+for themselves, you know, they’re doing something for the future generations of 
+people living with those conditions.  There isn’t, I don’t feel that there’s a robust 
+framework around how we might do that better because obviously some, some 
+members of the public are, know more about the science than we do and they’re 
+perfectly capable of interpreting scientific paper and some don’t so it’s not just all 
+about lay summaries and you know, but it’s about how do we work better with 
+potentially disease associations and charities and patient advocate groups and the 
+individual participants themselves to share some of that because I’m not sure we 
+routinely do.
+
+I: Yeah, so I that’s really interesting to hear because in one follow-up to that so 
+pretend, like pretend for a moment that Brexit like hadn’t occurred and it 
+sounds like when the new EU portal, whenever that finally gets off the ground 
+and gets launched in the new EU clinical trial legislation comes into full effect, 
+I believe that like, in addition to the standard tabular results format that the 
+EUCTR supports now, I assume there’ll be something like that in the new 
+system. They’re gonna make lay summaries sort of like mandatory-, 
+mandatory is my understanding.
+
+R: Yeah.
+
+I: Do you think that is like a, do you think that’s just like, ‘Oh that’s not gonna 
+help or do you think having those two things like really detailed like tabular 
+results alongside a lay summary in a database, a public facing database, like 
+do you, what do you think about that?
+
+R: Yeah, I think that it can’t do any harm. 
+
+I: Yeah.
+
+R: I think, I think it will help. It’s about, it’s about how do we signpost people to that 
+resource.
+
+I: Mhm.
+
+R: There will be some really active people who, who are already probably on that, 
+but they’ll be a lot of people who take part or lot of potential people that don’t take 
+part that could take part that we’re gonna need to be more actively marketing those 
+resources and tailoring and driving people to them. So I think it’s about how you use 
+it. I think it definitely definitely is a useful resource.
+
+I: Yeah.
+
+R: It’s about how we use it and how we make the most of it and how we drive that 
+engagement will be important in terms of how we recruit participants to these kind of 
+studies in the future.
+
+I: Yeah because it seems to me, it’s always reporting is always a very rarely 
+unless you’re dealing with like clinical study reports and industry trials do you 
+have, one thing is the definitive account of everything that happened in a trial, 
+like it’s a piecemeal of sort of all these things that are out there together that 
+make up the results. 
+
+R: That’s exactly right, yeah. It’s not as, it’s not as clean as, ‘Oh we’ve got a 
+compound we’re going to try and give this to patients and we’re gonna do Phase I, 
+Phase II, Phase III, oh there it is.’ It’s like lots of different bits coming together from 
+pre-clinical through clinical and then it’s, you know, it’s all of the stuff that you need 
+around the kind of commissioning and it’s just, yeah multi- so multifaceted that it’s 
+not that straight-forward.
+
+I: Mhm.
+
+R: Yeah.
+
+I: Right great so  yeah, I think that’s pretty much it and we’re just right about at 
+time.
+
+R: Perfect, thank you.
+
+
+
+

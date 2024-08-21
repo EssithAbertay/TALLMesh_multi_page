@@ -64,31 +64,31 @@ Here is an example of the expected JSON format:
 {
   "final_codes": [
     {
-      "code_name": "Work Stress",
-      "description": "The respondent describes high levels of stress and pressure at their workplace, affecting their overall well-being and productivity.",
-      "quote": "too much pressure"
+      "code_name": "Example Code Name",
+      "description": "This is where you would provide a 25-word description of the code, explaining its meaning and significance in the context of the analysis.",
+      "quote": "relevant quote here"
     },
-    {
-      "code_name": "Family Support",
-      "description": "The respondent talks about the emotional and practical support they receive from family members during challenging times.",
-      "quote": "always there"
-    },
-    {
-      "code_name": "Hobby Enjoyment",
-      "description": "The respondent mentions their enjoyment and satisfaction derived from engaging in personal hobbies and activities during their free time.",
-      "quote": "love painting"
-    }
+    // Additional codes follow the same structure
   ]
 }
-""",
-"Preset 4" : """Can you assist in the generation of a very broad range of initial codes (generate as many initial codes as needed - at least 15 codes - to capture all the significant explicit or latent meaning, or events in the text, focus on the respondent and not the interviewer), aiming to encompass a wide spectrum of themes and ideas present in the text below, to assist me with my thematic analysis. Provide a name for each code in no more than 4 words, 25 words dense description of the code and a quote from the respondent for each topic no longer than 4 words. Format the response as a json object keeping codes, descriptions and quotes together in the json, and keep them together in 'final_codes'.""",
-"temperature": 0.00,
-        "top_p": 0.1
+""", "temperature": 0.00, "top_p": 0.1},
+"Preset 4" : {"prompt": """Can you assist in the generation of a very broad range of initial codes (generate as many initial codes as needed - at least 15 codes - to capture all the significant explicit or latent meaning, or events in the text, focus on the respondent and not the interviewer), aiming to encompass a wide spectrum of themes and ideas present in the text below, to assist me with my thematic analysis. Provide a name for each code in no more than 4 words, 25 words dense description of the code and a quote from the respondent for each topic no longer than 4 words. Format the response as a json object keeping codes, descriptions and quotes together in the json, and keep them together in 'final_codes'. Format the response as a JSON file with the following structure:
+
+{
+  "final_codes": [
+    {
+      "code_name": "Example Code Name",
+      "description": "This is where you would provide a 25-word description of the code, explaining its meaning and significance in the context of the analysis.",
+      "quote": "relevant quote here"
     },
+    // Additional codes follow the same structure
+  ]
+}
+""", "temperature": 0.00, "top_p": 0.1},
 }
 
 reduce_duplicate_codes_prompts = {
-    "Preset 1 - Reduce Duplicates": {"prompt":"""Analyze the following list of codes and their descriptions. Identify and merge any duplicated codes. For each set of merged codes, provide:
+    "Preset 1 - Reduce Duplicates": {"prompt":"""Analyze the following list of codes and their descriptions. Identify and merge any duplicate codes. For each set of merged codes, provide:
 
 1. Important! A concise name for the merged code (maximum 4 words)
 2. Important! A detailed description (25 words) explaining the merged code's meaning and relevance
@@ -116,7 +116,7 @@ Important! Your response should be a JSON-like object with no additional text be
         "temperature": 0.00,
         "top_p": 0.1
     },
- "Preset 2 - Reduce Duplicates & Highly Similar": {"prompt":"""Analyze the following list of codes and their descriptions. Identify and merge any duplicated, or highly similar, codes. For each set of merged codes, provide:
+ "Preset 2 - Reduce Duplicates & Highly Similar": {"prompt":"""Analyze the following list of codes and their descriptions. Identify and merge any duplicate, or highly similar, codes. For each set of merged codes, provide:
 
 1. Important! A concise name for the merged code (maximum 4 words)
 2. Important! A detailed description (25 words) explaining the merged code's meaning and relevance

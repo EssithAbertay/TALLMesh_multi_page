@@ -15,8 +15,6 @@ Dependencies:
 - os: For file and directory operations
 - api_key_management: Custom module for managing API keys
 
-Author: [Your Name]
-Date: [Current Date]
 """
 
 import streamlit as st

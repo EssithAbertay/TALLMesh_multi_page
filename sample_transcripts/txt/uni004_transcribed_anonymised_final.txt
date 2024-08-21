@@ -1,0 +1,924 @@
+﻿
+
+I:	So, we’ll just go ahead and get started then.  So yeah to reiterate we’ll be 
+talking about transparency, trials transparency and we’ll focus on registration 
+and reporting of clinical trials but if there’s any other area of trials 
+transparency you would like to touch on, you can feel free to include those in 
+your responses and just ultimately the aim of those research is to identify sort 
+of barriers and best practices to research [um] that can be shared with the 
+larger community of UK, you know, public research institutions to inform the 
+discussion and plans for improvement. So  we’ll start right off, can you go 
+ahead and tell me about your role?
+
+R:	Right so yeah, I’m a part time Trial Manager, so I’ve just finished a project 
+with [disease area] and I’m moving on, starting a new job with [a different disease 
+area]. It’s still in the same team but yeah, it’s just a different project.
+
+I:	Great and so sort of how long have you been involved in you know, the 
+world of trial management and clinical trials?
+
+R:	Right, so being a Trial Manager, so I started in [the mid 2010s] and I finished 
+that project in 2020 and then starting the [new project] as a Trial Manager again from 
+[early this year] for a year contract.  I don’t know if you’re aware, but Trial Managers 
+or Trial personnel is only on a fixed term contract. We can never have a permanent 
+contract
+
+I:	Okay.
+
+R:	 so it’s kind of like an ongoing, kind of like on a I think the maximum we can 
+get is two years as such but and then it’s kind of like ongoing until funding finishes 
+and then you apply for a different job type thing so.  But with clinical trials process 
+type thing I’ve been I was, I am an R&D Officer for the NHS, so I started that back in 
+[early 2000s], so technically in a way I’m kind of like, you know, been doing this like 
+for 20 years.
+
+I:	Okay great so can you tell me either through your role as a Trial 
+Manager or through your R&D Officer roles how you’ve been involved with the 
+registration and reporting of trials?
+
+R:	Right the registration, what do you mean?  Can you define what you mean by 
+registration, registration to where?
+
+I:	To a trial registry such as the EUCT, EudraCT, EUCTR or 
+clincialtrials.gov or the ISRCTN, any of those like, you know, there’s various 
+other ones too but that’s yeah.
+
+R:	Yes so with my Trial Manger with [disease area] I’ve used the clinicaltrials.gov 
+and with that yeah that proved difficult completing but at the same time because, you 
+know, I find because of the terminology used, the different aspect of explaining 
+things, completing the forms online and although, you know, there’s guidance and 
+you know, definition for each terminology yeah I kind of like found it quite difficult at 
+the beginning, at the start until you kind of get familiar and thereafter then you have 
+to basically do, review every year for clinicaltrials.gov to make sure it’s obviously live 
+real information.  
+Whereas, now with the [new disease area], I’ve just registered this study with 
+ISRCTN
+
+I:	Right.
+
+R:	 and yeah so with that I find it more straight forward in a sense because I think 
+the terminology and probably because I’ve done it before with clincialtrials.gov then 
+there’s similarity to that and kind of the expectation you kind of like, you know, 
+recognise and understand so for both I’ve done and I’ve not done any, kind of like, 
+I’ve done kind of like [disease charity], you know, NIHR registration but I don’t know 
+if that’s the kind of thing that you’re looking for?
+
+I:	Yeah, no, the, the what you described is perfect. So just to build off so 
+this is in your role as a Trial Manager, it was your responsibility to like fill out 
+and maintain those registrations on clincialtrials.gov or the ISRCTN?
+
+R:	Yes.
+
+I:	Okay great and is that stan-, do you know if that’s standard at your 
+institution for the Trial Manager to be sort of in charge of that?
+
+R:	No idea [laughs]
+
+I:	No idea, okay, but for you it is. [laughs]
+
+R:	[laughs] Yes, I assume the majority will because I can’t see the CI doing that 
+or the sponsor although In the [University] it is not mandatory but it’s strongly 
+recommended plus obviously the fact that if you want to publish, you know, the ISR 
+[em] the, you know, in the top ten journals then you need to have a public 
+registration.
+
+I:	Yeah, and this, may be less, slightly less relevant now because we’re 
+living in a post-Brexit work but did you have any interaction with the EudraCT 
+the EudraCT and EUCTR system for getting the trial, like filing through the, like 
+getting the ethics and the approvals to the MHRA which then goes through to 
+the EudraCT system?  
+
+R:	Yes so we did two trials that I’ve ben involved with, they’re both non-
+commercial so non-CTIMPs studies.
+
+I:	Okay great.
+
+R:	So, I’ve not been involved in the MRHA, but I’ve been involved in the sponsor 
+and ethics approval registration submission and, you know, attended all the 
+meetings and stuff like that but yes.
+
+I:	Yeah, okay and then they were, but so the studies you’ve been involved 
+in are non, non-CTIMPs?
+
+R:	Yes, non-CTIMPs. 
+
+I:	Okay great but just to be clear some, so you’re [University] does do 
+some, does also do CTIMP research right?
+
+R:	Oh yes, yes, oh yes.
+
+I:	And you mentioned as an NHS R&D Manager do you, have you like 
+interacted with these maybe not as directly but like from a policy perspective 
+would any of these registration areas and things like, like dealing with 
+registration and things like that?
+
+R:	Not from the R&D perspective because we are kind of like the end process of 
+approval.
+
+I:	Gotcha, okay.
+
+R:	Although we, you know, as R&D officers then we need to check whether all 
+the approvals are in place before we can issue R&D approval. 
+
+I:	Right okay gotcha and then so I just wanted to make sure I understand 
+so for that role are you like where are you affiliated to as in R&D, like I know 
+it’s the NHS but where specifically like within the NHS?
+
+R:	Research and Development Office so we’re kind of like the final hurdle in 
+clinical, you know, approval process, so we check like the project, the applications 
+got sponsor approval, ethics approval if required because not all trials or studies 
+require ethics approval.  They might just need University approval or so if it’s a start 
+they won’t need any of that but and then we need to have kind of like have the all the 
+other, for example Caldicott approval or public benefit approval, you know, just all 
+these different things that are required, you know, to make sure the, the regulatory 
+process is in place for before the study starts.
+
+I:	Great yes and so that’s working for the N, the general NHS not for like a 
+specific institution?
+
+R:	That is for the whole, so the NHS, well as you know there’s different Trusts in 
+each region so yeah, so for us, for me, it’s [local NHS institution].
+
+I:	Gotcha.
+
+R:	So, all the hospitals within that region within that zone.
+
+I:	Okay great so one thing I’m interested in is hearing people sort of 
+describe in their own words why they think requirements for the registration 
+and eventual reporting of clinical trials are in place so I was, that’s my next 
+question can you explain why you think, just from your own understanding of 
+the topic, why we register trials and why we make sure that they are reported.  
+
+R:	Yeah, for me it’s transparency and for information for of the public especially 
+of the researchers in general and the participants.
+
+I:	Okay and then and then so like how like so what about what, why is that 
+transparency important?  
+
+R:	To make sure that the regulation is followed correctly and if there’s any query 
+then you can go back to it and ensure that it can be looked at.
+
+I:	Gotcha, okay great and then so okay, so switching back to your role as 
+a Trial Manager, so can you talk me through, you did a little bit of this already 
+but to get into a bit more detail.  So can you talk me through the process of 
+how sort of, you know, you, you’re starting the trial and you need to register it, 
+what does that process look like, you know, what is, what is the, the step-by-
+step sort of what that would look like on a, on a somewhat broad level. You 
+know, I don’t need to know exact details but broadly what does that process 
+look like for you?
+
+R:	Yes so, I’ll just go back to the recent one that I’ve done with ISRCTN.
+
+I:	Okay.
+
+R:	That process so what’s, how I started that is well get permission for, from the 
+CI to for the payment because ISRCTN’s got payment to it whereas clincialtrials.gov 
+is free.  So got confirmation of payment for that that he’s happy for me to register on 
+the ISRCTN, the reason I’ve chosen this time the ISRCTN is because it’s more 
+UK/European rather than American and also in a way because we don’t need to 
+review it on a yearly basis although obviously you have to make sure, you know, it’s 
+part of our responsibility to make sure it is up to date. And then after that I got in 
+touch with ISRCTN, went online, did all the payment from me and did as much as I 
+can and then liaised with the CI where information that needs to be done and in, you 
+know, I completed the form and got his verification with all that and then we 
+submitted to ISRCTN as requested and then ISRCTN actually got back to us quite 
+quickly and very helpful in the matter as well with some of the queries that they have 
+and I have to admit this time round with Covid, it took us a while to kind of like gather 
+all the information. So, again, directly liaising with whoever was in ISRCTN this, you 
+know, same person that I was dealing with, you know, from the beginning all the way 
+to approval, it’s the same person so again that kind of like help the process and yes 
+so got back eventually.  Took us a wee bit longer than expected but we got there. 
+Got our approval and here we are. We just need to start the study.
+
+I:	Excellent, yeah so a few a few follow up questions on that. So you so it 
+sounds like you haven’t started this study yet so where in the process did of 
+like getting this trial off the ground did registration come in, you know, was it 
+before ethics, after ethics, like how much of the trial had already sort of gone 
+through other steps.  Was, you know, was registration early or later in the 
+process of getting all this set up?
+
+R:	Yeah, so right from the beginning when I was kind of asked to join this study, I 
+mentioned straight away that we need public registration to make sure if we want to 
+publish, you know, that we get, you know, we get accepted for this. So, you know, I 
+explained that to the CI and then so right from the beginning I mentioned that in 
+terms of the actual submission or, you know, completion of the form, I did that 
+actually after ethics it’s because again of the Covid situation.
+
+I:	Okay.
+
+R:	Getting information from different, you know, source and different people and 
+kind of like getting all the information together but yes so, I did that after ethics and 
+and I think yeah I did it after receiving favourable opinion from ethics.
+
+I:	Great so there was like, you may have got during normal times, non-
+Covid times, it may have gone a better quicker, like-,?
+
+R:	Yes.
+
+I:	Yeah, okay and
+
+R:	 I was hoping to submit and get approval from IRSCTN at the same time, you 
+know, after my sponsor approval.
+
+I:	Mhm.
+
+R:	So I can kind of like, you know, I was hoping to do parallel submission, 
+IRSCTN and ethics so I was hoping like, you know, that at the end that I can both 
+and then update the protocol with the number but yeah it just didn’t work out like that.
+
+I:	Yeah, no okay that’s fine and then what sort of support or like so it 
+sounds like, you personally had some familiarisation, some familiarity with 
+registration from past experience but like what support or how is [your 
+University] involved in this process, you know, how did they, like are they 
+checking or are they providing you with resources or they doing anything to 
+make sure that you’re registering and registering correctly.
+
+R:	You mean like the sponsor, [the University] sponsor?
+
+I:	Yeah, so yeah like-,
+
+R:	Yeah.
+
+I:	Yeah, is it like, I assume that there’s a research office there or 
+something that might you know, like a sponsorship office who might well I 
+don’t know that’s what I’m asking, you know, are they offering any support on 
+this, yeah?
+
+R:	Yeah, so for us, so part of the sponsor approval is recommendation to register 
+in the public registration.  It’s strongly recommended because of the, you know, the 
+condition or publication but that is, that responsibility is basically delegated to the CI, 
+i.e. the registration.
+
+I:	Yeah.
+
+R:	The CI has delegated it to the Trial Manager.  [laughs]
+
+I:	Right, yeah.
+
+R:	So then in terms of support all we need to do is basically inform, you know, 
+once we’ve gone through the process, all we need to do is inform the sponsor that 
+we’ve got our approval and then they just yeah, set up their own system,
+
+I:	And then once the study gets going and maybe you know about this 
+more from your past the last study you worked on you know, you mentioned 
+that ongoing like update requirement for clinicaltrials.gov is there anyone 
+reminding you about that, you know, once, once you have, like you’ve taken 
+the recommendation.  You have registered, is there any ongoing support, you 
+know, reminding you to do, to check your updates or reminding you to interact 
+with the registry in any way?
+
+R:	Yes, so in terms of the clinicaltrials.gov because you need a yearly update 
+check, you know, for that system then the sponsor has somebody receiving 
+information or checking on a yearly basis if this is, you know, safe still up to date so 
+they get in touch with me
+
+I:	Okay.
+
+R:	and ask them to check the system and then the CI will have to verify it and 
+then, and then after the CI’s verification then the sponsor I think needs to seal it, 
+approve it or something, you know, whereas ISRCTN, I don’t know how it would 
+work because I, as far as I know, you don’t need to check every year.  
+
+I:	Yeah.
+
+R:	So, I don’t know how and what support that would be, you know, for ISRCTN 
+but definitely we will need the, say, the registration.
+
+I:	Yeah okay great so now moving on maybe once again this is something 
+where you have a bit more experience from you’re the past trial rather than 
+this one since this one hasn’t gotten off the ground yet, quite yet but what 
+what’s been your experience as a Trial Manager in being involved with the 
+results reporting of the trial, have you had any experience interacting with that 
+process in in any form?
+
+R:	Yeah, so with my Trial Manager hat on for the [disease area] we’re just in the 
+middle I think we’re, I’m just waiting for as I say, the final draft report, you know, 
+publication any time hopefully in the next week or two. We’ve not actually properly 
+published yet so in terms of putting the report together I kind of left that with the 
+research team because I’m kind of like, I’m off the contract.  
+
+I:	Right.
+
+R:	That’s kind of like, so that’s part of the problem with Trial Managers because 
+our contract kind of like really is not until say the, you know, writing in the publication 
+type of things.
+
+I:	Right.
+
+R:	So, we don’t really get involved in that.
+
+I:	Yes.
+
+R:	For me anyway, you know, it’s, not in my case.
+
+I:	Sure, sure so there was no sort of interest like at least when you as far 
+as your job is concerned, no-one since you were the person who interacted 
+with the registry there was no did anyone ever talk about putting the results on 
+the registry because you can do that at clinicaltrials.gov.  
+
+R:	Yeah as, so basically, I was involved in that study until database lock and 
+then throughout, you know, obviously I’ve informed them that would be one way of 
+putting it, you know, publishing it but the problem rests that study, we didn’t actually 
+register on the public registration until a year later.  
+
+I:	Okay.
+
+R:	Because we thought because this is a non-CTIMP then it wasn’t a, say, a 
+requirement only for CTIMPs so when we, when I registered when we were kind of 
+like, you know, registering for protocol publication to [a prestigious journal] they 
+informed us that we have to be, you know, the registry has to be done before 
+recruitment.
+
+I:	Right.
+
+R:	So, going back to all the information for public registration yeah didn’t realise 
+that is kind of like applicable to all [eh] trials, clinical trials.
+
+I:	Oh, that’s such really interesting to hear.
+
+R:	Yes.
+
+I:	Could you expand on that a little bit please because I would love to hear 
+more about sort of like what was the reaction of the larger research team to 
+like learning to essentially hearing about that.  I assume that was quite a, a 
+little bit of a shock maybe?
+
+R:	A shock, very disappointed. Very especially for my part because I didn’t kind 
+of like, I didn’t join the study until six months after the study started.  
+
+I:	Right.
+
+R:	So as soon as I start, I did ask that but there was no, it was not in the priority 
+at that time. The priority was recruitment, you know, opening sites and recruitment, 
+that was the priority so that was the task I was given straight away although at the 
+back of my mind, I should ask, you know, this should have been registered but it’s 
+not but anyway so very disappointed because of that we, I mean we’re trying again, 
+we’re trying to get in touch again with [prestigious journal]and see if they would.  
+Unfortunately, we’re not hearing back after that initial, you know, contact with 
+[prestigious journal] and that because we’re not registered within, is it three, I can’t, 
+is it three months before recruitment or something like that, there is a timeline?
+
+I:	It’s usually, so as far as the publishing in journals, I mean individual 
+journals might have different policies. From, from my understanding it’s just, 
+you know, as far as the ICMJE is concerned
+
+R:	Yes.
+
+I:	just any, any time before the first patient is enrolled is generally 
+considered okay.
+
+R:	Alright, I think on [prestigious journal] we were given a timeline before 
+recruitment.
+
+I:	Gotcha.
+
+R:	Yeah, I think it was three months if not more so yeah, we are really 
+disappointed, so we ended up publishing the protocol in the [another journal], yeah.
+
+I:	Yeah.
+
+R:	So yes, we’re in this conundrum now hence with the new study that I’ve got I 
+registered before, you know, straight after as soon as I can, with that lesson learned, 
+very hard lesson learned.
+
+I:	Interesting, yeah but it sounds like you weren’t, it sounds like you 
+arrived at the study after that that decision would have already had to have 
+been made, right, that was the last one?
+
+R:	Yes.
+
+I:	Yeah.
+
+R:	Yes, unfortunately it was still me as Trial Manager got blamed for not 
+registering. [laughter] so yes.
+
+I:	So, what did the, just to really quick touch on that one more time, the CI 
+of that study you were dealing with what was their sort of like reaction to that 
+to that situation where they didn’t, the trial didn’t get registered when it was 
+supposed to and like, yeah?
+
+R:	Really frustrated, really in a way angry because, you know, because the study 
+that we’re doing is, you know, we were really hoping for a high impact because we 
+want to contribute to this the changes in the standard of care, you know, and more 
+information about this, you know, so yeah really disappointed, really but at the same 
+time, you know, what can we do. It’s done, we just have to move on but again we are 
+at this stage now, so I don’t know, because I’ve not been in the, obviously I’ve not 
+been in touch with team I just spoke to the person kind of like co-ordinating all of that 
+that report writing.  I think they had several meetings to date, and I think he’s gonna 
+try, I asked him to push again for [prestigious journal] or somebody else within that 
+top ten and see if they would consider again because we’re hoping because the 
+report is actually quite positive. So maybe we’re hoping that, you know, they will kind 
+of like look at the result and hopefully ignore the yea
+
+I:	the late registration?
+
+R:	yeah misunderstanding.
+
+I:	Yeah sure and then so you haven’t so so that’s talking about journal 
+publications so just when you had left the team or even if you’ve heard 
+anything else since then if you’ve been in touch so like is there currently no 
+plan to put the results on clincialtrials.gov in that like, you know, their, their 
+tabular format or is there, or do you think someone will do that eventually?
+
+R:	I hope somebody will do that or I can do that on their behalf because I’m the 
+only one was kind of like really know how to use the system so once I start again 
+because I’m working with the same more or less team then maybe, you know, I’m 
+pretty sure the CI will give that job to me if, you know, because I think for me, I would 
+probably push for that too especially if we can’t go into the top 10.
+
+I:	Interesting okay and yeah, okay yeah that was very interesting so
+
+R:	In what Nicholas, in what way, how is it interesting?
+
+I:	Oh just interesting to hear a story like that, you know, 
+
+R:	Yes.
+
+I:	about where a retrospective registration, you know, came about and 
+hearing what the team had to deal with for that and, you know, how it led to 
+you being a lot more proactive about it in this, in the next one to, you know, 
+learning from that and just an interesting anecdote.  
+
+R:	Yeah. I mean so far from the interviews that you’ve done am I currently the 
+only one that has, that has done it retrospectively.  
+
+I:	So, you’re the only you’re actually the first Trial Manager I’ve spoken 
+with so far. I’ve spoken with some people in some other positions so you, I 
+have no-one to compare to.
+
+R:	Oh, okay that yeah no for me, that’s more interesting I can like really hear 
+from you after you’ve finished the, you know, the study you’ve got because yeah 
+that’s something I really kind of like want to know because it’s still, this, you know, 
+that kind of like recommendation has been there for, I don’t know, say the last ten 
+years, is it?  Would you say ten years?
+
+I:	I think it came, I believe the ICMJE one came out in I believe it was 
+announced in 2004 and came into effect in 2005, I believe.
+
+R:	Yeah, so yeah so that’s kind of like ten years when I started the study. And it 
+was interesting that the sponsor, I’m not blaming the sponsor, you know, there’s 
+nobody to blame that that wasn’t kind of like pushed at the beginning. and also 
+because this study was under the clinical trials unit. Then, you know, again because 
+that’s kind of like, their, in a way, say remit you know, under a sponsor’s delegation 
+that it wasn’t again kind of like put as a priority because of the consequences of 
+publication.
+
+I:	Yeah, so it sounds to me though like the institution now more, they, they 
+more proactively encourage you to do it like than they probably did back then, 
+would that be fair to say?
+
+R:	I would say that’s fair to say.  I don’t know that I was me…[audio cut-
+out]…because I was really kind of like annoyed [laughs] you know, that I was blamed 
+for something that I started six months after recruitment.
+
+I:	Right.
+
+R:	So yeah so, I was not happy and I kind of like yeah did voice my opinion and 
+ever since yeah say the process and the procedure’s been changed slightly and now 
+it is recommended.  Although they’re saying it’s not mandatory, it’s recommended 
+because nobody else is saying it’s mandatory. Everyone, you know in all the different 
+organisation are saying, ‘recommended’ so that’s what they’re following.  
+
+I:	Right and then I guess up until recently if you had been working on a 
+CTIMP it would have automatically been registered on the, in the EU process?
+
+R:	Exactly.
+
+I:	Yeah.
+
+R:	You see ‘cos I think that was the difference because this is, although it’s a 
+investigational clinical trials it’s still considered as a non-CTIMP so for all CTIMP, all 
+our studies are registered under obviously the EudraCT, so that was okay because 
+that’s considered as one of the public registration whereas non-CTIMP even up to 
+now, I know there’s still a lot of non-CTIMP that has not been registered. 
+
+I:	Yeah.
+
+R:	which is again I don’t know where at the moment you are, which again I would 
+be really interested to know the result and the effect of that.  Is that something that 
+you would be gathering and putting together?
+
+I:	So I’m only probably going to be talking in this study to like 10 to 15 
+people so I’m not going to get a big comprehensive but a lot of my other work 
+has dealt with you know, checking trial registration and then clincialtrials.gov 
+specifically but mainly for ones covered by the law which your trial probably 
+wouldn’t have been in the US and then also on the EU register.  So, your, sort 
+of, there’s trials you’ve worked on it sounds like are hitting that like non-
+CTIMP, not covered by the American law sort of sweet, potential sweet spot of 
+like stuff that, you know, I that’s tough to look at. Now I know that others, 
+some other researchers have done some work to look at non-CTIMP 
+registration in the UK and they, I think that those results are relatively recent. 
+They used HRA, you know, research ethics data and and I think it was like a 
+third of non-CTIMPS were not being registered so it definitely, you know, 
+definitely backs up what you’re saying some of the research out there.
+
+R:	So, Nicholas, so the HRA registration because obviously the study is was 
+registered under the HRA or the ethics committee and also with the NIHR,
+
+I:	Yeah.
+
+R:	you know, the National institute Research Centre so this study that I was 
+talking about it was registered with them before obviously recruitment but I wasn’t 
+sure if that is considered as public registration you see. That’s all we’ve so would you 
+consider that as public registration? So it’s just for me, you know, if we can go back 
+to [prestigious journal] for that [disease area] study, can we say it’s like actually you 
+know, what we’ve registered, this is the registration date, would you-?
+
+I:	So so those, I know so the pol-, I assume that the policy because 
+[prestigious journal] is like one of the I believe their one of the ICMJE members 
+so they probably go by either ICMJE policy or stricter sounds like maybe even 
+and that requires registration on a, like WHO approved registry, like 
+clinicaltrials.gov or the ISRCTN or these other ones so something like the 
+HRA, like they don’t, they’re not like acting in the same way as those other 
+registers do.  
+
+R:	Yeah.
+
+I:	I mean yes, so it’s difficult for me to say, you know, what you might be 
+able to say to [prestigious journal] or not that might you know be able to work 
+but yeah.  
+
+R;	Yeah no sorry I mean you probably can hear my frustration, you know, in the 
+matter but yeah it’s, it’s tricky because it’s not, it’s not black and white, you know, in 
+a way so I think that is possibly some of the frustration from say researchers old an 
+experienced one and especially for new researchers, you know, navigating this 
+process it is really quite difficult because recommendation, what does 
+recommendation really means, you know?
+
+I:	Yeah.
+
+R:	A recommendation means then you don’t actually really need to do it until you 
+realise when you’re doing what you want to do i.e., publication then, you know, your 
+result is not accepted so yeah it’s a hard lesson learned, you know, when it, when 
+something like this happens but yeah, I don’t know again if this is something that you 
+know that it would be part of your say result recommendation, you know, the different 
+aspect of say the negative impact of the process and recommendation that they use 
+and they do, sorry.
+
+I:	Yeah well, we might talk-, we might cover that a bit more as we work 
+though the interview her so but so just a quick follow up on what you just said 
+though so was your, was the CI on the project a new, what, what were they an 
+experienced or were they relatively new CI for the last project?
+
+R:	I would say relatively experienced CI
+
+I:	Okay.
+
+R:	as a CI goes. Everything is kind of like say delegated to the next in line.
+
+I:	Okay interesting okay great.
+
+R:	Yes, very interesting. [laughs] I’m finding that as well.  
+
+I:	So, I’m interested so when you, you know, registered that trial and 
+registered this one as you’ve gone through that process now on two different 
+registries did you sort of have to figure it out yourself or did you get any sort 
+of training or support in in doing that?
+
+R:	I figured that out myself.
+
+I;	Okay and there was no, the institution offered sort of no guidance or 
+what to do, they just like, 
+
+R:	There’s some guidance offered-,
+
+I:	they just you get a login.
+
+R:	Yeah, no sorry there’s a guidance on the website for both for clincialtrials.gov 
+and ISRCTN so, you know, what I’ve done is they’ll loaded that and kind of gone 
+through the the process.  In terms of support from say the sponsor or the previous 
+study, say the clinical trails unit.  So, from the sponsors point of view no, I didn’t 
+really get any support although I’m aware that any questions I have, you know, I can 
+ask them but at the same time I was under the impression that it’s your responsibility 
+so get on with it type thing. 
+
+I:	Yeah.
+
+R:	You know, at the time of completing the form and getting approval because 
+basically we know the study more than they do like in the details. In terms of the 
+clinical trials unit yeah as it’s kind of like, I would have thought they would have put 
+that as my priority, you know, to register because again doing, they are experienced 
+CTU but, again, I think it’s to do with the non-CTIMPs CTIMP 
+
+I:	Okay.
+
+R:	and what the sponsor recommendation.  So if the sponsor’s not kind of like 
+push for it then the CTU is kind of like put that on the back burner because obviously 
+there’s lots of other things to do so yeah.
+
+I:	And, and, yeah and interesting to so in that original in the past study, 
+the previous study you worked on there was sort of no push back from  the 
+REC, from the ethics committee about not having a registration in place as far 
+as you know?
+
+R:	No because even now what I’m seeing from the recom, you know, approval 
+letter is a recommendation. It’s not a mandatory.
+
+I:	Interesting okay.
+
+R:	So again, so it’s sponsor recommendation, it’s an ethics recommendation so, 
+you know, as a researcher what do you do?  I mean you choose, you know, what is 
+mandatory and you get on with the mandatory and then leave the recommendation 
+at a later date.  
+
+I:	So what about so I, you know, you’re working like you said, your 
+institution has like a relatively developed, like a pretty busy CTU and they do 
+lots of trials, is there any talk amongst it or any sort of like whether formal or 
+informal information sharing about this sort of thing, sort of amongst the trial 
+managers or the researchers or whoever on the various trials. Is there 
+anything like that going on?
+
+R:	Yes so when this happened to me I immediately informed all my colleagues in 
+the CTU that even though for non-CTIMP, you know, studies I basically says for all 
+studies that we’re doing it has to be registered in a public register, i.e..  ISRCTN or 
+clincialtrials.gov, you know, depending obviously on funding. But yeah so that was, 
+as soon as that basically happened to me, I shared that information to all and now as 
+far as I know, you know, that is part of all studies in that CTU.
+
+I:	And what was like the response to hearing about that, you know, what 
+was the like like what did your colleagues, what was the reaction to that when 
+you sort of shared that out?
+
+R:	I think it’s because they knew that I was kind of blamed for it although they 
+know that I didn’t start with the study they couldn’t really say anything because we’re 
+all employed by the CTU [laughs] and the managers were there, you know, and I 
+can’t obviously blame my line manager for not pushing for me to register in the 
+study.
+
+I:	Yeah.
+
+R:	So, it was just given as kind of like a positive feedback of my experiences, you 
+know, on our weekly meeting basically.
+
+I:	Yeah, interesting okay and then so I’m wondering that since now you’ve 
+sort of been through this once in a very, you know, disappointing negative way 
+and now it sounds like it’s been a more productive and proactive one this time. 
+
+R:	Mm.
+
+I:	I’m wondering though how do you feel you could be better supported or 
+informed or people who are doing this, these registration and stuff at your 
+institution in general, you know, what, what could be improved about that 
+process?
+
+R:	I think for me is if the publishers, you know, if this is their criteria as part of 
+their, you know, acceptance for publishing results then I think they need, I think this 
+is where the problem arises.  They can’t say it’s in a way it’s mandatory, you know, 
+this is what I’ve been told Nicholas that’s why it’s recommended at the moment but I 
+just don’t understand why, you know, like say for example, you know, the top ten 
+journals saying that, you know, they won’t accept but you know, the sponsors and 
+ethics and see all the approval sectors is still saying recommended if the result is 
+negative to the researchers. So I think it’s more like the yeah clarification and that 
+process and what is really what the researchers need to do to make sure, you know, 
+it’s plain sailing for them.
+
+I:	Yeah so, it’s, it’s confusing for you, it sounds like it’s sort of confusing 
+or there’s a disjoint there for you
+
+R;	Yeah.
+
+I:	 that this would be such an important requirement for the journals but 
+your institution doesn’t call it a requirement, they call it a like an optional step 
+or a recommended step?
+
+R:	Yes.
+
+I:	Yes okay.
+
+R:	Unless you’ve done that then, you know, you won’t read that recommendation 
+as anything but recommendation. 
+
+I:	Yeah, interesting and then so has there been any like are you aware that 
+your institution anything and this could be either at, you know, [the University 
+or NHS organization] if you’ve heard anything about like has there been any 
+recent developments or recent changes or communications to staff about 
+anything regarding registration or results reporting recently?
+
+R:	Yes so when this happened to me because I was speaking to the sponsor 
+about it and because it so happens to that the new governance manager is new to 
+the post and like, she’s from a different [institution] moving into our [institution] as the 
+Governance Manager and she so she sent out a, we have a newsletter to, you know, 
+researchers in [the University and NHS organization] recommending to ensure 
+before recruitment that they register their studies into public registration if 
+appropriate so, you know, so because I think there’s still a lot of student studies that 
+is obviously not being registered and staff studies that’s not being registered 
+because it’s not appropriate or I don’t what that really means because I thought all 
+studies has to be registered one way or another onto a public recognised register. 
+So again, there is still that for me, disjointed as you said, you know, information for 
+researchers but at the same time you don’t want to put another layer to the 
+researchers you know, forms, documents to complete before they can start the 
+study.  
+
+I:	Right if you don’t have to right. 
+
+R:	So yeah so actually that’s a newsletter and again the sponsor I think did say a 
+drive an exercise, you know, where I think everything’s registered from then on and I 
+think we, as [the University], I think we were named I don’t know what year it was I 
+was informed this when I attended they UKTMN, I don’t know if you’ve heard of that, 
+UK Trial Manager’s Network?
+
+I:	Yeah of course, yep.
+
+R:	conference that the University was top register, you know, of studies. It’s like 
+whoho, that’s brilliant so.
+
+I:	Yeah and I’m curious about so that’s another thing I wanted, yeah so 
+they even though you haven’t been directly involved in it for your two, you 
+know, examples of, you know, going through this registration process but are 
+you familiar with the EU that obviously not well people can still report so it’s 
+still relevant but with the process of mandatory reporting of results to the EU 
+register, like are you aware of that from your colleagues doing it or has it been 
+something that your institution has talked about at all?
+
+R:	For all CTIMPs yes definitely and say high profile studies it’s the non-CTIMP 
+is considered kind of like, I mean don’t get me wrong, it’s coming to that because I 
+keep asking, you know, you know, for example, if my studies going to be monitored 
+or audited or, you know, kind of like because I’m following say the CTIMP procedure 
+rather because before just non CTIMP kind of like process as such.
+
+I:	Yeah.
+
+R:	So now the sponsor is, our sponsor anyway is starting to look at, you know, 
+like say doing same process for CTIMPs and non-CTIMPs studies.  
+
+I:	Mhm so it sounds like the CTIMPs were a lot more, like looked after and 
+this sort of thing is a lot more, it’s, I don’t want to say taken seriously but it’s, 
+like it’s a lot more sort of comprehensive around CTIMPs than it is around non-
+CTIMPs?
+
+R:	Yeah, I think it’s to do with the legal aspect Nicholas.
+
+I:	Yeah.
+
+R:	So, you know, I think that’s what it is, and I think it’s because I don’t know, I 
+mean, how non-CTIMP is really seen previously. 
+
+I:	Mhm.
+
+R:	So it’s just for me a, I mean all clinical trials are, you know, are using patient 
+notes, patient safety, patient, you know, wellbeing so it should really be treated as 
+one but although we’re not using a drug you know, substance so but still, you know, 
+the process should be the same but I think, yeah I think I mean part of it is, you 
+know, is resources.  I think that’s one, you know, I mean I know that is one of the 
+factor is resources. It’s just, you know, normally there’s one sponsor each in each 
+[organisation], you know, luckily you have two or three but most it’s probably just this 
+one person dealing with thousands of applications, you know, CTIMPs and non-
+CTIMPs and staff and student research.
+
+I:	Right okay and then so we’ve talked a little bit about you know, I’ve 
+mentioned a couple of times Brexit happening but have you since you’ve been 
+working in this area for a little bit I’m wondering if sort of if you’ve heard of or 
+and if it’s impacted your work at all, some of the you know, there was the 
+letters from the that the House of Commons Science and Technology 
+Committee sent out to a bunch of sponsors about registering and reporting.  
+There’s the recent HRA strategy. I’m wondering if and then of course how 
+Brexit might impact some of these things.  I’m wondering if these have 
+crossed your, you know, your inbox and Universe at all and in what ways and 
+how if it’s impacted anything that you’re doing concerning these areas?
+
+R:	As Trial Manager, as far as I know, I’ve just been proactively asking about it 
+but I’ve not really been given any say instruction of how to deal with things apart 
+from carry on as it is, nothing’s changed.
+
+I:	Okay.
+
+R:	And then in terms of the R&D that on it’s more or less the same, so the NHS 
+Board is kind of like telling us that, you know, “Business as usual, we’ll let you know 
+when things basically start happening because there still is, it’s still under 
+negotiation.” So, in terms of like the data, contract, [um] samples, drugs, you know, 
+all of that [um] storage, it’s all still being apparently discussed, and no proper policy 
+or framework is in place yet, that’s my understanding to date.
+
+I:	Okay and then, you mentioned UKTMN earlier and I’m wondering talking 
+about either that resource or other resources like is that like a resource you go 
+to learn about this sort of thing or are there other resources you go to learn 
+about, you know, registration reporting things like that, you know, what 
+resources like UKTMN do you go to and how do those work as far as informing 
+you about these sorts of things, trial transparency topics?
+
+R:	Yeah, I I’m relying on mainly when I was doing my previous study under the 
+instruction guidance of the CTU Managers, you know, the seniors and the Directors 
+and with that, with that the UKTMN because I’m a member.  At the time as well, in 
+one of the say meeting, workshop that we did it touched base on public registration.  
+I think that was the, somebody from, somebody came and talked to us about, it was 
+the last UKTMN conference I was there and somebody came and talked about public 
+registration.  I can’t remember who it was.
+
+I:	It might have been me. [laughs]
+
+R:	Was that you? Yeah I was gonna say, well, you know, you did a really good 
+presentation but no so I was quite glad because I was at the time that’s just you 
+know what happened, you know, where I’ve basically gone through, you know, with 
+my own studies  and when I was there, when I was speaking to some of the Trial 
+Managers there again it’s the same kind of like scenario as CTIMP definitely they 
+register on EudraCT so public registration they’re safe but with the non-CTIMP 
+studies in their CTU not all is registered because it’s not recommended, well it’s not 
+mandatory.
+
+I:	Yeah.
+
+R:	So we were in the same kind of like position but when you mention it I think 
+everyone’s kind of like yeah in a way not taken aback but they’ve got more 
+understanding of really the importance of it and I kind of like, you know, I explained 
+to them what happened to my, you know, my experience and they were kind of like, 
+‘Oh okay then,’ you know, it’s something that they have to kind of think back and kind 
+of make sure it doesn’t happen to the [um] and that group there was [em] because 
+they were all like CTIMPs and non-CTIMPs so I think the majority of them did 
+register before recruitment.
+
+I:	Yeah.
+
+R:	But in terms of [the university] sponsor and CTUs I don’t know what the other, 
+you know, group, clinical groups are doing in because that’s something what would 
+be really quite nice is to have a network within the University, but I don’t know if 
+that’s gonna happen.
+
+I:	Right.
+
+R:	It’s, you know, share kind of like, share learned lessons type thing.
+
+I:	Yeah, you’re not getting any-.
+
+R:	At the moment, there’s nothing like that.
+
+I:	Yeah, okay so you weren’t getting like from like UKT, UK the Trial 
+Managers Network, you weren’t sort of getting anything, there was no like, like 
+you went to the conference, and you talked to people but there was nothing 
+sort of like, no education or proactive outreach about this sort of thing to the 
+network as far as you saw?
+
+R:	No, not from then up till now, no.
+
+I:	Okay right.
+
+R:	But it was because I think in a way it’s been touched on, you know, I think 
+peoples moved on from it.
+
+I:	Yeah Okay so that was actually I believe my final question but I usually 
+just like to give an opportunity, you know, is there anything else that’s on your 
+mind about what we’ve talked about today or anything else that’s popped up 
+that you were expecting for me to ask but I didn’t ask about all of this?
+
+R:	Yeah, I think I asked earlier on it’s like, you know, from the other interviews 
+that you’ve done what is their understanding, their perspective of clinical registration, 
+public registration?
+
+I:	Yeah so, I’ve talked to mainly people from like a research governance 
+point of view so far so-.
+
+R:	Research Governance so what is there? So that’s interesting.
+
+I:	Yeah, yeah so I mean it’s still, you’re only my my third interview overall 
+so it’s still very early in the process but yeah it’s interesting to hear the 
+different perspectives about like from you, who’s the one doing the actual 
+registration, to like them, who are the people who are sort of setting the 
+guidance and the policy and make, and, you know, and the people in charge of 
+sort of making sure that this stuff happens and the communication about it. So 
+yeah you know, it’s tough for me to sort of say anything holistically now 
+because like I said I’m still pretty early on in my interviews.
+
+R:	Yeah, yeah.
+
+I:	but yeah, you know, that’s the, when I. when I send my results, I hope it 
+will be chock full of answers like that for you. [laughs]
+
+R:	[laughs] No because that would be really interesting you know, hearing it 
+from, are you including ethics as well in this process?
+
+I:	 I’m not, it I haven’t talked to them I haven’t practically reached out to 
+like ethics committees or anything like that, I’ve mainly focused on like 
+research governance, trial managers and I’m hoping to maybe talk to some 
+research integrity office people as well.
+
+R:	Yeah, yeah.
+
+I:	But that is sort of the main focus but if, if, it came, if like, so for example 
+a lot of other people were like, ‘Oh you should talk to an ethics committee 
+about this,’ then I might go and try to look, you know, I can, I can adapt as I 
+hear more things from people.
+
+R:	No, you see for me it’s not ethics responsibility, it’s the sponsors responsibility 
+ultimately, you know, as part of the say the GCP, you know, concern and the UK 
+framework it’s the sponsor. I’m sure somebody, research governance will possibly 
+argue that. The other thing is it would be interesting to know what the CIs 
+perspective?
+
+I:	Yeah so, I’m specifically avoiding CIs for this study just because I want 
+the institutional perspective and I wanna leave, I want to get everyone but the 
+CIs basically.  [laughs]
+
+R:	Yeah no that’s fine, I don’t blame you.  What about Clinical Trials Directors?
+
+I: 	Yeah, yeah so that’s like, that’s I would definitely talk to like I’d put in 
+touch with the clinical with a direct-, like a CTU director or someone like that, 
+yeah that’s also, even if that is also a PI, that’s. I would definitely talk to 
+someone like that if I got put in touch as well, yeah.
+
+R:	Yeah no it’s just again because, you know, for me it’s the people in the lead 
+should be directing this recommendation, you know, for all trials but this, at the end 
+of the day in a way part of it is being blamed on say the workers rather than the 
+leaders but as they’re the one who’s supposed to be, you know, making sure but 
+yeah I mean, it’ll be interesting Nicholas to receive information from you in time.
+
+I:	Absolutely and yeah and very interesting to hear your perspective so 
+thank, thank you very much.  [recording switched off]
