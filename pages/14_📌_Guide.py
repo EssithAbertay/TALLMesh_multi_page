@@ -1,15 +1,43 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Feb  4 15:28:10 2024
+TALLMesh Guide Module
 
-@author: Laptop
+This module provides a comprehensive guide for using the TALLMesh (Thematic Analysis with Large Language Models) application.
+It includes detailed explanations of each step in the thematic analysis process, from project setup to visualization of results.
+
+The guide is presented using Streamlit's interactive features, allowing users to explore different sections of the application
+and understand how to effectively use each component.
+
+Created on Sun Feb  4 15:28:10 2024
+@author: Stefano
+
+Dependencies:
+    - streamlit: For creating the interactive web application
+    - api_key_management: Custom module for managing API keys
+
+Usage:
+    This script is intended to be run as part of a Streamlit multi-page application.
+    It will display as the "Guide" page in the TALLMesh application.
+
+Note:
+    Ensure that all dependencies are installed and the api_key_management module is available in the project directory.
 """
 
 import streamlit as st
 from api_key_management import manage_api_keys, load_api_keys
 
-
 def main():
+    """
+    Main function to render the TALLMesh guide page.
+    
+    This function creates the structure and content of the guide page, including:
+    - An introduction to TALLMesh
+    - Detailed explanations of each step in the thematic analysis process
+    - Tips and best practices for using the application
+    
+    The content is organized into expandable sections for easy navigation.
+    """
+    # Display the main header and introduction
     st.header(":orange[Welcome to TALLMesh: Thematic Analysis with Large Language Models]")
 
     st.write("""
@@ -37,6 +65,7 @@ def main():
     thoroughly reviewed and adjusted based on your research context and objectives.
     """)
 
+    # Display the getting started section
     st.subheader(":orange[Getting Started]")
 
     st.write("""
@@ -54,6 +83,22 @@ def main():
 
     st.divider()
 
+    # Create expandable sections for each main part of the guide
+    create_project_setup_guide()
+    create_initial_coding_guide()
+    create_code_reduction_guide()
+    create_finding_themes_guide()
+    create_finalized_theme_book_guide()
+    create_metrics_visualizations_guide()
+    create_custom_prompt_management_guide()
+
+    # Call the API key management function
+    manage_api_keys()
+
+def create_project_setup_guide():
+    """
+    Creates an expandable section explaining the project setup process.
+    """
     with st.expander("Project Set Up"):
         st.header(":orange[Project and File Management]")
 
@@ -115,11 +160,11 @@ def main():
 
         st.info(":bulb: By properly setting up your project and managing your files here, you'll have a solid foundation for the subsequent steps in your thematic analysis process.")
 
-
-    #st.divider()
-
+def create_initial_coding_guide():
+    """
+    Creates an expandable section explaining the initial coding process.
+    """
     with st.expander("Initial Coding"):
-
         st.header(":orange[Initial Coding]")
 
         st.write("""
@@ -177,10 +222,11 @@ def main():
 
         st.info("Initial coding sets the foundation for your thematic analysis. Take your time to review the generated codes and ensure they capture the essence of your data before moving on to the next stage.")
 
-    #st.divider()
-
+def create_code_reduction_guide():
+    """
+    Creates an expandable section explaining the code reduction process.
+    """
     with st.expander("Reduction of Codes"):
-
         st.header(":orange[Reduction of Codes]")
 
         st.write("""
@@ -236,10 +282,11 @@ def main():
 
         st.info("Code reduction is a critical step in refining your analysis. It helps to consolidate your findings and prepare for the identification of overarching themes in the next stage.")
 
-    #st.divider()
-
+def create_finding_themes_guide():
+    """
+    Creates an expandable section explaining the process of finding themes.
+    """
     with st.expander("Finding Themes"):
-
         st.header(":orange[Finding Themes]")
 
         st.write("""
@@ -295,8 +342,10 @@ def main():
 
         st.info("Finding themes is a crucial step in synthesizing your analysis. It helps you move from detailed codes to broader, more conceptual understanding of your data. Take your time to reflect on the themes and how they relate to your research questions.")
 
-    #st.divider()
-
+def create_finalized_theme_book_guide():
+    """
+    Creates an expandable section explaining the finalized theme book process.
+    """
     with st.expander("Finalised Theme Book"):
         st.header(":orange[Finalised Theme Book]")
 
@@ -353,8 +402,10 @@ def main():
 
         st.info("The Finalised Theme Book represents the culmination of your thematic analysis. It provides a structured overview of your themes and their grounding in the data, which is crucial for ensuring the validity and reliability of your qualitative research. The following pages make use of these finalised themes for metrics and visualisations")
 
-    #st.divider()
-
+def create_metrics_visualizations_guide():
+    """
+    Creates an expandable section explaining the metrics and visualizations available in the application.
+    """
     with st.expander("Metrics and Visualisations"):
         st.header(":orange[Visualization and Analysis Tools]")
 
@@ -425,11 +476,12 @@ def main():
         st.info("""
         These visualization tools provide different perspectives on your thematic analysis. Use them in combination to gain a comprehensive understanding of your data, verify the robustness of your analysis, and identify key insights and patterns.
         """)
-        
-    #st.divider()
 
+def create_custom_prompt_management_guide():
+    """
+    Creates an expandable section explaining the custom prompt management process.
+    """
     with st.expander("Custom Prompt Management"):
-
         st.header("Custom Prompts Management")
         st.write("The Custom Prompts Management page allows you to create, edit, and delete custom prompts for different stages of your thematic analysis. Here's how to use this page effectively:")
 
@@ -492,7 +544,5 @@ def main():
 
         st.write("Remember, well-crafted prompts can significantly improve the quality of your analysis. Take time to refine your prompts based on your specific research needs and the nature of your data.")
 
-    manage_api_keys()
-    
 if __name__ == "__main__":
     main()

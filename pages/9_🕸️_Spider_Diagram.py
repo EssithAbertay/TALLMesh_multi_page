@@ -1,16 +1,52 @@
+"""
+Spider Diagram (Theme-Codes Mind Map) Generator
+
+This module creates an interactive mind map visualization of themes, codes, and quotes
+from a qualitative data analysis project. It uses Streamlit for the web interface,
+NetworkX for graph creation, and Pyvis for interactive network visualization.
+
+The mind map displays the hierarchical relationship between:
+1. The project
+2. Themes
+3. Reduced codes
+4. Initial codes
+5. Quotes
+
+Dependencies:
+- streamlit
+- pandas
+- networkx
+- pyvis
+- project_utils (custom module)
+- api_key_management (custom module)
+"""
+
 import streamlit as st
 import pandas as pd
 import networkx as nx
 from pyvis.network import Network
-from project_utils import get_projects, PROJECTS_DIR, get_processed_files
 import os
 import tempfile
+
+# Custom modules
+from project_utils import get_projects, PROJECTS_DIR, get_processed_files
 from api_key_management import manage_api_keys, load_api_keys
 
 def load_data(project_name):
+    """
+    Load the latest theme and code data for a given project.
+
+    Args:
+        project_name (str): Name of the project to load data for.
+
+    Returns:
+        tuple: A tuple containing two pandas DataFrames (themes_df, codes_df).
+               Returns (None, None) if no data is available.
+    """
     themes_folder = os.path.join(PROJECTS_DIR, project_name, 'theme_books')
     codes_folder = os.path.join(PROJECTS_DIR, project_name, 'expanded_reduced_codes')
     
+    # Load themes data
     themes_files = get_processed_files(project_name, 'theme_books')
     expanded_themes_files = [f for f in themes_files if 'expanded' in f]
     if not expanded_themes_files:
@@ -18,6 +54,7 @@ def load_data(project_name):
     latest_themes_file = max(expanded_themes_files, key=lambda f: os.path.getmtime(os.path.join(themes_folder, f)))
     themes_df = pd.read_csv(os.path.join(themes_folder, latest_themes_file))
     
+    # Load codes data
     codes_files = get_processed_files(project_name, 'expanded_reduced_codes')
     if not codes_files:
         return None, None
@@ -27,6 +64,17 @@ def load_data(project_name):
     return themes_df, codes_df
 
 def create_mind_map(project_name, themes_df, codes_df):
+    """
+    Create an interactive mind map visualization using NetworkX and Pyvis.
+
+    Args:
+        project_name (str): Name of the project.
+        themes_df (pd.DataFrame): DataFrame containing theme data.
+        codes_df (pd.DataFrame): DataFrame containing code data.
+
+    Returns:
+        str: HTML string representation of the interactive mind map.
+    """
     G = nx.Graph()
     
     # Add project node
@@ -66,6 +114,8 @@ def create_mind_map(project_name, themes_df, codes_df):
     net = Network(height='600px', width='100%', bgcolor='#222222', font_color='white')
     net.from_nx(G)
     net.toggle_physics(False)
+    
+    # Set network options for better visualization
     net.set_options('''
     var options = {
       "nodes": {
@@ -98,8 +148,15 @@ def create_mind_map(project_name, themes_df, codes_df):
     return html_string
 
 def main():
+    """
+    Main function to run the Streamlit app.
+    
+    This function sets up the user interface, handles project selection,
+    loads data, creates the mind map, and displays it in the Streamlit app.
+    """
     st.header(":orange[Theme-Codes Mind Map]")
 
+    # Get list of projects and set up project selection
     projects = get_projects()
     if 'selected_project' not in st.session_state:
         st.session_state.selected_project = "Select a project..."
@@ -114,23 +171,26 @@ def main():
         key="project_selector"
     )
 
+    # Rerun the app if a new project is selected
     if selected_project != st.session_state.selected_project:
         st.session_state.selected_project = selected_project
         st.rerun()
 
     if selected_project != "Select a project...":
+        # Load data for the selected project
         themes_df, codes_df = load_data(selected_project)
 
         if themes_df is None or codes_df is None:
             st.error("No data available for the selected project.")
             return
 
+        # Create and display the mind map
         mind_map_html = create_mind_map(selected_project, themes_df, codes_df)
-
         st.components.v1.html(mind_map_html, height=600)
 
         st.write("Drag nodes to rearrange. Zoom with mouse wheel. Click nodes to expand/collapse.")
     
+    # Manage API keys
     manage_api_keys()
 
 if __name__ == "__main__":
