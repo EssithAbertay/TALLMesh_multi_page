@@ -17,7 +17,7 @@ import re
 from api_key_management import manage_api_keys, load_api_keys, load_azure_settings, get_azure_models, AZURE_SETTINGS_FILE
 from project_utils import get_projects, get_project_files, get_processed_files, PROJECTS_DIR
 from prompts import reduce_duplicate_codes_prompts
-from llm_utils import llm_call
+from llm_utils import llm_call, process_chunks
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -82,7 +82,7 @@ def amalgamate_duplicate_codes(df):
         'merge_explanation': 'first',
         'original_code': lambda x: list(set(x)),
         'quote': lambda x: [{'text': q, 'source': s} for q, s in zip(x, df.loc[x.index, 'source'])],
-        'source': lambda x: list(set(x))  # Keep this for backward compatibility
+        'source': lambda x: list(set(x))  # Keep this for backward compatibility / linking to sources later
     }).reset_index()
 
     # Convert columns to appropriate string formats
@@ -182,50 +182,40 @@ def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_t
         for _, row in combined_codes.iterrows()
     ]
     
-    full_prompt = f"{prompt}\n\nCodes:\n{json.dumps(simplified_codes_list)}"
-    
-    processed_output = llm_call(model, full_prompt, model_temperature, model_top_p)
-    
-    if processed_output is None:
-        logger.error("LLM call failed to produce a valid output")
-        st.error("Failed to process codes. Please try again or adjust your settings.")
+    # Process codes in chunks
+    reduced_codes = process_chunks(model, prompt, simplified_codes_list, model_temperature, model_top_p)
+
+    if not reduced_codes:
+        logger.error("Failed to process any chunks successfully")
         return None, None, None
 
-    try:
-        json_output = json.loads(processed_output)
-        reduced_codes = json_output['reduced_codes']
-        
-        # Create a mapping of original codes to reduced codes
-        code_mapping = {}
-        for reduced_code in reduced_codes:
-            for original_code in reduced_code.get('original_codes', [reduced_code['code']]):
-                code_mapping[original_code] = reduced_code
-        
-        # Apply the mapping to the original combined_codes DataFrame
-        reduced_rows = []
-        for _, row in combined_codes.iterrows():
-            if row['code'] in code_mapping:
-                reduced_code = code_mapping[row['code']]
-                new_row = {
-                    'code': reduced_code['code'],
-                    'description': reduced_code['description'],
-                    'merge_explanation': reduced_code.get('merge_explanation', ''),
-                    'original_code': row['code'],
-                    'quote': row['quote'],
-                    'source': row['source']
-                }
-                reduced_rows.append(new_row)
-        
-        reduced_df = pd.DataFrame(reduced_rows)
-        
-        total_codes = len(combined_codes)
-        unique_codes = len(reduced_df['code'].unique())
-        
-        return reduced_df, total_codes, unique_codes
-    except (json.JSONDecodeError, KeyError) as e:
-        logger.error(f"Error processing LLM output: {str(e)}")
-        st.error(f"Error processing LLM output: {str(e)}. Please try again or adjust your settings.")
-        return None, None, None
+    # Create a mapping of original codes to reduced codes
+    code_mapping = {}
+    for reduced_code in reduced_codes:
+        for original_code in reduced_code.get('original_codes', [reduced_code['code']]):
+            code_mapping[original_code] = reduced_code
+
+    # Apply the mapping to the original combined_codes DataFrame
+    reduced_rows = []
+    for _, row in combined_codes.iterrows():
+        if row['code'] in code_mapping:
+            reduced_code = code_mapping[row['code']]
+            new_row = {
+                'code': reduced_code['code'],
+                'description': reduced_code['description'],
+                'merge_explanation': reduced_code.get('merge_explanation', ''),
+                'original_code': row['code'],
+                'quote': row['quote'],
+                'source': row['source']
+            }
+            reduced_rows.append(new_row)
+
+    reduced_df = pd.DataFrame(reduced_rows)
+
+    total_codes = len(combined_codes)
+    unique_codes = len(reduced_df['code'].unique())
+
+    return reduced_df, total_codes, unique_codes
 
 def process_files(selected_project, selected_files, model, prompt, model_temperature, model_top_p):
     """

@@ -117,3 +117,48 @@ def llm_call(model, full_prompt, model_temperature, model_top_p):
 
     st.error("Max retry attempts reached. Unable to complete the API call.")
     return None
+
+def chunk_codes(codes, chunk_size):
+    """
+    Split the codes into chunks of specified size.
+    
+    Args:
+        codes (list): List of code dictionaries.
+        chunk_size (int): Maximum number of codes per chunk.
+    
+    Returns:
+        list: List of code chunks.
+    """
+    return [codes[i:i + chunk_size] for i in range(0, len(codes), chunk_size)]
+
+def process_chunks(model, prompt_template, codes, model_temperature, model_top_p, chunk_size=50):
+    """
+    Process codes in chunks for models with output limitations.
+    
+    Args:
+        model (str): The name of the AI model to use.
+        prompt_template (str): The template for the prompt.
+        codes (list): List of code dictionaries.
+        model_temperature (float): The temperature setting for the AI model.
+        model_top_p (float): The top_p setting for the AI model.
+        chunk_size (int): Maximum number of codes per chunk.
+    
+    Returns:
+        list: List of reduced codes.
+    """
+    chunked_codes = chunk_codes(codes, chunk_size)
+    reduced_codes = []
+
+    for chunk in chunked_codes:
+        chunk_prompt = prompt_template.replace("{codes}", json.dumps(chunk))
+        chunk_result = llm_call(model, chunk_prompt, model_temperature, model_top_p)
+        
+        if chunk_result:
+            try:
+                chunk_reduced_codes = json.loads(chunk_result)['reduced_codes']
+                reduced_codes.extend(chunk_reduced_codes)
+            except (json.JSONDecodeError, KeyError) as e:
+                logger.error(f"Error processing chunk result: {str(e)}")
+                continue
+
+    return reduced_codes

@@ -88,7 +88,7 @@ Here is an example of the expected JSON format:
 }
 
 reduce_duplicate_codes_prompts = {
-    "Preset 1 - Reduce Duplicates": {"prompt":"""Analyze the following list of codes and their descriptions. Identify and merge any duplicate codes. For each set of merged codes, provide:
+    "Preset 1 - Reduce Duplicates": {"prompt":"""Analyze the following list of codes and their descriptions. Identify and merge any duplicate codes within this chunk. For each set of merged codes, provide:
 
 1. Important! A concise name for the merged code (maximum 4 words)
 2. Important! A detailed description (25 words) explaining the merged code's meaning and relevance
@@ -98,6 +98,9 @@ reduce_duplicate_codes_prompts = {
 Important! If a code already has a merge explanation, incorporate it into the new explanation.
 
 Important! For unique codes that are not merged, keep them as they are.
+
+The codes to analyze are provided in the following format:
+{codes}
 
 Format the response as a JSON file with the following structure:
 
@@ -116,7 +119,7 @@ Important! Your response should be a JSON-like object with no additional text be
         "temperature": 0.00,
         "top_p": 0.1
     },
- "Preset 2 - Reduce Duplicates & Highly Similar": {"prompt":"""Analyze the following list of codes and their descriptions. Identify and merge any duplicate, or highly similar, codes. For each set of merged codes, provide:
+ "Preset 2 - Reduce Duplicates & Highly Similar": {"prompt":"""Analyze the following list of codes and their descriptions. Identify and merge any duplicate or highly similar codes within this chunk. For each set of merged codes, provide:
 
 1. Important! A concise name for the merged code (maximum 4 words)
 2. Important! A detailed description (25 words) explaining the merged code's meaning and relevance
@@ -126,6 +129,9 @@ Important! Your response should be a JSON-like object with no additional text be
 Important! If a code already has a merge explanation, incorporate it into the new explanation.
 
 Important! For unique codes that are not merged, keep them as they are.
+
+The codes to analyze are provided in the following format:
+{codes}
 
 Format the response as a JSON file with the following structure:
 
@@ -145,8 +151,6 @@ Important! Your response should be a JSON-like object with no additional text be
         "top_p": 0.1
     },
 }
-
-
 
 finding_themes_prompts = {"Preset 1: Basic Theme Generation (Overlap Allowed)": {"prompt":"""Analyze the provided list of codes and generate themes that capture the main ideas and patterns in the data. For each theme:
 
