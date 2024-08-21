@@ -80,15 +80,14 @@ def amalgamate_duplicate_codes(df):
     amalgamated_df = df.groupby('code').agg({
         'description': 'first',
         'merge_explanation': 'first',
-        'original_code': lambda x: list(set(x)),
+        'original_code': lambda x: list(x),  # Changed from set() to list()
         'quote': lambda x: [{'text': q, 'source': s} for q, s in zip(x, df.loc[x.index, 'source'])],
-        'source': lambda x: list(set(x))  # Keep this for backward compatibility / linking to sources later
+        'source': lambda x: list(x)
     }).reset_index()
 
-    # Convert columns to appropriate string formats
-    amalgamated_df['original_code'] = amalgamated_df['original_code'].apply(json.dumps)
+    amalgamated_df['original_code'] = amalgamated_df['original_code'].apply(lambda x: json.dumps(list(set(x))))  # Ensure unique but keep as list
     amalgamated_df['quote'] = amalgamated_df['quote'].apply(json.dumps)
-    amalgamated_df['source'] = amalgamated_df['source'].apply(lambda x: ', '.join(x))
+    amalgamated_df['source'] = amalgamated_df['source'].apply(lambda x: ', '.join(set(x)))
 
     return amalgamated_df
 

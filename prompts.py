@@ -93,7 +93,7 @@ reduce_duplicate_codes_prompts = {
 1. Important! A concise name for the merged code (maximum 4 words)
 2. Important! A detailed description (25 words) explaining the merged code's meaning and relevance
 3. Important! A brief explanation (max 50 words) of why these codes were merged
-4. Important! A list of the original code names that were merged
+4. Important! A list of ALL original code names, including those that were not merged. Every input code must be accounted for in the output. 
 
 Important! If a code already has a merge explanation, incorporate it into the new explanation.
 
@@ -124,7 +124,7 @@ Important! Your response should be a JSON-like object with no additional text be
 1. Important! A concise name for the merged code (maximum 4 words)
 2. Important! A detailed description (25 words) explaining the merged code's meaning and relevance
 3. Important! A brief explanation (max 50 words) of why these codes were merged
-4. Important! A list of the original code names that were merged
+4. Important! A list of ALL original code names, including those that were not merged. Every input code must be accounted for in the output.
 
 Important! If a code already has a merge explanation, incorporate it into the new explanation.
 

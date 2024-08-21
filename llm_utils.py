@@ -148,6 +148,7 @@ def process_chunks(model, prompt_template, codes, model_temperature, model_top_p
     """
     chunked_codes = chunk_codes(codes, chunk_size)
     reduced_codes = []
+    original_code_set = set(code['code'] for code in codes)
 
     for chunk in chunked_codes:
         chunk_prompt = prompt_template.replace("{codes}", json.dumps(chunk))
@@ -159,6 +160,16 @@ def process_chunks(model, prompt_template, codes, model_temperature, model_top_p
                 reduced_codes.extend(chunk_reduced_codes)
             except (json.JSONDecodeError, KeyError) as e:
                 logger.error(f"Error processing chunk result: {str(e)}")
+                # Retry logic can be added here
                 continue
+
+    # Validation step
+    processed_original_codes = set()
+    for code in reduced_codes:
+        processed_original_codes.update(code.get('original_codes', [code['code']]))
+    
+    missing_codes = original_code_set - processed_original_codes
+    if missing_codes:
+        logger.warning(f"Missing original codes: {missing_codes}")
 
     return reduced_codes
