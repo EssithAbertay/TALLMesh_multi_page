@@ -203,7 +203,23 @@ def main():
 
     # Project selection
     projects = get_projects()
-    selected_project = st.selectbox("Select a project:", ["Select a project..."] + projects)
+    
+    if 'selected_project' not in st.session_state:
+        st.session_state.selected_project = "Select a project..."
+
+    project_options = ["Select a project..."] + projects
+    index = project_options.index(st.session_state.selected_project) if st.session_state.selected_project in project_options else 0
+
+    selected_project = st.selectbox(
+        "Select a project:", 
+        project_options,
+        index=index,
+        key="project_selector"
+    )
+
+    if selected_project != st.session_state.selected_project:
+        st.session_state.selected_project = selected_project
+        st.rerun()
     
     if selected_project != "Select a project...":
         st.write(f"Selected project: {selected_project}")
