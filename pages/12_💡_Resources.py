@@ -180,5 +180,11 @@ def render_additional_features():
     and interpretative skills remain crucial throughout the analysis process.
     """)
 
+    st.divider()
+    st.subheader(":orange[Additional Resources]")
+
+    video_url = "https://www.youtube.com/watch?v=Sd_nJPXzMzE"
+    st.video(video_url)
+
 if __name__ == "__main__":
     main()
