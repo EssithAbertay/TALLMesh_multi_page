@@ -243,31 +243,45 @@ def process_files(selected_project, selected_files, model, prompt, model_tempera
     Returns:
         tuple: A tuple containing the final reduced DataFrame and a DataFrame of reduction results.
     """
+    logger.info(f"Starting to process files for project: {selected_project}")
+    logger.info(f"Number of files to process: {len(selected_files)}")
+    logger.info(f"Model: {model}, Temperature: {model_temperature}, Top P: {model_top_p}")
+
     reduced_df = None
     total_codes_list = []
     unique_codes_list = []
     cumulative_total = 0
     progress_bar = st.progress(0)
+
     for i, file in enumerate(selected_files):
+        logger.info(f"Processing file {i+1}/{len(selected_files)}: {file}")
         df = pd.read_csv(file)
+        logger.info(f"File {file} read. Shape: {df.shape}")
+
         # Add source column if it doesn't exist
         if 'source' not in df.columns:
             df['source'] = os.path.basename(file)
+            logger.info(f"Added 'source' column to DataFrame for file: {file}")
         
         file_total_codes = len(df)
         cumulative_total += file_total_codes
+        logger.info(f"Cumulative total codes: {cumulative_total}")
         
         if reduced_df is None:
             reduced_df = df
-            total_codes_list.append(cumulative_total)
-            unique_codes_list.append(len(df['code'].unique()))
+            logger.info("First file processed, no reduction needed")
         else:
+            logger.info(f"Comparing and reducing codes for file {i+1}")
             reduced_df, _, _ = compare_and_reduce_codes(reduced_df, df, model, prompt, model_temperature, model_top_p)
             if reduced_df is None:
+                logger.error(f"Failed to process file {file}. Skipping to the next file.")
                 st.error(f"Failed to process file {file}. Skipping to the next file.")
                 continue
-            total_codes_list.append(cumulative_total)
-            unique_codes_list.append(len(reduced_df['code'].unique()))
+        
+        total_codes_list.append(cumulative_total)
+        unique_codes = len(reduced_df['code'].unique())
+        unique_codes_list.append(unique_codes)
+        logger.info(f"After processing file {i+1}: Total codes = {cumulative_total}, Unique codes = {unique_codes}")
         
         progress = (i + 1) / len(selected_files)
         progress_bar.progress(progress)
@@ -277,8 +291,11 @@ def process_files(selected_project, selected_files, model, prompt, model_tempera
         'total_codes': total_codes_list,
         'unique_codes': unique_codes_list
     })
-    results_df.to_csv(os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv'), index=False)
+    results_path = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')
+    results_df.to_csv(results_path, index=False)
+    logger.info(f"Saved code reduction results to: {results_path}")
     
+    logger.info("File processing completed")
     return reduced_df, results_df
 
 @st.cache_data

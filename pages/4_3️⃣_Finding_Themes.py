@@ -19,6 +19,11 @@ from api_key_management import manage_api_keys, load_api_keys, load_azure_settin
 from project_utils import get_projects, get_project_files, get_processed_files
 from prompts import finding_themes_prompts
 from llm_utils import llm_call
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Constants
 PROJECTS_DIR = 'projects'
@@ -60,6 +65,7 @@ def preprocess_codes(df):
     Returns:
         pandas.DataFrame: A preprocessed dataframe with unique codes and combined quotes and sources.
     """
+    logger.info("Starting preprocessing of codes")
     unique_codes = {}
 
     # Iterate through the DataFrame to collect unique codes and their associated data
@@ -85,6 +91,7 @@ def preprocess_codes(df):
         for code, data in unique_codes.items()
     ])
 
+    logger.info(f"Preprocessing complete. Number of unique codes: {len(preprocessed_df)}")
     return preprocessed_df
 
 def process_codes(selected_files, model, prompt, model_temperature, model_top_p):
@@ -101,9 +108,18 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p)
     Returns:
         tuple: A tuple containing the processed output (dict) and the preprocessed dataframe.
     """
+    logger.info(f"Starting to process codes from {len(selected_files)} files")
+    logger.info(f"Model: {model}, Temperature: {model_temperature}, Top P: {model_top_p}")
+
     # Combine all selected files into a single DataFrame
-    all_codes = [pd.read_csv(file) for file in selected_files]
+    all_codes = []
+    for file in selected_files:
+        logger.info(f"Reading file: {file}")
+        df = pd.read_csv(file)
+        logger.info(f"File {file} read. Shape: {df.shape}")
+        all_codes.append(df)
     combined_df = pd.concat(all_codes, ignore_index=True)
+    logger.info(f"Combined DataFrame shape: {combined_df.shape}")
     
     # Preprocess the combined DataFrame
     preprocessed_df = preprocess_codes(combined_df)
@@ -113,17 +129,22 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p)
     
     # Construct the full prompt
     full_prompt = f"{prompt}\n\nCodes:\n{', '.join(codes_list)}"
+    logger.info(f"Full prompt constructed. Length: {len(full_prompt)}")
     
     # Process the codes using the AI model
+    logger.info("Calling AI model to process codes")
     processed_output = llm_call(model, full_prompt, model_temperature, model_top_p)
     
     # Extract and parse the JSON response
     json_string = extract_json(processed_output)
     if json_string:
-        return json.loads(json_string), preprocessed_df
+        logger.info("Successfully extracted JSON from AI response")
+        parsed_output = json.loads(json_string)
+        logger.info(f"Number of themes found: {len(parsed_output.get('themes', []))}")
+        return parsed_output, preprocessed_df
     else:
-        st.warning("No valid JSON found in the response")
-        return None
+        logger.warning("No valid JSON found in the response")
+        return None, preprocessed_df
 
 def save_themes(project_name, df):
     """

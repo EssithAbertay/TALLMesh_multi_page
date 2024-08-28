@@ -122,6 +122,6 @@ TBC
 - The British Academy for their support 
 - Virginia Braun and Victoria Clarke for their seminal work on Thematic Analysis
 
-For questions or suggestions, please contact the project PIs: Prof. Stefano De Paoli (s.dipaoli@abertay.ac.uk) & Dr. Daniel Rough (drough001@dundee.ac.uk).
+For questions or suggestions, please contact the project PIs: Prof. Stefano De Paoli (s.depaoli@abertay.ac.uk) & Dr. Daniel Rough (drough001@dundee.ac.uk).
 
 ---

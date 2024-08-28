@@ -69,8 +69,16 @@ def llm_call(model, full_prompt, model_temperature, model_top_p):
                     st.error("Azure settings are not configured. Please set them up in the Azure Settings page.")
                     return None
 
+                print(f"Azure settings: {azure_settings}")
+                print(f"Azure settings type: {type(azure_settings)}")
+
                 deployment_name = model.split("azure_")[1]
-                deployment = next((d for d in azure_settings['deployments'] if d['deployment_name'] == deployment_name), None)
+                
+                if 'deployments' not in azure_settings or not isinstance(azure_settings['deployments'], list):
+                    st.error("Invalid Azure settings format. 'deployments' should be a list.")
+                    return None
+
+                deployment = next((d for d in azure_settings['deployments'] if d == deployment_name), None)
                 
                 if not deployment:
                     st.error(f"Selected Azure deployment '{deployment_name}' not found in settings.")
@@ -82,12 +90,13 @@ def llm_call(model, full_prompt, model_temperature, model_top_p):
                     azure_endpoint=azure_settings['endpoint']
                 )
                 response = client.chat.completions.create(
-                    model=deployment['deployment_name'],
+                    model=deployment,
                     messages=[{"role": "user", "content": full_prompt}],
                     temperature=model_temperature,
                     top_p=model_top_p
                 )
                 content = response.choices[0].message.content
+
                 json_content = extract_json(content)
                 if json_content is None:
                     logger.warning(f"Failed to extract valid JSON from Azure's response. Raw content: {content}")
