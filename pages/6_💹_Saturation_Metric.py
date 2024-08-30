@@ -90,7 +90,7 @@ def main():
 
         st.write(":green[3. Interpreting ITS]")
         st.write("""
-        - A higher ITS ratio indicates less saturation (many new codes are still emerging), while a lower ITS ratio indicates more saturation (few new codes are emerging). Ideally, a good saturation point shows a flattened curve, meaning that analyzing additional data adds little new information—the data is becoming saturated.
+        - A higher ITS ratio indicates less saturation (many new codes are still emerging), while a lower ITS ratio indicates more saturation (few new codes are emerging). 
         """)
 
         st.subheader(":orange[Why ITS is Important]")
