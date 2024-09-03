@@ -58,7 +58,7 @@ def create_project(project_name):
     os.makedirs(project_path, exist_ok=True)
     
     # Create subfolders for different stages of the analysis
-    subfolders = ['data', 'initial_codes', 'reduced_codes', 'themes', 'refined_themes', 'theme_books', 'expanded_reduced_codes']
+    subfolders = ['data', 'initial_codes', 'reduced_codes', 'themes', 'refined_themes', 'theme_books', 'expanded_reduced_codes', ]
     for folder in subfolders:
         os.makedirs(os.path.join(project_path, folder), exist_ok=True)
 
