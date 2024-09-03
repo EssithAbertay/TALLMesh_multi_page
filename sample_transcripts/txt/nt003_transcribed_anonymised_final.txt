@@ -1,0 +1,856 @@
+﻿
+I:	So I was hoping that just to get started here so just a few quick notes so 
+I’m going to ask you mainly about your current organisation and sort of the 
+current state of play as it were but either of you have past experiences either 
+from previous positions you’ve held at, at this organisation or other 
+organisations that you would like to reflect on about how things have changed 
+or evolved over time that’s, I’m very happy to hear about that as well and that’s 
+sort of like the main thing I like to say and then if there’s other, you know, I’m 
+mainly focusing on registration and reporting but if there’s other aspects of 
+trials transparency and sort of research integrity that you feel are relevant to 
+the questions I ask you can feel free to touch on those as well.   So I was 
+hoping, firstly, could each of you just quickly tell me a bit about your role and 
+your position?
+
+
+
+R1:	Okay yes so I’m [name] I’m the R&D Manager for [NHS Trust] and I have, I 
+suppose in a nutshell I have corporate responsibility from an operational point of 
+view for all of the research that we do, clinical research that we do across our 
+hospital sites which includes [various sites] and I head up a small team of, R&D 
+team, which includes [R2’s] branch of that which [R2] will introduce [themselves] in a 
+minute looking after the QA side so ultimately, I’m, if you like, sponsor representative 
+for want of a better phrase.
+
+R2:	I’m [name], I am R&D QA manager working with [R1] and two other people, 
+two monitors. There’s a small QA team, four of us and been in post for oh I think 
+[over a decade] now but and we sit within the main R&D group, but we are a sort of 
+separate and we mainly look after the house sponsored, the Trust sponsored 
+CTIMPs.
+
+I:	Okay great.
+
+R2:	We sometimes venture into the more higher risk non-CTIMPs but it is mainly 
+the CTIMPs.
+
+I:	Gotcha okay great and so I think you may have mentioned [R2] but how 
+long both like been working roughly in the area of like, you know, clinical 
+trials, research management and administration?
+
+R1:	For me it is thirteen years.
+
+I:	Okay.
+
+R2:	It’s a bit longer, I’ve worked in other research departments but I’ve been in 
+R&D since about 2012 I think it was [R1] wasn’t it?
+
+R1:	Yeah.
+
+I:	Okay great and then just so I get a sense of your organisation, what is 
+roughly the size of your portfolio of trials at a given time.  I don’t need an exact 
+number, like a rough, rough estimate and like what proportion of that is 
+CTIMPs versus non-CTIMPs generally.  
+
+R1:	So, across the board including things that we host, so not everything we 
+sponsor, we’ve probably got about 450 active studies in different phases at any one 
+time. Probably about 80 of those, 80-90 of those are Trust sponsored and then 
+breaking that down into the CTIMP category of those 90 probably might be half a 
+dozen that are, are CTIMP. Sometimes that fluctuates so we’re not, we’re not a huge 
+Trust in that regard but that can fluctuate some years up to probably doubling that 
+maybe twelve studies.
+
+I:	Okay, yeah so it varies but like a relatively low proportion of your entire 
+portfolio is CTIMPs at any given time?
+
+R:	Yeah.
+
+I:	Okay, great so to get things started we’ll come back to a lot, more of the 
+particulars about how the organisation sort of manages the day to day of 
+doing a lot of this work but the first thing I like to ask is just is, is if each of you 
+could in your own words explain to me sort of the importance of registration 
+and reporting of clinical trials sort of like, why is this something we care 
+about? Why is it something we often require? Just in your own words like 
+could you both just give an idea of like in your mind why is that important?
+
+R1:	I think one of the things I notice from my role and [R2] may have a different 
+view is that there’s so much focus operation on getting things up and running and 
+started for research and so much time taken with that and the regulatory side that it’s 
+often an overlooked element but actually when you stop to think for a second it’s 
+more important to some extent than the transparency is more important that some of 
+the earlier elements yeah because essentially without that integrity of data sharing 
+the research is meaningless in my mind. You know, you could have a really good, it 
+can, both, both ends of the spectrum, you can have a really good well designed, 
+robust regulatory type project which doesn’t go anywhere because it’s, it’s not 
+publicised. It’s not replicated, it’s not tested then again you could equally have 
+somebody who might be wanting to hide results for a particular reason or a particular 
+purpose or commercial gain and actually that just stifles research so I think from, 
+from my point of view, there’s no point us doing the work, there’s no point us putting 
+the energy in and the effort into doing that work and also actually you lose sight of 
+the fact of why we’re doing the research.  I think that’s my biggest grievance I would 
+say from all of these processes that you get so wrapped up in what we have to do, 
+the hurdles we have to jump through that we forget that actually the results matter to 
+patients. And not just patients of now but patients of the future so actually without 
+those results being available the new treatments are not going to be available to our 
+patients or they are and they’re gonna be available and cause some issues for 
+patients further down the line.
+
+R2:	Well I can’t, you know, I haven’t got a lot to add to that because I agree 
+entirely with what [R1] has said but looking at it even from our single centre Trust 
+sponsored CTIMP studies, as [R1] says, historically we’ve been focusing on getting 
+them set up but we’re running into GCP and UK regs and that’s been a very 
+important part and you might think well a single centre study in one of our academic 
+departments, ‘what difference is that gonna make to the world?’ but it needs to be 
+out there because other people like yourselves that go and look on research and I 
+think ‘oh I’ve got an idea for a study here,’ it might already have been done and 
+nobody’s put it out there, the bad and the good results, so you know, the multicentre 
+stuff yes that’s obvious but it’s also our single centre stuff as well I think that we, you 
+know, we need to, it needs to be there, it needs to be out there and is just as 
+important as the multicentre stuff, yeah.
+
+I:	Yeah great.
+
+R1:	It’s also a skill as well, it’s also a skill that our researchers need to herd and 
+develop, you know, it’s part of being an academic. It’s the complete package.  It isn’t 
+just getting the data into a system and pressing a button to say that’s the result.  It’s 
+about articulating that result to an audience, and I think that’s that’s really important.  
+
+R2:	Mm.
+
+I:	And what about sort of registration, so that’s the results dissemination 
+part, why, why do we sort of have these requirements about registration which 
+is sort of more on the start-up side you were maybe referring to earlier with, 
+along with the, like your GCP training and your audit set up and all that sort of 
+things, why do we, why do we register trials?
+
+R1:	I think again as [R2] said, I think you know, it’s, it’s to show the general 
+community of what’s happening, what the intentions are for that research and you 
+would hope maybe naively that that would inform future research collaborations 
+strategies within organisations and groups to network but it’s, it’s also important to 
+know that you’re not duplicating work so I think it’s, it’s really important that there’s a 
+registration there but also I think as well just from a behavioural point of view, setting 
+that stall out very early on that this is a formal process and a formal requirement and 
+giving it the same credibility as you would when any researcher expects to put an 
+ethics application or an application into the MHRA, that is a registration in itself, that 
+application is an acknowledgement that we have an intention to do something and 
+we’re seeking regulatory approval but sometimes, they’re viewed in different ways.  
+They’re viewed as I’ve gotta do that because that’s, that’s the law, it’s regulatory and 
+the registration side is equally as important and will be part of the submission and 
+the law so I think that’s that would be my view on it. And I think just you have to 
+register a trial, especially a drug trial.  All trials should be registered but especially a 
+drug trial because the competent authorities need to know what’s going on out there 
+and what we’re using and what we’re testing so it it’s, there’s got to be a central point 
+at which you can go on and say, ‘Right we are aware, the MHRA for example in this 
+country are aware of this trial and we, you know, we expect it to come through to be 
+approved [um] and we know what’s going on and the safety issue as well.  
+
+I:	Great so now coming back into speaking about more of the specifics 
+about, you know, you’re your organisation.  So can you talk me through the 
+process of how sort of a trial gets set up, you know, you mentioned that that 
+can be quite an onerous thing so if I’m a PI, let’s, let’s say I have my grant 
+funding already and I come and I say, ‘Alright, I wanna do a trial.’ What, what is 
+that process look like?
+
+R1:	So it starts with a, [R2] you can correct me if I’m wrong with some of these 
+things, but it starts with a sponsorship request form, so we would ask the applicants 
+fill in a form detailing what their intentions are, what the topic is, some of the 
+resources that they’re gonna need and details of the funding that they have in place 
+and then from a, if it’s a CTIMP for example, [R2] and [another colleague] that, the 
+trial monitor, will review some of that early documentation, that protocol help steer 
+the protocol in terms of making sure it meets the requirements that we have as a 
+sponsor, review all of the other documentation prior to submission to ethics and 
+MHRA that will be a iterative process back and forth and then culminating in a 
+submission that we’re happy with to sign off to go to the regulatory approvals.  In 
+parallel with that we’d be working alongside the team to understand, you know, if 
+there’s third parties involved with Trials Units and different third-party vendors. We’d 
+be working alongside that for contracting and vendor assessments and then as part 
+of the process as well we’ll be setting up a monitoring plan, so we’ve got the 
+oversight of what’s happening with that activity, risk assessments you’d be doing 
+[R2] I think as well from an ongoing point of view. What we can also do is we have a, 
+a sponsor oversight group that meets every month and we would then be [putting 
+that on the list of new studies for application to discuss with the oversight group.
+And then ultimately once we’re happy the sponsor then signs off a green light for that 
+to commence and then the monitoring plan will commence once they’ve started 
+culminating in the close out visit and then from a reporting point of view at the end 
+[R2] can probably talk through so the reminders that we have in place for our CIs 
+and PIs that’s, that’s in a crude, in a crude sort of process that’s, that’s all the 
+process. 
+
+I:	Sure, sure.
+
+R1:	Is there anything else that I’ve missed [R2]?
+
+R2:	No, I think that’s broad, broadly it, yes, yeah. There is tooing and froing.
+
+I:	Yes, so during that process so does like just in terms of sequencing so 
+you have, you know, so you request sponsorship and does ethics happen 
+alongside that or would ethics happen after sponsorship has already agreed 
+to?
+
+R1:	Yes.
+
+R2:	Sorry yeah it would happen after the sponsorship request form we’d, we’d 
+study that, we’d look at a draft protocol. We’d in principle would agree to sponsor it 
+[R1]. wouldn’t we?  I mean the final, the final agreement to sponsorship is signing off 
+the IRAS form which [R1] will do and then the submissions take place.
+
+I:	 To the, in that to start, kicks off the ethics process.
+
+R2:	Yes, yeah.
+
+I:	Okay great and then sort of now as you move into ethics and there’s 
+more active monitoring of the things that need to be done so like where does, 
+say like, you know, registration for like where does that sort of then enter the 
+picture as a, as a thing for both I understand it’s different processes so I’d be 
+interested to hear about how you handle it for both CTIMPs and non-CTIMPs 
+and what your processes are for ensuring that that happens or what that looks 
+like?
+
+R2:	Well historically we’ve always had to have a EudraCT number with our 
+CTIMPs and we tend to do that so that we have some control over checking to see 
+whether they’ve been reported or uploaded on to the EudraCT system.  But at that 
+time, we also encourage if they want to put it on clincaltrials.gov or ISRCTN or 
+whatever so that is usually on the protocol and the completed in the IRAS form, Is 
+that the sort of thing you were asking about?
+
+I:	Yeah so basically for a CTIMP obviously up until Brexit, up until earlier 
+this year there was an automatic, automated process for registration but so 
+you’re saying that even if you did a CTIMP if they wanted to they could also 
+put it on the ISRCTN or clincialtrials.gov, you’re happy to be supportive of that
+
+R2:	Mm.
+
+I:	 and then for non-CTIMPs is that sort of just a thing they have to do 
+themselves or would formally require them to sort of, no you need to like 
+register here at some point, like we’re telling you need to do this?
+
+R2:	Yeah, well, the ethics letter approval letter usually states that it has to be 
+registered on somewhere.
+
+I:	Okay.
+
+R2:	Now forgive me if that’s not for non-CTIMPs [R1] I know it is for CTIMPs but-,
+
+R1:	Yeah, yeah for non-CT, I think, I think where where we’re going with this is 
+that the, for the CTIMPs it’s an automated process, for non-CTIMPs it’s not, so our 
+safety net that we rely on is the ethics process to basically remind the applicant and I 
+think it’s fair to say that there’s a mixed response and we don’t necessarily police 
+that from a resourcing point of view, we don’t necessarily have the res- we haven’t 
+directed resource to that yet for non-CTIMPs.  CTIMPs certainly, non-CTIMPs less 
+so.  We do get it’s a mixture so from my perspective overseeing things from a more 
+higher up level I do see quite a lot of the non-CTIMP applicants will take that advice 
+from the ethics committee and will, and will see it as a mandatory thing to do and 
+actually register. So, I have, I’m one of the authorised users for clinicaltrials.gov to 
+issue licences access that system so again centrally a lot of people will come to me 
+and say, “I want to register the study. It’s part of medics application,” but what we 
+haven’t necessarily got I don’t think for non-CTIMPs is that joined up approach 
+where it triggers it so even as we’re talking now, I’m thinking, you know, that’s just 
+something we would potentially add to the sponsorship request.
+
+I:	Sure.
+
+R1:	So that actually it ties it in. Does that answer the question?
+
+I:	Yes, yes absolutely and so the okay yeah and now so touching back, 
+[R2] may have touched on this a little bit in one of her prior responses or 
+maybe it was[R1], one, maybe both of you did but coming along to trial close 
+out so there’s obviously this, once again up until recently this EU requirement 
+for CTIMPs to put them on the register so it sounds like that was, you had a 
+formal close out process. You sort of chased that and ensure that, can you tell 
+me a bit how that operated and how that looked in your experiences with that 
+when it was, when it was still happening?
+
+R2:	Right, well we always had it as a reminder for the close out monitoring visit, 
+we, you know, on our check list so at that point the investigators would be reminded 
+that they have got the year to upload results onto whichever websites they said in 
+their application form, their IRAS application form. We would also put in, we’d only, 
+we use Outlook so we’d put in three six and nine and twelve month reminders that 
+came up to us to the R&D QA team and we would then email the investigators to 
+say, “look do you know, you’ve now got nine months in order to, not only the 
+summary which we need to send to REC but also to upload the, the reports, the 
+results onto the websites, the databases.” 
+We have it in the we have a formal agreement between PI and sponsor for our single 
+site studies and it’s in there as well. They’re signing up to agree to do that they 
+upload results. We have it for a CI sponsor for our multicentre studies as well which 
+we sponsor so we have it, we have it in our data management plan again that they 
+are agreeing to do this so they’re all just, they’re all just paper reminders but we, we 
+do our best to highlight this is something that we have to do and try and keep track of 
+it ourselves.  We are looking in the future to try and get slightly more sophisticated 
+automated reminders and things like that but that’s where we are at the moment. 
+
+I:	Great and what has been, and so do you do those reminders just for 
+CTIMPs or do you kind of push people to upload results no matter where 
+they’ve, no matter the type of, like because you obviously you only have your 
+deadline for things that are regulated, everyone else can sort of take a bit more 
+time if they need it.  
+
+R2:	Yeah.
+
+I:	But so is that process just for CTIMPs generally?
+
+R2:	CTIMPs and high-risk non-CTIMPs but the vast majority, we the QA team 
+does not oversee. 
+
+I:	Yeah okay, gotcha right because you mainly focus on those very very 
+limited group. 
+
+R2:	We do.  We only have limited resources; there are only three, just recently 
+four of us and we, obviously our CTIMPs have to be our main priority.
+
+I:	Yes, great.
+
+R2:	Yeah.
+
+I:	And then so I’m wondering how do PIs tend to respond to that sort of 
+reminder process.  Are they, like they do push back on it? Are they fed up with 
+it and then like or are they happy to do it and they like the reminders, and it 
+keeps them honest, it’s like, you know, what’s the general reaction been to 
+that, that you’ve seen?
+
+R1:	It’s mixed isn’t it and I think again depending on the clinician and the area, you 
+know, some will, some will just ignore the reminders others will respond back with a 
+holding statement that says, ‘You know, I’m on call so I’ve got this commitment at the 
+moment but I’ll do it within x time frame,” and you can sort of take your foot off the 
+gas a little bit and I think what we, so it is a mixed bag and it’s, it’s almost just that 
+relentless communication but to be fair, you know, we, we’re a small team but 
+actually we build relationships with those clinicians so we can, we can push and we 
+know how far to push things before we have to have conversations and things and 
+one of the things that we have started to do recently, pre-pandemic I suppose, was 
+using the sponsor oversight group to escalate any issues because I think ultimately if 
+we think we can control it we will do but if it comes peer to peer from a clinician so 
+our, the member of, the chair of the oversight group is our R&D Director who is a 
+clinician and academic so if he, if they get a letter from a peer saying look, you know, 
+pull your socks up, you know, why haven’t you done this it adds a bit more weight to 
+it.  
+
+I:	Okay.
+
+R1:	So, we give them, we’re quite polite and maybe we need to, we need to not 
+be as polite, but we try and give every opportunity for them to, you know, hit the 
+milestone and do it but ultimately we have had I think, I think there’s two occasions 
+we’ve had to write a letter
+
+R2:	Yes.
+
+R1:	and a combination of that and a couple of more prods from us and it did the 
+trick, I think.
+
+R2:	It did, yes, yeah it helped, yeah.
+
+I:	Great and then what was your, like I understand, so for CTIMPs, you 
+know, the new requirement came about and there was sort of like a 
+retrospective, you know, requirement to report as well. Like, can you talk 
+about what was the process for dealing with that, you know, and trying to keep 
+up with that.  I don’t know exactly what your like situation was with what you 
+were reporting at that time and stuff but you know, did you have a, like was 
+that, was that a mountain to climb and what did that look like?
+
+R2:	Mhm.
+
+R1:	Yes [R2’s] got the scars. [laughter]
+
+R2:	I’m still getting flashbacks [laughs] yes, yes it was, our percentage of reported 
+trials it was evidence to see it was [a lower] per cent for EudraCT that was a 
+EUTrackers, ClinicalTrials.gov was probably the same sort of percentage-wise I 
+would, would you say [R1], yeah.  
+
+R1:	Yeah.
+
+R2:	And yes, it was a, a mountain to climb.  We realised we’d, we’d not kept a 
+close enough eye on this and it was just blanket approach of just getting everybody 
+to try and do, to upload results and it, I mean I have to say we now stand at for the 
+CTIMPs for EudraCT, we now stand at [a much higher] percent [R1], the last time we 
+looked.  
+
+R1:	Yeah.
+
+R2:	So, there are some that obviously haven’t, we’ve got a couple that are out 
+there. We tried to do as much as we could ourselves but obviously we need the 
+clinicians, we need the investigators doing the bulk of it but we did help where we 
+could and that’s why we sort of tried to take control of certainly EudraCT as well as 
+ClinicalTrial.gov because [R1] manages that and so does [another colleague] our 
+monitor but we sort of took control and I took control of the, the studies on EudraCT 
+so I could send them out and know what was happening and keep an eye on things 
+and it was just, it was a slog if I’m honest but we are getting there, you know, and 
+hopefully implementing things going forward it will never get to that situation again.
+
+I:	Yeah, do you feel like that’s, or do you feel like this, it was sort of you 
+know, a slog as you’ve described but also led you some like positive process 
+improvement and iteration of your internal processes that have improved the 
+way you go about monitoring, like is that, would that be fair to say?
+
+R2:	Oh, I think so, [R1] I leave that up to you, you know.
+
+R1:	Yeah no I think, I think what it’s done, it’s done that, it’s definitely done that in 
+terms of, you know, revising some of the processes and tweaking the processes and 
+tightening things at that end but I think more, more than that going back to my earlier 
+point, it actually made us sit back and think this is an important issue rather than and 
+it’d been overlooked I think, you know.
+
+I:	Mhm.
+
+R1:	So I think that’s what I took away from it was actually there is no point us 
+doing, you know, it’s half a job isn’t it, you know, you can, you can do really well and 
+get a flying report from the MHRA saying that you’re compliant in everything else , 
+everyone’s happy, the funders are happy but that last bit of getting that information 
+available and fully accessible is just as important and I think we probably well I can 
+only speak for myself, but from my point of view, it was probably overlooked so I 
+think that’s the biggest thing that the media attention around that and the, the 
+intensity of getting that sorted in in a short space of time me really and actually that’s 
+started to transverse, you know, to some degree onto the researchers themselves as 
+well.  They, they’re pre-empting the questions that we’re gonna ask them, you know, 
+they’re pre-empting sending us drafts of reports. They’re, you know those sorts of 
+things, they’re realising, you that’s equally important from that point of view.
+
+I:	Mhm 
+
+R2:	No sorry I was going to say we always had sort of a process to try and get the 
+clinical trials summaries in on time but that
+
+I:	The REC, 
+
+R2:	Exactly.
+
+I:	like the REC requirement.
+
+R2:	Yes, yeah but obviously we didn’t follow that through with the reporting so, 
+you know, we always had that sort of process and reminders and that was our sort of 
+aim to get the clinical trials summaries in on time.
+
+I:	Sure.
+
+R:	We just needed to take it that step further.
+
+I:	And as far as any like publications arising from this work, you know, in a 
+journal like is that all pretty much left to the, like you guys are pretty hands off 
+when it comes to that stuff or do the, do the PIs like do the PIs mainly own that 
+process or are you guys involved in that process in any way?
+
+R1:	I think we used to be hands off and that again that’s a by-product, a positive 
+by-product of this whole process is that we probably were hands off, it was a bit like 
+we’ve done our bit, onto the next study and what this has shown us is we 
+implemented a, a I suppose it’s, it’s still 90 per cent with the investigators but that 10 
+per cent, that quality control process of getting a draft manuscript, making sure that 
+actually they, their methodology, you know, a classic example is that their 
+methodology is as it was in their protocol and as per ethics, they haven’t deviated.  ] 
+Is it the correct sample size?  Have they mentioned the Trust in in and the proper 
+funding as, as per contract etc etc so it’s a, it’s not a rigorous scientific critique of the 
+paper but it’s a quality control governance check if you like that we do and we get, 
+we get the R&D Director to sign that off don’t we as well?
+
+R2:	We do, and we get an independent statistician to look at the stats section to 
+make sure that they sort of followed what they said they were going to do. I mean it 
+doesn’t do hugely in depth, but he will make, you know, reassure us that it’s as it 
+should be.
+
+I:	Is that, has that, how has that process gone exactly?  Have you 
+considered, has that, has extending QA into like publications do you feel like 
+it’s, it’s generally been well received and like gone smoothly or has it been like 
+difficult to sell?  I’m just, that’s like a relatively unique, relatively unique I feel 
+like I’ve heard so I’m interested to hear like how it’s gone.  
+
+R2:	I think we, we’ve had, how many since we’ve implemented [R1], 3 or 4? 
+
+R1:	Yeah.
+
+R2:	Yeah.
+
+R1:	I think so.
+
+R2:	And it’s like with all investigators, you know, it’s not something else for us to 
+do. We’re putting another step in the process. 
+
+I:	Uh-huh.
+
+R2:	But on the whole it’s been positive, I think it;’s-,
+
+R1	Yeah, I think we’ve, I think with a lot of these things we were helped by the 
+fact that it was actually a finding in our last MHRA inspection, so it gave us that 
+weight, so it wasn’t just us saying, ‘We’d like to do this because it’s the right thing to 
+do. Actually, it’s something that we all picked up on and, you know, very, to give you 
+a classic example it’s just, it’s that quality control thing that actually, you know, 
+someone copies and pastes from a previous publication in the same area of disease 
+and forgets to proofread it, you know and you find actually it’s got the wrong sample 
+size in it, it’s got whatever.  That will obviously be picked up when it’s, you know, 
+critiqued and reviewed and all the rest of it but it was that embarrassment factor 
+really of actually, we, we’re sponsoring the study. We should, we should have had 
+oversight of that, and we should have picked that issue up.  We’ll probably still miss 
+certain things because we’re not clinical but we’ve got a safety net, we’ve got the, 
+we’ve got the clinician as the R&D Director, we’ve got our very basic, you know, ten 
+point or whatever it is QC check and I think that will evolve over time as we get more 
+and more of those through but I think like [R2] says, it’s probably seems a bit of a 
+chore but actually we’re, we’re thankful that we can say well actually it’s an MHRA, 
+we’ve been told to do this, it’s part of our MHRA Cappa [um] so.
+
+I:	Great so we’ve talked  a lot so far about things that have worked, you 
+know, processes that have improved and worked really well that you’ve put in 
+place but I assume, you know, as things change and you adapt to first this EU 
+stuff, then the EU stuff going away, then you know, the MHRA Make It Public 
+strategy is sort of also changing a lot of or might change a lot, some of the 
+requirements around some of these things.  Have there been any like sort of 
+things you’ve implemented that, you know, you needed to iterate and change 
+like it sort of didn’t work right the first time and you needed to, like what, or 
+like have there been significant barriers stood along the way that have sort of 
+made things not work as smoothly as you might like?
+
+R2:	I think at the moment it’s, it’s the old thing of the response and interaction of 
+investigators.  I don’t mean to sound as though I’m blaming them but, you know, you 
+can only be as good as the response you get and no matter how much you chase 
+something up sometimes, it doesn’t always work and you don’t always get the end 
+result and I think we always know as things change, it’s going to be a changing 
+process isn’t it [R1], I mean we’re always tweaking processes and and we will do, 
+continue to do so as, as the requirements, you know, changes so-, 
+
+R1:	No just to add to that [R2] I think you’re right that one of the things that we’re 
+conscious of is that yes, we’re trying to hit this target of getting 100 per cent 
+transparency so we will throw whatever we can at it to make sure we do it but one, 
+we did that as a reaction to, you know, the Parliamentary issues and all of those 
+sorts of things but it shouldn’t ever get to that point where it’s just, oh someone’s 
+given us a kick up the backside so we’re gonna, we’re gonna spend six months on 
+this. It should be a continuous process, so I think that’s part of what we’ve learnt but 
+also I think there is a point where if it isn’t a two-way interaction with the investigators 
+then it lessens the credibility of that task in a strange way because the investigators 
+think, ‘Well that’s R&D QA team, they’ll get on with it  you know, it just comes out the 
+other end and I don’t have to do anything with it.” So, I think that’s something which 
+we’ve got to be careful with. We’ve done a little bit of that when we were trying to get 
+our percentage up to 80 but there are 1 or 2 that are left are the ones that we 
+physically cannot intervene on because we, we’re not-,
+
+I:	For one reason or another yeah.
+
+R1:	Yeah, yeah.
+
+R2:	Mm.
+
+R1:	So it will always have to be a team approach with the clinicians and I think 
+that’s probably where our next phase is gonna have to be is that we’ve got all the 
+paperwork that says yes you will adhere to this, you will do this, this and this but how 
+do we get that relationship up with them to such an extent that they’ve got the 
+resource and the time to put into this and then that leads onto the whole issue of, 
+you know, the seriousness of which you take this which is [internet connection lost]
+
+R2:	He’s frozen.
+
+R1:	I was frozen.
+
+R2:	Yeah.
+
+I:	You’re back now so you were saying the seriousness of which you take 
+it and then it cut off.
+
+R1:	Yeah so, we talked about the seriousness in terms of should we implement 
+any sanctions as a sponsor.
+
+R2:	Yeah, mm.
+
+R1:	So, you know, again we do, we’re not a sponsor that, we’re an academic 
+sponsor or an NHS sponsor, we don’t really have the power to sort of say, we’re 
+going to cut your funding off or we’re not going to do this. It’s not in our best interest 
+to some degree but, you know, there are things that we could do that might help 
+smooth that path but we always use that as a last resort. You know, I don’t, I don’t 
+really want to be in position to say we’re not gonna sponsor any more of your work. 
+We’re not gonna do this and this because actually weighing it up that could be even 
+more detrimental.
+
+I:	Mhm.
+
+R2:	Yeah, we’re there to facilitate research aren’t we and encourage it so it would 
+be a big step to take.
+
+I:	But those are in a, in a drastic situation those sort of are on the table 
+now nowadays
+
+R2:	Yeah.
+
+I:	in a, in a disagreeable but drastic situation.
+
+R2:	Yeah.
+
+I:	So just on a mechanics question so if I am registering, like I need to 
+upload my information to EudraCT on the, on the initial, you know, XML file 
+that gets sent off to MHRA or the results or say I’m, you know, registering on 
+the ISRCTN or the clincialtrials.gov or wherever, is that something like as the 
+PI am I or someone on my team, my study team, the actual one doing that 
+aspect or is any of that actually like done by, so I know you said you’re the 
+administrator on the ClinicalTrials.gov account, is that just you giving them 
+access to then register it themselves essentially.  
+
+R1:	Yeah.
+
+I:	And it works the same way with the EUCTR and the EudraCT?
+
+R2:	Yeah.
+
+I:	Okay is there any sort of training or resource that offered that people, so 
+they know how to use them or is just pretty much based on like their familiarity 
+with it or that they, like is their responsibility to sort of understand how to use 
+those systems?
+
+R2:	The later I think, yes, we don’t have any training in place. It was very much a 
+steep learning curve for all of us actually but [laughs]  no definitely the latter is, you 
+know, their responsibility to learn how to access these things and how to-,
+
+R1:	Yeah, I mean it’s not, it’s not a great rationale but 
+
+R2:	Mm.
+
+R1:	the vast bulk of the certainly the CTIMPs ones are quite a closed circle of 
+people that within certain academic areas that within our teams that we work on so 
+you will get the same PIs who should be more familiar with the system as they go on 
+but we don’t I don’t think, we don’t offer any sort of formalised step by step 
+screenshots of this is what you should do. Having said that, you know, we we do 
+work very closely with some of the investigators so we would just basically get them 
+round the table, and we’d go through the form with them.
+
+R2:	Mm.
+
+R1:	So when that’s happened on several occasions so it’s not, it’s not a 100 per 
+cent true we leave them to their own devices.
+
+I:	Gotcha.
+
+R1:	They do get some support but it’s not, I would say not formalised.
+
+I:	It’s individualised, like they can come to you with questions that you’re 
+then happy 
+
+R1:	Yeah.
+
+I:	and they tend to be aware like your resource that they can go to with 
+those, with those issues, yeah.
+
+R1:	Yeah.
+
+R2:	Yeah.
+
+I:	Great and then can you talk a little bit about sort of like what did, does 
+the like, like top level support at your institution look like, how do they view 
+these, you know, aspects as a priority so like some of these things involve 
+you, you guys, you know, this is a tension, there’s always a tension between 
+imposing more requirements on the PIs and but not overburdening them. Is 
+there any like how does the support look like from the, from, you know, a level 
+above, sort of maybe you [R1] or multiple levels above you for implementing 
+some of these new measures and for these new steps in the process, you 
+know, what does that look like?
+
+R1:	I think it’s a case of that there’s that trust that we would get on with it and 
+we’re doing what we’re doing.  One of the things that we did, I can’t remember when 
+it was but when everything hit the fan so to speak and there was a big explosion of 
+this, we did get quite a lot of communication down from our Chief Exec who was 
+interested in, you know, not being called in front of Parliament basically so we did get 
+quite a lot of, you know, where are we at? Can you give us an update?”  And what 
+we used to do very, very simply was we would do a screenshot of the EUtracker for 
+example or really good graphic that we could visualise and say to the, to the 
+Executive team, “This is where we’re at.” And what we do as well, [R2] would do a 
+little mini report that would provide a forecast of where we were gonna be, so I think 
+from a operational level we got that support as in backhanded support, as in get this 
+done, basically.
+
+I:	Mm okay.
+
+R1:	But in terms of actual support of the mechanics of, you know, put this system 
+in place, it’s left to us to do that to achieve it and that’s where the R&D Director 
+would come in and say and we pretty much operationalise that through the oversight 
+group by, by saying, “Look, we’ve got Professor X who hasn’t done what he should 
+be doing? How do you want us to take this forward, you know, do we write to them? 
+Do we give them another month?” you know, those sorts of things so I think I think it 
+would be unfair to say there isn’t any support. There is support for research in 
+general.
+
+I:	Sure yeah.
+
+R1:	But, but when it comes down to the specifics of transparency, policy or any of 
+the SOPs around that they, they’re not necessarily gonna want to see what we’re 
+doing other than what’s the results; are we, are we actually achieving what we 
+should be doing?
+
+I:	Great and that oversight that sponsor like oversight committee is that 
+that’s been in place for a long, you know, that’s not a new development that’s 
+always sort of been in place or is that, or is that relatively new?
+
+R1:	When was that? [Within the past few years].
+
+R2:	Yes [within the past few years].
+
+I:	Oh so that’s a relatively new development.
+
+R2:	It was fairly new yes, yeah.
+
+I:	Ah okay was that sort of in response to some of this stuff that happened 
+over the last couple of years or is that just sort of a natural thing that arose 
+other, otherwise?
+
+R1:	It came, it came again out of our [recent] inspection for the MHRA 
+predominately but then actually it was the, it was the appropriate place to tie in the 
+transparency work as well so very early on we made the decision in our terms of 
+reference to look at the transparency issues and make sure they were on a standing 
+agenda item for that.  So, at the moment it’s a bit of, that that item is pretty much 
+stuck at [the current] per cent with a couple of studies where we’re pulling our hair 
+out, you know, ‘where, where do we go with this?’ type thing but yeah-,
+
+I:	Are those very old studies just I assume they’re like very old ones yeah.
+
+R2:	Yeah.
+
+R1:	Yeah.
+
+R2:	We have a bit of an issue as well with, with our percentage, I mean I don’t 
+know probably shouldn’t talk numbers, but we do have an issue with some studies 
+we had quite a, a flux of studies that actually started but they didn’t take off really. 
+There was no reasonable data to get, we ended them prematurely because there 
+was no recruitment or somebody left and there weren’t the resources to, to backfill 
+this person and you can’t sort of get these off the system because you can’t load any 
+data and I’ve put a letter on saying, an explanation onto the EudraCT website 
+explaining why there was no data but they’re constantly there and I know they were 
+going to look at this. It wasn’t just our problem, it seems to be fairly common problem 
+so we have things like that that are affecting our numbers and I know this isn’t all 
+about numbers but it, it does exist and we’re never going to, at this point in time 
+never going to have a 100 per cent because of these studies.
+There’s [ a few] studies isn’t there [R1] that applies to, so sorry that was just a little 
+bit of an interlude I know but just to explain the numbers really.
+
+I:	Yeah so great so we’re approaching the end here and I just wanted to do 
+a few have a few more questions here so we talked a little bit about, we’ve, 
+we’ve chatted about quite a bit about, you know, the impact that that 
+Parliamentary committee had and how, you know, you plan to adapt to the new 
+HRA strategy.  Just to touch really quickly on Brexit and moving away from the 
+EudraCT system that, you know, no new registrations will be going through 
+that that system anymore as of this year, has that sort of impacted, like how, 
+have you needed to move and adapt to that yet or is still too early and you 
+haven’t really had to change anything as a result of that yet and you’re still 
+sort of waiting for any more?
+
+R2:	Yeah, I would say that’s our situation [R1] wouldn’t you?
+
+R1:	Yeah.
+
+R2:	Yeah.
+
+I:	Okay great and the last area I touch on, I like to touch in these is just so 
+when new developments sort of in these areas occur when there’s no 
+requirements or things like that what is your route and mechanism for hearing, 
+hearing about them, like, you know, if something were to change about the 
+requirements or the HRA gave more information about lay summaries that 
+they’re expecting, things like that what would be the ways that you would hear 
+about those?
+
+R1:	So, we, MHRA will be the blog, MHRA blog that we, we sign up to and we get 
+the daily, daily emails on those. HRA updates again, HRA newsletters part of the 
+R&D forum as well we get messages via that. And we’d also I think from my 
+perspective I would probably hear about it at some of the networking events so part 
+of the UKRD which is the, the group of R&D Directors and R&D Managers 
+networking nationally so it would probably be brought up there as agenda item and 
+depending on the, on what the change was as well, they, that group sometimes 
+offers speakers to come in and do training and do sort of seminars on what the 
+changes involve etc etc. 
+We also have locally within [our local area a clinical research network], we have 
+something called [name of org] which is all the R&D managers across [multiple local] 
+organisations and every quarter we also get the HRA representative to come and 
+give us a what’s changed this month or what’, what’s coming. Regulatory update if 
+you like and I do recall some of the transparency stuff coming through that route 
+
+I:	Interesting.
+
+R1:	via, via the HRA.
+
+R2:	Yeah.
+
+I:	And so it sounds like these networks, like you mentioned the R&D forum 
+and you mentioned this local…network those are sort of pretty important for 
+like keeping on top of things and yeah.
+
+R1:	Yeah
+
+I:	And then what, sorry go ahead please.
+
+R2:	No, no we always try and attend the symposium as well, the MHRA 
+symposium ‘cos that often you hear about things but that often clarifies it for you, you 
+know, they go into things that you’ve read about or you’ve heard about that they can, 
+they can dot the i’s and cross the t’s.  
+
+I:	And what about peer contact so what like have you heard from your 
+peer institute, like do you have communications either within or outside of, 
+you know, something like the R&D forum where you share knowledge and best 
+practice or if you questions, does that, does that occur at all?
+
+R:	Yeah, I mean I think that’s probably what this [local group] is really for.
+
+I:	Okay.
+
+R:	So, we get, they invite speakers to give a bit of a session but it’s, it’s 
+predominately also about you know, tell us who’s doing what with that.  Has anyone 
+implemented it yet? So, it’s a forum where we can raise questions and go, we, we’re 
+stuck on this.  So, we might go to that forum and say, “We’ve got lots of studies that 
+terminated early, you know, do they want to know how we get round that, how we 
+report it, how we notify?” so there’s  a lot of that happening I think through those 
+sorts of groups but I suppose the only disadvantage with that is it’s almost about it 
+being an issue for everyone, you know, there isn’t, there isn’t a huge amount of time 
+to go through everyone’s sort of list of issues that they have so it has to be such a 
+prominent issue that affects, you know, 80, 90 per cent of the people for it to be 
+discussed almost. It’s not that frequent but that, that is definitely a forum for that.
+
+I:	Mhm and then yeah so the very last question for a NHS organisation that 
+I like to ask for the Trust, so you’re obviously University Trust so you have 
+some connection to the local University does that, how does that relationship 
+manifest in any of your like SOPs, like is there because I assume some stuff 
+kind of gets, is there co-sponsorship with the University or is there some stuff 
+is going on at the Trust but it’s sponsored through the University, like and 
+what does your role in that sort of research look like?
+
+R1:	Yeah, I mean it’s again, CTIMPs there’s no University sponsorship for 
+CTIMPs, always, always diverts to the Trust currently.  There’s no co-sponsorship 
+despite the fact that probably 90 per cent of the CTIMP work is university employed 
+academics.
+
+I:	Okay.
+
+R1:	so they, you know, it’s not a criticism but they are risk-averse, you know, they, 
+they don’t have the structure in place to do that at the moment. For non-CTIMPs 
+there is a movement towards some of the work being sponsored by the University 
+and it’s largely on a case by case basis [internet connection lost]
+
+R2:	He’s gone again.
+
+I:	Mm.
+
+R1:	Back.
+
+I:	So a case by case basis. 
+
+R1:	Yeah so, it’s assessed on a case by case basis.  In terms of the processes 
+and how they interact between the two it hasn’t happened yet
+
+I:	Okay.
+
+R1:	 and I think probably along with some of the finances side of things the 
+University have probably got a fairly robust system for publications because of their 
+Research Excellence Frameworks and all the things they have to report on for that 
+sort of stuff so it’s something that we will I think have to unify at some level. I think 
+there’s some to put it into context there’s some bigger discussions ongoing about 
+trying to create a Joint Research Office.
+
+I:	Ah okay.
+
+R:	And that, that would be with the idea of not necessarily a physical building that 
+everyone sits in but a unifying of those processes and taking the best bits from both 
+sides.  I think if you put it into a very brief description, NHS is very, very from our 
+point of view is very good at the, the GCP, the compliance bits all those sorts of 
+things where the University [infrastructure isn’t equipped for this element] and then 
+you might need to change that and say the University’s got more robust publication 
+issue policies and things that we need to learn from so there’s, there’s a natural 
+marriage that we could have probably have.
+
+I:	And there’s a model for that, some other institutions have those joint 
+sort of research office. Great so that is all my questions today.  If there’s 
+anything else, any final think you’d like to note or mention or anything I didn’t 
+ask that you’d like to comment on?
+
+R1:	Not that I can think of.
+
+R2:	No.
+
+I:	Okay, great.
+
+
+
+
+

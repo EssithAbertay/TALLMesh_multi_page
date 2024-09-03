@@ -6,8 +6,11 @@ Created on Fri Feb  2 15:16:46 2024
 """
 import streamlit as st
 import openai
+from openai import AzureOpenAI
 import pandas as pd
 import ast
+from api_key_management import manage_api_keys
+
 
 client = openai
 
@@ -20,21 +23,24 @@ def get_completion(prompt, model, temperature):
     )
     return response.choices[0].message.content.strip()
 
-@st.cache
+@st.cache_data
 def convert_df(df):
     return df.to_csv().encode('utf-8')
 
 def main():
-    st.sidebar.title("Select Model and Provide Your Key")
+    #st.sidebar.title("Select Model and Provide Your Key")
 
-    model_options = ["gpt-3.5-turbo-16k", "text-davinci-002", "llama-2", "mistral"]
+    model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5", "azure_model_1"]
     selected_model = st.sidebar.selectbox("Select Model", model_options)
 
-    api_key = st.sidebar.text_input("Enter OpenAI API Key", type="password")
+    #api_key = st.sidebar.text_input("Enter OpenAI API Key", type="password")
 
-    if st.sidebar.button("Confirm Key and Model"):
-        st.sidebar.success("API Key and Model Confirmed!")
-        client.api_key = api_key
+    #if st.sidebar.button("Confirm Key and Model"):
+    #    st.sidebar.success("API Key and Model Confirmed!")
+    #    client.api_key = api_key
+
+
+    manage_api_keys()    
 
     st.header(":orange[Refining Themes]")
     st.subheader("Changing the temperature will result in different creative for the model")

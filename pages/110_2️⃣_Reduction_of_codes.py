@@ -373,7 +373,7 @@ def main():
         - At the bottom of the page, you'll find an expandable section showing previously processed reduced code files.
         - You can view, delete, or download these saved reduced codes.
         """)
-
+      
         st.subheader(":orange[Key Features]")
         st.write("""
         - :orange[Automatic merging:] The AI identifies similar codes and combines them, providing explanations for the merges.

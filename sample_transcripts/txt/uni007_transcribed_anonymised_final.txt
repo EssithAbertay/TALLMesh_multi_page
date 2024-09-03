@@ -1,0 +1,720 @@
+﻿I:	So just to get us started can you tell me a bit about your role?
+
+R:	Yeah, I’ve been at [my University] for probably 20, just over 20 years.  I’ve 
+been running the clinical trials unit there for more than 15 years now, so I started in 
+that role just as the clinical trial came in and the remit of the unit is, you know, NIHR, 
+UKCRC clinical trials, large multicentre clinical trials typically.  We started out 
+specialising in [disease area] within one school of the University over the years we, 
+we made the case that it made sense to expand and support other, other areas and 
+so now we support trials across the whole of [the University] and yeah so we, we 
+basically work with statisticians, data managers, trial managers running a range of 
+clinical trials, everything from early, you know, pre-registration device trials through 
+to big multicentre pragmatic, you know, international late phase studies, so every 
+every myriad of everything.
+
+I:	And that includes CTIMPs, you’ve got to run CTIMPs as well, yeah?
+
+
+R:	Yeah, yeah. Now [this University] is unusual in that we have a separate 
+sponsor office, well I don’t know how unusual this is actually, there’s a separate 
+sponsor office so obviously every organisation will have some sort of sponsor office 
+but in many places they’re very, I don’t know what the right word is, tick box light 
+touch, very much NHS R&D, you know, go through checks, sign off but really not 
+very involved in the actual conduct. Unusual at [this University] they, they put 
+together a joint office purely for CTIMP responsibilities back in, I don’t know, 2004, 
+something like that and so that group is very heavily resourced but only focused on 
+CTIMPs and so we’ve ended up with, with a, you know, a huge, I think there’s 
+something like 35 full time staff just overseeing the CTIMP studies of which there’s 
+probably about 80 or 90 at any one time so it’s a very high level of oversight. And so 
+there’s a bit of a two tier thing where CTIMPs I’m sure you’re aware, you know, [the 
+University] will have perfect reporting of CTIMPs.  It’ll be [perfect] because there’s 
+this huge resource that of course everything must be reported because there’s so 
+much manpower and it’s very telling actually, it’s a very good you know, yeah, it’s, 
+yeah, it’s a 15-year study and what happens when you highly control one element 
+and don’t control the other element.  
+So non-CTIMP studies are largely left to their own devices organisationally. And so, 
+as a CTU many years ago, I’m sure you know CTUs well enough to know that, you 
+know, a CTU might run half a dozen studies and in some places, they will be very 
+much, you know, pick out the cream of the crop. They want the high impact, you 
+know, big hitting good papers and shouldn’t and could take the best ideas and make 
+them great which is good.  We took a slightly different approach which was yes do 
+those studies but many years ago we also looked across the organisation and 
+thought well there are lots of researchers trying to do research well and they simply 
+don’t have the infrastructure to do it well. 
+And even with the best will in the world they’ll fail and so we decided to do things like 
+provide randomisation services cheaply to those studies, even if we did nothing else 
+[and there were some anxieties about, ‘Oh but, you know, couldn’t they run a study 
+really badly and the CTU had supported it.’ It’s like well, ‘they could but they’ll have 
+run it a little bit better if we take randomisation, make it independent.’
+
+I:	Yeah.
+
+R:	It would run a little better if we’d run an EDC [Electronic Data Capture] system 
+and then actually involved in designing their data collection packs so all of those 
+things will makes things a little better and so we’ve been running that as a strategy 
+for many many years and right from the first study back in 2004, 2005, you know, 
+we, we decided to mandate that if a study used our randomisation system, we 
+wouldn’t make the system live until we saw their public register.
+So, in a very simple way, it just became an easy control to scoop up as many of the 
+study’s organisationally as we could.  At the very least, let them use our 
+randomisation service and as part of that process we would just sit there going, “You 
+still haven’t got your registration, we’ll make it live, just need your registration. Do 
+you want us to help us with your registration but register it? “And actually, that 
+worked, worked well because it was very apparent back then that more than half of 
+investigators had no idea about the Journal Editor’s statement.  They didn’t know 
+they were meant to register their trial.  It wasn’t ill intent; they just didn’t know.
+
+I:	Yeah of course.
+
+R:	And actually, that was a very easy way of making people aware of that and 
+our main concern was the people didn’t get to the end of the study and found they 
+couldn’t publish it so that was a quick easy hitter but that only hit the studies that 
+happened to come to the CTU.  I mean we’re now, I think we’re now providing 
+randomisation for about half of all trials across the organisation but not a 100 per 
+cent of them.
+
+R:	No, we’ve, we’ve managed to have one thankfully so avoided, we’ve avoided 
+[multiple]. [laughs] [Short non-relevant interlude with identifying information removed] 
+Yeah, it gets a bit well the trouble is you think, you know, the multiple teams of QA 
+Managers and uff yeah doesn’t make sense. Anyway, so no we’ve been, we’ve been 
+fortunate we’ve managed to hold it one which has helped but we’re not mandatory 
+and I think that’s the key and we’ve and there have been mutterings over the years 
+of making investigators work with our CTU and I’ve always resisted those because I 
+never think that’s the way to do things.  I think there has to be academics must have 
+choice.
+
+
+
+R:	So, we’ve never been mandatory, we, we have no particular desire to be 
+mandatory but we’re happy to help whoever comes. What the University has lacked 
+historically is a proper central governance structure for all other research.  That isn’t 
+CTIMPs because there’s the College Ethics Committee and obviously there’s a 
+sponsor signatory for ethics applications that go through REC but really there’s not, 
+historically, not been much scrutiny of those and so there’s no mechanism to chase 
+to make sure that they are reported and things like that so, you know, back, back in 
+the day when the AllTrials initiative first sort of appeared it was us that drove getting 
+[the University] to sign up to it.  It was us that sort of tried to get the organisation a bit 
+more engaged with the idea that that this is, that this is an issue that isn’t going 
+away.  
+
+
+
+R:	There is a problem here. Yes, we’ve solved registration up to a point but it’s 
+still not there, but the world is catching up, you know, the ethics committees, it’s 
+becoming normal to register trials but publications still weren’t brilliant and the 
+timeline to publication wasn’t great. There was a bit of a roadblock organisationally in 
+that there was one person who just didn’t see there was a problem and I think what 
+they really meant was they could see there was a problem but couldn’t see that there 
+was a way of solving it without spending money
+
+
+
+R:	So the [name] who I put you in contact with, I’m not sure if [they’ve] been back 
+in touch with you but [they’re] charged with setting up a sort of integrity governance 
+for all research across the University and so in the long run I think it’s [their] office 
+that will probably be tasked with making sure that there are systems to track things 
+through.  In the meantime, you know, things have happened, so things like when 
+you’re putting a grant in there are trigger points where the various forms and 
+processes you go through alert you to the fact that there’s an expectation everything 
+will publish, that, you know, everything must be registered, that, you know, all that 
+sort of thing. I still think it should be driven through ethics quite frankly, I think it 
+would be more efficient to do it at national level.
+
+
+
+R:	Well, I think the, I think the effect of publication bias I think is fairly evident 
+when you look at the data and the number of trials that are missing from, from the 
+evidence base and I think there’s been a very good job by AllTrials to make people 
+aware of that, to publicise it. I think that it’s probably a bigger issue in many ways for 
+Industry because I think the trials that don’t publish in the public sector mostly not 
+exclusively but mostly are trials that don’t matter
+
+
+
+R:	 and I’ve tended to find over the years because I’m paying quite a lot of 
+attention to this internally, the ones that fall by the wayside not always but most of 
+them tend to be small feasibility type studies and I definitely lose interest in it. It’s 
+rare of big definitive interesting studies, even if it’s a negative result to fall by the 
+wayside.  It does happen but it’s it’s more rare.
+
+I:	Sure.
+
+R:	And on the whole, I’ve tended to find, and this is entirely anecdotally, when 
+you speak to investigators it’s clear that the ones that have fallen by the wayside is 
+because they’ve made a judgement that clinically it really isn’t gonna make much 
+difference to anybody, even if that was out there in the world.  
+Whereas the reasons for publication bias within Industry are very different.  The 
+reason their results don’t become public or didn’t become public historically were for 
+very different reasons that are likely more damaging.  I think it’s still good practice to 
+get them all out there, but I think, you know, the trials that we end up chasing for 
+publications and for results mostly are negative and but more importantly mostly are 
+very poor quality.  
+
+I:	. What so, what does and then you said also that your office is also 
+willing to offer help for registration and things like that can you just talk about, 
+a bit more about what that looks like to me.  So I’m an investigator, I’m looking 
+at getting a trial started.  I want to, you know, work with the CTU.
+
+
+R:	Yeah if it’s a CTIMP then well up until recently that would have been EudraCT 
+and so the Uber office with loads of money does that so we don’t worry ourselves too 
+much about that because they can sort those out.  So, for the non-CTIMPs people 
+have to choose usually between clincialtrials.gov and ISRCTN. Sometimes it’s 
+simply us reminding us that it’s a funder requirement of their funding body that they 
+go to ISRCTN and they just haven’t noticed because they didn’t’ read the letter 
+properly. [laughs] and sometimes that if that’s NIHR funded, they pay for it and again 
+people often haven’t picked up on the fact that there’s a system for that.  You just 
+need to do it but it’s not that difficult.  So signposting is what all that most people 
+need. For the ones that want to go to trials.gov again pointing them in the direction of 
+the sort of administrator within the organisation who controls that so that they can 
+help them if they get stuck.  We find people have more trouble with trials.gov than all 
+trials, oh sorry than ISRCTN just because I don’t know, ISRCTN they’re a bit more 
+human, you can actually speak to people.  Trials.gov, from what I gather they send 
+communications out to people and literally they can’t interpret the words that are 
+being said, they don’t know what they’re being asked to do and they just get, really 
+sent up a roadblock so I prefer to send people to ISRCTN and so what we’ve done 
+more recently because the vast majority of studies are being scooped up and get to 
+ISRCTN either by through the funders or whatever, it’s working quite well and so the 
+few that fall by the wayside we decided that what we would do is we’ve set up an 
+arrangement with ISRCTN where we pre-pay for registrations so that rather than the 
+investigators having to fiff faff about, figuring out how to pay them because that 
+seems to be the biggest barrier. [laughs]
+
+
+
+R:	So, we said well, you know, that appears to be as far as I can work out the 
+biggest problem so we’ll pay them for I don’t know, 20 or 30 registrations up front 
+and that way we can just say to people, ‘Here’s, here’s your number’ and we’ll just 
+cross charge you.”
+
+
+
+R:	I think we’re the first organisation ISRCTN have done that with, but we said 
+we’d try it out for a while see how it goes because it’s not many studies now, so we 
+may as well just try find an easy solution for those.  I’d rather we go to ISRCTN, I 
+don’t like trials.gov
+
+
+R:	Investigators like trials.gov because it’s free.
+
+
+
+R:	I don’t, I don’t even think it’s more bureaucracy and faff. I think there’s a lack 
+of intelligence coming back from trials.gov
+
+I:	Okay.
+
+R:	you know, when, when I interact with ISRCTN there’s a flexibility and a 
+thoughtfulness about them so they will recognize that if they’ve been trying to contact 
+an investigator for the last ten years to get the result of a trial and that investigator 
+has long since moved on from [the University] and, you know, they’re probably 
+findable somewhere in the world. If I can track down a paper that looks like the 
+primary paper and I can reasonably read it and say yes, I believe that this paper links 
+to that trial, they’re perfectly comfortable with me emailing them and saying, as far as 
+I can figure out this one goes with that one and somebody will actually read the 
+paper and see whether they agree, and they will link it even if the person who set up 
+the account isn’t there to do it.  No chance in hell with trials.gov.
+
+
+R:	Just not gonna happen [laughs] or they expect that it’s your decision whatever 
+you like and it’s like a bit of, a bit of iteration would be nice because, you know, with 
+the ISRCTN, you know, they can see, you know, somebody in the organisation’s 
+trying to sort this out.  The person who ran the study is long long gone and we’re just 
+trying to do a sweep through and tidy up loose ends from old studies but it feels a bit 
+more collaborative and a bit more can do.
+
+I:	Interesting.
+
+R:	Than than trials.gov.  
+
+
+
+R:	Exactly so, you know, with those ones we, we have a process where we’ll 
+make an exception, let the study start recruiting on the expectation that any day now 
+this is gonna appear in the public domain so, you know, but if, and we also I think we 
+have a process where if a study’s exempt from registering for some reason we’ll 
+allow those to go ahead but all of that is built in because again the administrators 
+don’t know which, which are okay and which aren’t. They just follow a process of it’s 
+either there or it’s not and that’s that.
+
+
+
+R:	Again, depends on what we’re doing, so if all we’ve done is a randomisation 
+service then, for a study then what we will do is I mean the randomisation service 
+goes up that’s the end of it as far as we’re concerned until the study ends and then 
+the administrators would keep bothering the investigator for the primary paper so 
+even if all we’ve done is a £500 randomisation service they just get these really 
+irritating emails from us saying, “Have you published yet? Have you published yet? 
+Did you get one, oh well done you, you’ve finished, have you published yet though?  
+[laughs] ‘Our records suggest that you’re about to publish, have you published?’ 
+[laughs] Thanks for coming.
+
+R:	but I mean they log everything so they just, you know, every quarter they do a 
+sweep through and contact everybody where and if they say we’re not going to 
+publish for another year, we just put it back by a year and then we’ll turn up again, 
+going ‘Hello, us again.’  So we do that on everything, everything where we’ve done 
+randomisation. If we’re not otherwise involved in the study, then we wouldn’t pick up 
+if they do a protocol change and they don’t update the register.
+
+
+
+R:	But if we have also built them a database system for the study, then a 
+protocol change that changes the eligibility criteria should trigger the database to be 
+updated and as part of that process they would check back to see if they’ve updated 
+them in the protocol have they updated their public register so there would be a 
+prompt to the team.  Again, their responsibility to do it but we would prompt them to 
+say, you know, we’ve notice you haven’t, you might want to do that.  
+
+
+R:	If we hadn’t of done the database as well and then if we have any people 
+involved in the studies, you know, Trial Managers, statisticians, health comms or 
+whatever then I would expect yes and TMGs, that would be routinely picked up and 
+and dealt with.
+
+We do get involved in in externally sponsored CTIMPs where there is no, our, our 
+sponsor office wouldn’t be involved in those and as of for those we just do exactly 
+the same, we, we don’t do anything differently.
+
+
+
+R:	For the studies where we’re actually running them, yes. For the studies where 
+we’ve got the publications what we started doing is that with ISRCTN and trials.gov, I 
+think every, it’s either once every six months or once a year, we pull off everything 
+unpublished organisationally and we do a sweep through to see if there’s any that 
+we’ve got a record that they’ve been published that are not showing as having 
+results on the register.
+
+
+
+R:	And it’s quicker for us to do it as a sweep through everything and this is where 
+I found ISRCTN incredibly helpful because they were perfectly happy for us to in 
+fact, they were so helpful because they’re downloading function wasn’t working 
+properly for me and I couldn’t everything that I wanted nicely and so they did me an 
+export. And they were comfortable with us just updating the whole spreadsheet, 
+sending it back to them and they would just go through it which was, it’s helpful just 
+[laughs] And in some cases because the reason I first started talking to them years 
+ago was because within the [our organisation] our email addresses have all changed 
+in one part of the organisations, so they were chasing investigators on email 
+addresses that that didn’t exist anymore. 
+
+
+R:	And so, we first got in touch with them because we could see all these 
+registrations, saying, ‘Oh contacted so and so at this email address, no response, no 
+response.’ And I thought, ‘Well you’re never gonna get a response. They’re going 
+into the abyss; they’re not going to be going anywhere.’  And so we’d contacted them 
+and sort of given them a list of all the updated email addresses of all those 
+investigators because a lot of them were still at [the University] and yeah periodically 
+whenever we had time we sort of dipped in and had but it’s not been very, it’s been a 
+case of just fitting it in when there’s time with, you know, we’re, we’re not tasked with 
+doing it organisationally, we’re not, it’s not necessarily our responsibility but we’ve 
+sort of done sweeps through because it’s, it’s a sensible thing to do and until the 
+organisation gets itself to a point where it does do it systematically which I’ve always 
+thought is bound to come eventually so it’s just doing what we can on no resource 
+until they sort of wake up and get there or ethics takes it over, I don’t mind which.
+
+
+
+R:	Yeah there’s a few teams where we’ve gone back to them and said, “Look if 
+you’re really are never gonna publish and I’ll tell you this is almost always where it’s 
+PhD student project. Almost always, so where we can with student projects, we’ve 
+tried to make sure that the thesis goes into ETHOS.
+
+
+R:	But I sort of think well it’s not bad, it’s out there. It’s written up somewhere and 
+it’s publicly available so in my mind it’s probably the best they’re gonna get.
+We have pointed a few PhD supervisors because usually by the time we find these 
+ones these PhD students have long given up on academia. They’re now working in a 
+bank somewhere. They’re ain’t gonna do anything about this. [laughs] Yeah they’re 
+primary school teachers now [laughs] so they’re not gonna do anything about it and 
+quite frankly it was a student project
+
+
+R:	it’s a learning exercise and I do think there needs to be recognition that there 
+is, should be a separation between what is meant to be a learning exercise and a 
+clinical trial. And we have worked really hard to try to make sure we don’t have Phd 
+students doing things like CTIMPs because you can’t let a CTIMP fail so how can 
+you let a PhD student do it as their project without giving them an unfair advantage 
+over other PhD students so I think there’s a lack of recognition that that PhD student 
+projects are different.  You must be allowed to do a bad PhD, you know, if you and 
+your supervisors elect to do an unpublishable PhD then it should be unpublished 
+beyond the dissertation write-up and there is a process to get dissertations into the 
+public domain and I actually don’t see why that isn’t good enough but a couple of 
+supervisors I have gone back to them and said, “Look, ISRCTN have a process for 
+you to upload the results, but you have to put it all into their format 
+
+
+
+R:	In the early days it was interesting, the early days when they didn’t know 
+about the Journal Editor’s statement the early response was, you know, “Aren’t they 
+being ridiculous? What a lot of nonsense. We’re academics, don’t you know type 
+thing.” That wasn’t, that that waned fairly quickly the the biggest objection was 
+having to pay out money.  
+
+
+R:	So this sort of idea there was some kind of a money making scam so you 
+know what people can be like. Again, who owns ISR, who owns ISRCTN, who’s 
+benefiting from it. This idea that somebody was making a profit on the back of 
+whatever so there was a bit of that in the very early days. Once you pointed them to 
+the Journal editors’ statement they tended to hush up.  I think once they could see 
+that it was, you know, it really was the Journal Editors, let’s not, you know, they’re 
+not, they’re not peeing around here, this is what they mean. They’re not joking, just 
+do it. So actually, I think most people accepted that this is a good thing in principle 
+and the main resistance was the actual bureaucracy of doing it, not the principle. A 
+few people objected because they felt that would make their ideas public and that 
+others could then steal their ideas.  So early on there was a few, certainly the, the 
+sort of the more novel, earlier type stuff and there was a sort of suspicion that 
+somehow this would be damaging to them because people would know about the 
+research too early. But like I say, it was very clear that that world has changed so 
+just get used to it move on, you know. You don’t get that anymore but in the early 
+days there was definitely an element of that. What other? Definitely the early days 
+this idea that, you know, well they didn’t believe the journal editor would really not 
+publish a good trial just because it wasn’t registered and I think a few had to be 
+made examples of before they really believe that did in fact happen.
+
+
+
+R:	Oh yes, no we had one, we had one when somebody turned up at out office 
+had been rejected for not registering and it was a trial we hadn’t been involved with 
+but she was just completely distraught because she knew nothing about it and I was 
+like well, ‘should have come to us.’ [laughs] But it was, you know, they just end up in 
+a worst journal. So really from the early days we just always framed it that this 
+something that’s really important to do unless you’d like to publish in the Beano.
+
+
+
+I:	Great so in terms of so it sounds like a lot of the, so if when people are 
+actually say like entering the registration information like onto, onto the 
+ISRCTN or clincialtrials.gov or uploading results there if that’s a requirement 
+or if they were just choosing to or whatever [who, so who is generally, is that 
+like sitting within the study team usually or yeah?
+
+R:	Yep, in the study team, yeah and I know some organisations have sort of got 
+people to do it for them.
+
+
+R:	  If you try to get, the only way that people can do it for you is you literally 
+have a process where somebody’s handing it to them. They’ll get it wrong, even with 
+our own group, the administrators don’t have to go to the investigators to get the 
+publications.  They will, they will quite often do a search on PubMed. They’ll try and 
+find it themselves, but they still have to go back to the investigator say, you know, 
+we’re looking for the primary paper. Is this the primary paper?
+
+
+
+R:	And, you know, we’ve, we’ve had post-docs in our team who have sat down to 
+look at two or three papers trying to work out which one is the primary and, you 
+know, they’ve struggled because you might have two or three ISRCTN registrations 
+that are quite similar involving the same team and you’re trying to discern and then 
+they haven’t quoted their blessed registration number in any of them [laughs] and so 
+the trouble is the moment you turn it into a administrator click button, you’ll just get 
+mistakes, things uploaded against the wrong entries which is why, you know, I can’t 
+help thinking it would make more sense to have this done through the ethics 
+committees, the HRA because then, you know, it’s attached to the correct project 
+and then only those studies that don’t go through NHS Ethics are left to scoop up. 
+Yeah, no like I say I was just trying to minimise it and I still think it’d be daft to have, I 
+mean I already know some organisations are employing, you know, staff just to data 
+on the registries but the moment you do that you detach it from the actual academics 
+doing it and then they’ll just do it wrong.  
+
+
+
+
+R:	And the only commonality we have is that every piece of, every clinical trial 
+with human participants goes through an ethics committee and that is, that is the 
+common path and if that’s the common path that has to be path for, you know, it 
+can’t even be the NHS. We do studies in prisons, we do studies in schools, we do 
+studies in the community.  It, it can’t be the NHS or the Universities, it must be the 
+ethics committees to my mind but I’ve no idea what they’ve actually decided to do.  
+I’ve always assumed at some point registration would become a condition of ethics 
+approval and at some point, rather than closing ethics at last patient, last visit or 
+doing an end of study declaration when you’ve locked your dataset which isn’t the 
+end of the study.  The end of the study is when you have presented your results to 
+the world.  
+
+
+
+R:	So, to me they’ve always closed them too early.  The study isn’t finished until 
+the study is published and if you have to keep paying or doing annual reports then 
+then it keeps it focused in the front of your mind.  It’s a bit like that annoying email 
+saying, ‘Have you finished yet?’ If you keep getting a reminder that that your study is 
+still open because you still haven’t published year after year after year then sooner 
+or later, you’ll give up and publish it.  [laughs]
+
+
+R:	There’s a click button to say, is it going to ISRCTN so it will automatically 
+transfer if it’s being funded by NIHR 
+
+
+R:	and then we’ve worked out some mechanism with ISRCTN so that if it’s not 
+being funded then we can gift them one of our pre-paid spots.
+
+
+R:	And, and that way every time there’s a protocol amendment that that should 
+automatically flow because those two things being connected together would make a 
+lot of sense  but I don’t know if they’re planning on doing.  I mean I don’t know if it’s 
+going to be an opt in system where people can choose to use it or what the plans 
+are.  
+
+
+R:	Yeah, I think from what the ISRCTN, from discussions with ISRCTN and the 
+Trial Managers it sounds as if when you’re doing your IRAS application if you click 
+something to say that your funder is covering the cost of IRSCTN, I think it auto 
+populates from one to, but I could be wrong.
+
+
+
+R:	But I certainly got the impression it was a very seamless easy process 
+certainly for NHIR funded studies and depending on when the team to go and get the 
+registration, I think some will have gone ahead and done it in advance of doing that 
+step.  I think it’s a bit haphazard I think as to how it flows but I, it’s not, no study has 
+not been able to do it or has hit a massive roadblock.  Payment seems to be the 
+biggest problem as people’s excuses to why they didn’t do it.
+
+
+R:	Very, very much bottom up because the, what drove the CTIMPs sponsor 
+office was of course the legislation and you’ll all go to prison a couple of years if and 
+so when the regulation came in there was lots of, you know, whipped up hyper-
+anxiety about the MHRA, lots of investment, great that’s, that’s all to the good but it 
+the downside of that is it also created a mentality that if there isn’t a regulator who’s 
+going to put you in prison then it doesn’t matter and so one of the things we’ve been 
+battling against and the chap who’s left, it’s good that he’s left. He only heard the 
+voice of the CTIMP studies.
+
+R:	So, every time we would try to be heard because we were in Faculty whereas 
+the CTIMP group were in the core of the College.  We’ve now moved over there as 
+well so it makes it easier as well but we, because we were in Faculty, you know what 
+it’s like when you sit in Faculty, there’s layers and layers to get through before 
+anybody hears anything you say and so you’ve got somebody in the core of the 
+organisation saying, here we have the regulation trials. It’s all about the regulator 
+trials, the regulators, the regulators and we’re just a voice in the wilderness 
+screaming, “But what about good science, what about good science, what about 
+good science?” and of course there’s no penalty for bad science. So as long as 
+they’re getting grants and they’re getting publications and REF is looking okay, 
+where’s the incentive to chase the grotty little trials that didn’t publish.  There isn’t an 
+actual incentive, and nobody is driven particularly organisationally but it’s a good 
+thing to do.  You know, my argument is very simple, if you’ve got junior researchers 
+doing those little feasibility studies, doing their PhDs, learning good practice from day 
+one sets them up to be good investigators.  If they learn on day one it doesn’t really 
+matter then you send them out into the world thinking that actually it doesn’t matter.  
+So, you, know, I think it’s bad training to let people believe that it doesn’t matter but I 
+accept that that’s because I’m working in trials. I do understand, I step back, I look 
+from an organisational perspective, there isn’t much of an incentive. 
+
+R:	and again, we just keep repeating that there’s as much of a problem here as, 
+you know, CTIMPs great, we’re, we’re a bit ahead of the game but there is still a 
+problem and it’s only a matter of time before that problem emerges and whether that 
+comes through the HRA or ethics or where, sooner or later it, you know, it’s going to 
+get to the point where it become apparent, so the freedom of information requests 
+have helped so whatshisname I’ve forgotten his name.  Who’s that chap that always 
+does the freedom of information requests?
+
+
+R:	Till, yeah. So again, you know, I actually find it quite helpful when he sends in 
+those requests because it brings it back on the agenda. Because it’s a reminder that 
+that it’s not just CTIMPs, there are other studies and so I think what happened, I 
+think Till had sent in a request about something about what are our policies for all 
+trials and of course the organisation automatically sends it to the CTIMP people who 
+answer it only about CTIMPs and what was good is he he kept coming back going 
+“Na, na, I’m not only talking about CTIMPs, what about everything else?”  
+
+
+
+R:	And its good because it reinforced exactly what we’d been saying for a long 
+time which is there’s a wider problem here.  Luckily that all coincided with the chap 
+who was obstructive leaving and someone else coming in whose a bit more mindful 
+that that actually this, there’s a wider piece here and so he’s now pushed for budget 
+to set up a team within [an internal] group to really focus on lots of things, not just 
+this but this is definitely on the agenda as this isn’t, you know, something that we can 
+ignore. And we’ve done exercises and going through, cause he’s asked me about 
+what is the cause, what is, from our experience of what we’ve seen what are the 
+things that are affecting trial publications, what’s delays, what’s blocking them and 
+it’s like I say the majority it’s PhD student, maternity leave bizarrely is a huge barrier.
+
+
+R:	I think our record is like seven or eight years.  We had two trials that were oh 
+painfully long.  They did, they both got published in the end and again it wasn’t 
+because anyone was being awful
+
+
+
+R:	 I work on a two-year run in my head, so I don’t get too het up until something 
+hits the two-year barrier and then I start to get irritated with them but then maybe I’m 
+too optimistic because a year, well it depends on when you define the end of the trial 
+but if you’re looking at database log or last patient last visit by the time you’ve done 
+the analysis and you’ve been rejected a couple of times, a year isn’t very long and so 
+I only really start to worry when things start to teet-, teeter over the two-year mark 
+personally but in that’s the face of there’s so much out there that needs tidying up 
+that you know, when it goes beyond two years I start emailing because again 
+administrators emailing investigators saying have you published has an effect but if 
+they ignore them sooner or later somebody has to email them where they’re more 
+likely to pay attention.  And so, having an escalation path to be able to sort of, you 
+know, either have me email then or if that doesn’t work get somebody who will scare 
+them a bit more to email them.
+
+
+R:	Well if they’re, you know, if the Head of Research for the organisation, 
+Professor whoever contacts them saying, “You know, we have been informed, you, 
+we’re a bit-,” and it’s usually phrased nicely “bit concerned about this one, apparently 
+it’s been hanging around for a while, what’s going on?” then, you know, that that 
+makes you sit and I mean it’s difficult there’s no reward for publishing your trials. If 
+you know it’s going to be going into a grotty journal, it’s going to do nothing for your 
+REF impact.  It’s not going to generate your grant income and you’re trying to avoid 
+getting culled in the next round of academic culling, I can completely understand why 
+they’re going to prioritise writing more grants over tidying up the loose ends of an old 
+paper.
+
+
+R:	Yeah, and I think but I think there’s a very big difference between you did a 
+HTA trial and never published it which I think would be almost impossible. It would 
+be almost impossible to have a major NIHR HTA EME grant and never publish it. 
+That’s, that’s unheard of because the funders drive it. It’s the little RfPB [Research for 
+Patient Benefit] feasibilities that that can wane but more likely the ones that really 
+don’t get published are the ones where you’ve got a little pot of money from industry 
+or charity or PhD student project and nobody’s driving it and the reality is NIHR are 
+only going to pay attention to studies that weren’t published that they funded.  
+
+
+R:	You know, I find myself contacting jobbing clinicians, going, “Do you 
+remember that study you did in 2007? Have you still got the dataset?  You know, I 
+realise you’re in Dorset now, but you never did publish it.” [laughs]
+
+I:	Yeah, what is the response to that when you sort of have to do that 
+retrospective that like people long gone outreach?
+
+R:	Depends, depends where they’ve gone to, so if they’re still in academia it’s 
+kind of like, ‘oh yeah-,’ all sorts of excuses like, you know, my email got archived so I 
+can’t understand, I can’t figure out how to unarchive the dataset because it’s buried 
+in my email somewhere to  “I’ll, I’ll try and get to it.”  The latest one is “I’ve got Long 
+Covid, can’t do anything.”
+
+I
+R:	No, there’s a couple who’ve been honest and have said, “It’s never going to 
+be published” and those are the ones who said, “Look here’s the format the data 
+would need to be put into ISRCTN,” and I find it a bit irritating that they want the raw 
+data in a very specific format that involves work to get it into that format.
+
+
+R:	Yeah, but you’re effectively taking all the data breaking it down by trial arm 
+and presenting it in tables.  Somebody would have to spend some time on it to get it 
+into that format. 
+Trials that are abandoned, I have a bit of bugbear with trials that are abandoned 
+because if trial didn’t reach anywhere near its target, they still want, if anybody was 
+randomised, they still want to present it that way.  Now if you randomise six patients 
+into a study and then the study died, what, what for?
+
+R:	If they would accept that there are some historic trials where it’s gone beyond 
+x number of years, where you say, “Look even if it’s a paragraph to say, we started 
+the study. We recruited six people. It died a death, we never even collected any 
+outcome data, or we got 23 people, or we analysed it, there was nothing to see, 
+nothing to see here, it was a mess.”  But usually it’s because it was such a flippin’ 
+mess and sometimes, they don’t even have the datasets anymore, they’ve lost them, 
+or, you know, it’s somewhere but they can’t lay their hands on it and I don’t know if 
+you saw the paper [a colleague] wrote.  [They] wrote up…a paper saying he found 
+himself at a dinner party I think with Ben Goldacre on one side and Ian Chalmers on 
+the other [laughs] and had to admit that he had a proper, a real proper solid 
+unfunded trial, an unpublished trial much to his embarrassment and shame and they 
+ended up going back and publishing it, but [they] wrote up the fact that [they] had 
+had a unpublished trial and, you know, hands up it can happen to anyone.
+
+R:	Can’t say I have, I have, I know, I know some organisations have employed 
+people to make sure trials are registered and published. I don’t know of any 
+Universities are doing that, I think it’s mainly the NHS Trusts but I haven’t paid a 
+huge amount of attention it’s just something that verbals a lot.  I mean I’ve always 
+worked on the basis in the long run it’s not going to particularly be our problem 
+because I think in the long term it will be solved in national level through the HRA or 
+something like that so, you know, I’ve, I’ve never it’s always felt as if it’s just a 
+holding pattern, do what we can until it’s solved properly.
+
+R:	Yeah, and partly, partly because I’m mindful that because I’ve been in post for 
+so long a lot of the people are people I know or knew before they left. So the vast 
+majority of people I’ve been emailing I’ve at least had email contact or met them in 
+the past and so it’s more likely I’ll get a response if it’s me emailing saying, “Hey Paul 
+do you remember me?” or, you know, “Hi Professor Blah, how’s it going over there in 
+Oxford, there’s this trial you didn’t publish.” But because they would have known me 
+at some point, I just think that there’s an opportunity to try to get some of those done 
+in a timescale whereas five years from now or ten years from now, I think that 
+opportunity may be lost either because people will have retired or died or, you know, 
+whatever and so we thought actually, ‘let’s just sweep through, make the historic 
+stuff as good as we can and hopefully the prospective stuff will sort itself out.
+
+R:	Yeah, I mean if it was done through the HRA then it would probably be the 
+NHS R&D offices that would hear about it first because things tend to get cascaded 
+to them. I presume that [my colleague] in the sponsors office must get information 
+cascaded in the same way, I don’t really know. We would probably hear about it 
+through the UKCRC, they usually publicise things that change so it would probably 
+come out through, through them and usually there would be some kind of 
+consultation exercise, if they just change it so we’d probably hear about it through 
+that so yeah.
+
+
+I:	Just a chance to wrap up.
+
+R:	No, I think I think that’s okay.  I think, I think the PhD student project is one 
+that needs to raised because there’s a lack of recognition that a PhD is meant to be 
+a learning exercise and yes, it might generate some useful evidence but there is no 
+requirement for PhD student to publish their PhD so why do we require PhD students 
+doing a clinical trial to publish their PhD beyond ETHOS? And I do think that they 
+should write it up in a PhD thesis, I would prefer that they publish but usually the 
+ones that haven’t published are the ones where, you know, it wasn’t great, there was 
+nothing very exciting, they underrecruited, it did badly and I just think [poor internet 
+connection] you know, would you expect the supervisors to go and write that up. It 
+just, it just feels like there’s a lack of recognition that there is a difference between a 
+teaching or or we say that actually PhD students shouldn’t be running trials. 
+
+I:	Yeah right, I guess suppose that’s the other option.  [laughs]
+
+R:	Yeah, and that’s the way we’ve gone with CTIMPs.
+
+I:	Yeah.
+
+R:	because, you know, we feel quite strongly that if a PhD student runs a CTIMP 
+then what you’re doing is pushing them in a position a) where they could be sat in 
+front of an MHRA inspector which I don’t think is fair to any PhD student and you’re 
+setting them up to not fail. You cannot let them fail.
+
+I:	Yeah.
+
+R:	And to me that just works completely contrary to all of academia where people 
+must be allowed to fail when they’re learning and so I think across the organisation I 
+think there’s an acceptance that that CTIMPs are off the table for PhD students, but 
+we still get PhD students running other trials.
+
+I:	Yeah of course.
+
+R:	And at times well and successfully and they produce good data but then what 
+happens if they fall by the wayside, who’s, who’s meant to pick that up? Or you send 
+a very clear message for your PhD supervisor it will in fact fall to you and you, you 
+are expected to do it and there is an obligation on the supervisor but there needs to 
+be some clarity on that because the supervisors just shrug their shoulders and say, 
+“Well the student’s gone so, you know, there we go,”
+
+
+I:	do you think that that should be at like the like national level or do you 
+think like organisations should be like turning around to and like making that 
+like sort of being clear about those expectations to their Faculty and students.
+
+R:	Do you know, do you know this is where there’s disconnect because what you 
+tend to find in Universities is there tends to be and I don’t know if this is your 
+experience as well, there tends to be a line between education and research in, in a 
+University and so the education side are the ones that deal with all the PhD students 
+and all of the rules and everything around PhD students. They have absolutely no 
+understanding of any of this stuff.
+
+R:	You know, the struggle to know if a PhD student is even doing the trial 
+because they’ve got so many and you know, even I’ve had discussions in the last 
+year with our own PhD people that process PhD applications saying, you know, at 
+the very least could they collect data on whether PhD students are doing trials as a 
+PhD because they have no way of knowing. There’s no trigger, there’s nothing, 
+there’s nothing in the system to even alert anybody to the fact that a student might 
+be planning on doing a CTIMP and so things can and have fallen through the net but 
+when I’ve gone back to try and work out well where in the system can we catch this 
+so it couldn’t happen again is actually quite difficult because you realise the people 
+on the educational side is, you know, as far as they’re concerned this is a PhD 
+student doing and as long as supervisor’s happy then that’s fine but the supervisors 
+don’t realise this could be an issue, you know, where exactly is this information going 
+to be cascaded.
+
+
+
+
+

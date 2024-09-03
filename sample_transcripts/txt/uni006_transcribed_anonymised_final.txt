@@ -1,0 +1,736 @@
+﻿
+I:	Great, excellent so that is that.  Great so to just get started with the, to 
+get started with the interview can you just briefly tell me about your role and, 
+you know, how you interact with trials transparency in your role, at your 
+organisation?
+
+R:	Yeah so, I’m the Quality Manager for [a healthcare organisation’s] clinical 
+trials [department], so we oversee some of the sponsor responsibilities for CTIMP 
+trials that are sponsored [within the organisation] and I’m responsible for like our 
+SOPs which include registering trials on a publicly accessible database and then at 
+the end of the study having the results published on there for EudraCT, I’m the 
+person that actually does the EudraCT upload and post the results on there.
+
+I:	Great so do you in your portfolio are you managing both CTIMPs and 
+non-CTIMPs?
+
+R:	Just CTIMPs.
+
+I:	Just CTIMPs, okay great and then so about how long have you been in 
+this role?
+
+R;	About a year now.
+
+I:	And were you working in related areas prior to that like in this general 
+area of like research governance?
+
+R:	Yeah, I’ve been in clinical trials for nine years now.
+
+I:	Great and did your previous roles deal with like registering and 
+reporting and things like that as well?
+
+R:	I was a [trial monitor] one of our [trial monitor] duties was to register, to get the 
+EudraCT number and do the MHRA submissions which then leads to it being 
+registered on EudraCT and to follow up with the investigators and ask for the results 
+at the end of the study.
+
+I:	Great so and then in terms of [clarifying how sponsorship among named 
+organisations works]?
+
+R:	[Trials are sponsored by the University or an NHS Trust] depending on how 
+they’re set up.
+
+I:	Great and then so, so you, just to make sure I understand because I 
+don’t want to mistake things when I ask further questions.
+
+R:	Yeah.
+
+I:	So, all of those flow into [your organisation] and then that’s where you, 
+where you sit is just above everything.
+
+R:	Yeah.
+
+I:	Great okay so is there someone else at the organisation who would 
+handle like the non-CTIMPS or like are there SOPs and things like that 
+covering non-CTIMPs or is there someone else at the organisation who 
+handles that?
+
+R:	Yeah, so non-CTIMPs would be split by the Trust so each trust will have their 
+own personal department who does that, same with [the University], there’s a whole 
+separate department that does non-CTIMPs.
+
+I:	Gotcha, okay so those are-,
+
+R:	It’s only CTIMPs that are all merged into one [laughs] yeah.
+
+I:	Gotcha do you know, do you have any idea of like the, the rationale, the 
+reasoning for that or-?
+
+R:	[um] So the [office] which I oversee that only looks after CTIMPs because we 
+look after the regulatory responsibilities.
+
+I:	Okay.
+
+R:	So that’s more why it was more the MHRA responsibilities, and I know there’s 
+recently device studies are now more heavily, heavily regulated and the [University] 
+is looking at having something similar in place but for the moment it’s just the CTIMP 
+studies.
+
+I:	Gotcha great so I’ll come back, I’ll circle back to some more detail about 
+exactly how you manage and register and report and things like that and what 
+that looks like
+
+R:	Yeah.
+
+I:	but one broad question I like to ask at the top of these interviews can 
+you just explain to me in your own words why there are, you know, 
+requirements for the registration and reporting of clinical trials, like why does 
+this, why do these requirements exist and why are they important or why are 
+they not important?
+
+R:	Yeah I wasn’t expecting that, yeah so yeah I think it’s really important 1) to 
+avoid duplication because I know, especially at the moment and with all the Covid 
+studies, investigators in the country even around the world may come up with the 
+same idea and I suppose you want to stop having identical or even very similar ideas 
+and studies running in parallel if you only need one, for example.
+
+I:	Mhm.
+
+R:	So I suppose that’s important so if you are thinking of doing a study you could 
+do a search, see if anyone’s looked at that particular drug and that particular area 
+before: 1) It would help with the basis of your research for like background and 
+what’s been done before and what needs to be done further like a review, do like a 
+literature review for example, see how it can be improved or 2) you might see 
+someone’s done it and didn’t work so you might think ‘oh it’s a good idea but maybe 
+not worth doing.’  
+And then other important factor is transparency I think the participants in the trials as 
+well, just to see, so they can see the study there in it has been officially registered, 
+the results are made available so if they want to see them, they can. Their doctors 
+can see them if anyone has any questions or any, wants their information, it is 
+available for them to see basically.  I don’t think anything should be secret when it 
+comes to people’s care in that way.
+
+I:	Great so let me just see where I want to go next here. So what in terms 
+of like the hierarchy at your, at your organisation like how much is above and 
+how much is, like where are you in these sort of like hierarchy of trial 
+governance and research like where does, just trying to understand where you 
+sort of sit in relation to who is above you and who is below you or-?
+[Detailed explanation of organisation structure removed as identifiable. The 
+participant works primarily on a certain category of trials within the organisation.]
+
+I:	Gotcha absolutely and okay great so I think now maybe we’ll get into a 
+bit of like the, the details of sort of how your SOPs operate and like how 
+registration and then eventual reporting fits into that.  So starting with 
+registration so if I’m a trialist and I wanna start a trial within the [organisation], 
+what does that process look like for me sort from the beginning?
+
+R:	So we become involved once you have your funding application fully signed.
+
+I:	Okay.
+
+R:	So, whoever’s sponsoring your research, the [contracts] team would help with 
+all the funding, get the agreements signed etc.  At that point, you would come to my 
+team once you’ve got all your funding and the first thing we do is we have a kick-off 
+meeting and in that meeting one of the items on the checklist is that the trial has to 
+be registered on a publicly accessible database and that the results have to be 
+published within twelve months or six months if it’s a paediatric trial. So we make 
+that very clear from the beginning that’s what needs to be done and then as we 
+move through the set-up process so you get your REC approval, you get your MHRA 
+approval, you get your R&D approval before we issue the green light for recruitment 
+we will, so when, it’s a bit more complicated now because before it’d be on EudraCT 
+and we know the MHRA has put it on EudraCT, that’s fine.  
+
+I:	Right.
+
+R:	Now we have to go back and ask have you put it on ISRCTN or 
+clincialtrials.gov and just remind them it needs to be on there before we can green 
+light them for recruitment and then obviously six weeks can tell them it has to be on 
+there legally six weeks after they recruit their first patient to be in the terms of their 
+REC approval, so we do make it clear throughout the process that it does have to be 
+registered.
+
+I:	And then what, is there any, has there, post-Brexit and post leaving the 
+EMA infrastructure, has there been any, like do you, have you noticed for the 
+few that have started in these four months since then have you, is there any 
+preference amongst your investigators for clinicaltrials.gov or the ISRCTN, 
+just curious?
+
+R:	So, our preference is the ISRCTN
+
+I:	Okay.
+
+R:	 and that’s what we would recommend and now when I provide a quote for 
+trial costing, I include the registration fee in there just to make them aware that it’s 
+like a £270 fee to go on there
+
+I:	Yeah.
+
+R;	unless their NIHR funded, yeah.
+
+I:	Yeah, okay great so and is there a reason for steering people towards 
+the ISRCTN, more than clincialtrials.gov?
+
+R:	It’s to do with clincialtrials.gov.  I know we don’t come under the FDA 
+regulations, but they said there could be a financial penalty if you don’t report within 
+the timelines.  Obviously, we would encourage, and we do tell investigators they 
+need to report in those timelines, but I think it’s just in case there is a financial 
+penalty that comes onto the [sponsor].
+
+I:	It just feels safer, yeah?
+
+R:	Yeah, yeah.
+
+I:	Gotcha, great okay and then so as far as the actual, some, maybe this 
+has changed a bit in the time since with once again leaving the EMA 
+infrastructure but perhaps you could draw, tell me a little bit of what it was like 
+before and after but like, so who’s the actual person doing the registering 
+usually, like who is actually like typing the information into the database and 
+sending it off, is it you, is it someone else?
+
+R:	So before when it was EudraCT it would be the [trial monitor] would registrar 
+for the EudraCT number and then it’s actually the MHRA who types in and fills in the 
+database so as sponsor you don’t have access to edit that, the MHRA do it, and 
+when you do an amendment, they also amend it for you on there.  Post, not having 
+access to that anymore, it’s the investigator or the investigator team that we ask to 
+register on a database and do the updating.
+
+I:	Right so the investigator is just sort of in charge.  They may delegate it 
+but it’s their responsibility?
+
+R:	Yeah.
+
+I:	Okay great and just so I understand so the way that it used to work so 
+basically you would file paperwork with the MHRA and then they would do the 
+official typing it into but like all that information would be sort of like file-, filed 
+in some way?
+
+R:	Yeah, so when you apply to do a trial, you fill oƒut. It’s called an CTA Annexe 
+1 form that’s where all your trial information goes and then when you look on the 
+EudraCT clinical study register, you know, it has that table, that information is pulled 
+directly from that form, so I imagine they just upload it.
+
+I:	Gotcha so they just like, yeah, pull that form in and then I assume they 
+turn it into the XML that gets sent off to the EMA, yeah. 
+
+R:	Yeah, we send them the XML yeah and I imagine they just forward that on or 
+post that some way, yeah.
+
+I:	Yeah gotcha, okay excellent so what procedures, so now that I’m 
+registered and my trials underway, what procedures do you have in place to 
+ensure, like is there, or is there any procedures in place to ensure that the 
+record stays updated over time?
+
+R:	So previously that would just happen automatically when you did an 
+amendment to the MHRA, they’d upload the, so basically every time you do an 
+amendment you update that XML and they would just post that.
+
+I:	Okay.
+
+R:	Now we don’t have a formal procedure in place yet, but I imagine it will be 
+every time there’s an amendment, we’ll tell the investigator they have to go and 
+update that information on that database.
+
+I:	Gotcha.
+
+R:	We haven’t had a study that’s hit that point yet 
+
+I:	Okay.
+
+R:	So still fairly new yeah.
+
+I:	Yeah great and then and then I guess I assume you wouldn’t have had 
+studies that have hit the completion point yet that have started post so if you 
+can talk about how it used to function and how you think it would function 
+moving forward but 
+
+R:	Yep.
+
+I:	But when it actually comes and you said you have experience entering 
+things into the EudraCT so, you know, my trials finished, how does that wrap 
+up procedure start to look like to get you the results on time and to then, you 
+know, make sure they get up and in inputted and all that.
+
+R:	Yep so once the trials finished and the database is locked so all the data’s 
+clean, the data’s locked it gets like exported to go off to the statistician to do their 
+thing so at that point we would remind the Investigator, “You’ve got 12 months to get 
+this published to get the report back to me,” and we have a template basically 
+EudraCT is not very user-friendly and it, it’s just not very nice so we have made a 
+word template of basically all the information that needs to go in there. So I send that 
+off the investigators and say this is the format I need the data in to like the adverse 
+events for example, it’s a very specific format that I need it and then once we hit 
+about the nine-month mark, we will send them monthly reminders, “If I haven’t had 
+your report yet, I’m gonna need it in the next three months.” And normally at 11 
+months, we’ll start asking them weekly for that report, just because I need time to 
+upload it as well, especially if it’s a big multi-centre study because you can’t just 
+attach something to you that you have to physically type in every single entry.
+
+I:	Tabular, yeah.
+
+R:	Yes [laughs] it takes time so I, yeah so, I just let them know I need time to be 
+able to do that to meet the deadline.
+
+I:	So how was that, it’s not the way things function anymore but how was 
+that working-, just curious like how was that working?  Were people generally 
+getting things to you on time or was there a lot of chasing involved, like how 
+did that look especially with such a big portfolio I assume?
+
+R:	Yeah, it did vary generally everyone was pretty good in getting that 
+information to us or if for example they were waiting for like analysis of a lab 
+endpoint for example that they didn’t have yet, I would just say, “Send me what 
+you’ve got. I can start inputting that in and then once you’ve got me the last bit that 
+will be like a half hour job rather than the two-day job it is to enter all the information.”  
+So yeah, we do work with our investigators to try and make it easier for them as well 
+but generally people are pretty good. It’s normally like I say if there’s been a delay 
+somewhere along the line, there might be a delay in data cleaning.  It might be a 
+delay in some lab analysis. It might be the statistician wasn’t available so there are 
+various delays but generally the investigators are pretty good at getting the results to 
+us in the timeframe.
+
+I:	Yeah, and have you ever had a situation where you uploaded some 
+results and then updated them because you have that capability too, right?
+
+R:	Yeah.
+
+I:	Yeah.
+
+R:	I have done that in the past yeah so if, if we hit our twelve months and I might 
+have all the primary endpoint analysis I’ll enter that in and then if the secondary 
+endpoint comes at a later date, I will update it to put that information in there as well.
+
+I:	Excellent and then so that, the reminder emails and that monitoring 
+process sort of how is that managed, like what is the actual like way you like is 
+there just a big spreadsheet or, you know, how do you do that?
+
+R:	Yeah so, I have a spreadsheet that has all our live studies on. Once they get 
+completed, they move onto a new tab and I have a column for CSR deadline and 
+then once we hit that month of when it’s due, they move to a separate tab for 
+basically uploads and that’s how I track it. So I would go in there every month see 
+what’s due or due to be due soon and keep on top of it that way and at the same 
+time all of our trials have a dedicated [trial monitor] on them and there’d be the ones 
+who’d be emailing the investigators and chasing the data so I would just tell them, 
+“Oh, this is when the CSRs due, please can you put a calendar reminder in your 
+diary to chase them every month,” for example and that’s, that’s how it’s managed.
+[Short clarification section removed for potentially identifiable information]
+R:	[The trial monitors are] the ones who would go to site and do the source data 
+verification, so they check the medical record matches the database. 
+
+I:	Gotcha okay and then so now that EudraCT and the EMA are out of the 
+picture do you have a sense of what putting results on the ISRCTN or 
+clinicaltrials.gov will, will look like moving forward?
+
+R:	I imagine it will be similar in the way we would remind them and chase them 
+for upload results, and also, as sponsor we need a copy of the results I’m not a 
+hundred per cent sure without looking what format it goes into each of those 
+registries.
+
+I:	Mhm.
+
+R:	So, we can still provide them with our template, or they can use their own 
+template depending as long as the results are published, and we receive a copy but 
+yeah without doing it I can’t say for certain exactly what they’ll look like, but we would 
+still chase them and make sure the results are uploaded and that we receive a copy 
+as well.
+
+I:	But it sounds like that might sit with the investigators now that it’s not 
+that, like I know that there’s you can still put things, results on the EudraCT so 
+eventually all those will get wrapped and submitted but 
+
+R:	Yeah.
+
+I:	 but the moving forward for these other registries it sounds like that will, 
+that onus will fall on the investigator most likely unless something changes 
+between now and-?
+
+R:	Yeah, most likely it’s difficult because for EudraCT I would be the contact 
+point so when I log in I see all those trials that for the other databases I don’t have 
+them in my personal registry for example
+
+I:	Yeah.
+
+R:	 and I’m not sure if I could access them, so yeah that’s something we’re 
+gonna need to explore down the line whether we [ask] the investigator to do it or 
+whether we automatically get given access to all those trials so we can do the 
+uploads ourselves.
+
+I:	Okay.
+
+R:	That’s something that yeah, we still need to look into and determine how 
+we’re gonna do it.
+
+I:	Great so and then is, so does your involvement end in in terms of like 
+results dissemination, does your involvement end at the getting them into a, 
+like reg-, like pretending that EudraCT is still the primary mode of functioning 
+
+R:	Yeah.
+
+I:	Does that sort of end at getting that on the registry or is your like office 
+involved in like following up on publications and things like that as well at all?
+
+R:	Yeah, no we end at posting on there, yeah, because we do the regulatory 
+responsibilities everything else fell under the CI so they’re yeah, they do their own 
+publications or depending on their funder agreement where they need to publish, 
+who they need to tell that.  The onus for that all lies on them, yeah.
+
+I:	Great and so one thing I’m particularly interested from you, from your 
+experience is unique to some of the other people I’ve chatted with for this 
+study so far is is has there, is there any sort of differences in your job in 
+dealing with the University versus dealing with the NHS Trust or is it all pretty 
+uniform in the way like the organisation runs?
+
+R:	Yeah, it’s pretty uniform so our SOPs cover all the organisations, and I 
+wouldn’t, we’d, our office doesn’t treat them differently, they’re all treated the same. 
+There might be certain nuances but largely they’re all treated exactly the same and 
+there wouldn’t be a difference.
+
+I:	And they’re all, yeah and they don’t like there’s not more sort of like 
+complications or working with an NHS Trust in the University or anything like 
+that, no, okay?
+
+R:	No.
+
+I:	So I’m interested what you hear works particularly well and particularly 
+not well about the way, like are there, what would you like to see improved and 
+what do you think works particularly well about the way organisation does this 
+like manages these processes for registration and reporting?
+
+R:	Yeah, I suppose that’s a difficult one to answer at the moment, but I think 
+moving forward if we could have access to those registries to do the uploads 
+ourselves that would be good in a way that we can remain responsible for it. It’s a 
+difficult one to answer because the trial, I don’t have the trial results, I can’t make 
+someone analyse their data any quicker or get back to me any quicker and I don’t 
+see how as an organisation or an institution that could be managed either. It’s just 
+the investigators know the rules, they know their workloads largely they do get them 
+to us on time, so I suppose the system does work. It’s just when there’s 
+unforeseeable delays in there.
+
+I:	Right okay and then so you said, so you’ve been in this role for a year 
+you said and then
+
+R:	Mm mm.
+
+I:	were you at the, were you at [this institution] even like in your prior 
+position as well, yeah?
+
+R:	Yeah, yeah.
+
+I:	And then so over the time that you’ve been there have you noticed sort 
+of changes in the way that these processes work like, like have things 
+changed for the better or for the worse like over the time you’ve been at the 
+organisation because it sounds like you’ve been in one form or another 
+interacting with these processes like all along so like, you know-,
+
+R:	Yeah so not since I’ve been there but I think a couple of years ago now when 
+it was published about how bad the, especially the University sector was at 
+publishing results there has been a big improvement and we did manage to chase 
+everyone and get all our backdated results uploaded which was good so yeah, now 
+there’s a firm process in place which as I said we make people aware right from the 
+beginning this is a requirement it has to be done and we remind then throughout so 
+there has been a big improvement in the past couple of years.
+
+I:	So that focus sort of arose from that attention that got put on the like the 
+processes for that?
+
+R:	Yeah, yeah, I don’t think I don’t think people realised the extent to how much 
+data was missing for example, or who’s responsibility it might have been to ensure 
+that was on there so for some of them the data had been published in a journal for 
+example.
+
+I:	Right.
+
+R:	We hadn’t closed the loop and put it on the database and some of that was 
+due to the EudraCT not being very user friendly.
+
+I:	Right sure so it sounds like yeah like EudraCT was one of the, in terms 
+of, we’re talking barriers, the EudraCT itself would it be fair to say that was a 
+barrier?
+
+R:	Yeah, and then once we got the results, the backlog of entering all that data 
+in, yeah and one of my colleagues did [give advice] on how to get results uploaded 
+into EudraCT because they know other institutions were having similar problems and 
+difficulties in doing that.
+
+I:	Yeah no I know that [this institution] has been a bit of a model I think for 
+how to, how to do this really well so that’s why, part of the reason I was, you 
+know, very excited to talk to you that it’s really brought it together over the 
+recent years and become a leader in the coun-, within the country and within 
+Europe I would say and like, you know, at least meeting those regulations and 
+navigating that process which I know can be very difficult.
+
+R:	Yeah.
+
+I:	So, what so when that change was sort of happening to the extent that 
+you’re aware, like did that involve a lot of buy-in from sort of like high level, 
+like high level people at the, at the either the individual institutions or the, like 
+where did that pressure sort of come from, was it-?
+
+R:	I’m not sure I wasn’t involved in that process to be honest or those 
+discussions so I couldn’t say without making assumptions.
+
+I:	Yeah, no worries, I wouldn’t want you talk about things you you’d don’t 
+know, you aren’t aware of but in the off-, in the chance you were. Alright, let’s 
+see, okay yeah so talking about how so with registration falling to the, to the 
+individual trialist and now potentially some of that results reporting 
+responsibilities and the inter-, ongoing interactions with the registries what 
+sort of like training or like onboarding to people to familiarise them with that 
+processes like what, what to what extent does that happen and what does that 
+look like and are you involved at all in that?
+
+R:	So I suppose we don’t give training on like the databases themselves. All of 
+our Chief Investigators do CI responsibility training and one of the items in there will 
+be that they have to register it and do have the results available but we don’t give 
+specific training in that, no.
+
+I:	Yeah, so you don’t say like this is how clinicaltrials.gov works and how 
+you work or something like that?
+
+R:	Yeah.
+
+I:	Yeah, okay?
+
+R:	No, we let people navigate that themselves. 
+
+I:	Sure, sure sure. Are you aware of the individual institutions sort of do 
+that sort of thing at all, just if you’re aware?
+
+R:	I’m not sure and again it will depend on us so some of our studies will have 
+Trial Managers and I know that will be their responsibility and if that Trial Manager 
+sits within like a CTU or a CRO they may do that or have training on that but again it 
+depends on how each individual study’s set up, yeah.
+
+I:	Okay and then what so when you are in this job and you, like are there 
+maybe you don’t have such a good answer since you’ve been, it sounds like 
+you’ve only been in this role for about as long as Covid’s going on
+
+R:	Yeah.
+
+I:	but like are you involved, are there external resources to your 
+organisation that you rely on to try to, to like under-, to like essentially, do 
+your job better to improve it, like understanding the regulations or 
+understanding the like best practices for dealing with these sorts of things, 
+you know, are there any professional organisations or outside places you go 
+for that?
+
+R:	No apart from like the MHRA and the HRA webpages, blogs not really.  We 
+do have [some in-house training resources] but we would just check the MHRA and 
+the HRA web pages or if it’s we have some European studies, the EMA web pages.
+
+I:	Mm so there’s like a good would, would you say there’s like a good sort 
+of knowledgebase within the organisation that you feel like you can turn to for 
+questions or issues like with the-?
+
+R:	Yeah, yeah.
+
+I:	Great and then let me like go through my questions here and make sure 
+there’s nothing else I want to make sure I touch on.  So, are there any like just 
+while we’re talking, so are there any sort of specific examples of, you know, 
+you don’t have to go into detail about the exact trials themselves but just like 
+experiences from being in this world for, you know, in a year and dealing with 
+the requirements, where like is there any sort of individual experiences that 
+have stuck out to you about this process that you might want to tell me about 
+or, you know, just like, you know, this was, this happened this way and I found 
+it instructive or just in anything you might wanna convey?
+
+R:	Yeah I suppose the last year like we said has been different to how it would 
+usually be 1) because of Covid and 2) because of Brexit so at the moment there are 
+a few studies where results outstanding but that’s because they’ve been delayed due 
+to Covid so the trial finished, database has been locked but a lot of the lab analysis, 
+the labs have all got redirected to Covid work so they haven’t been able to analyse 
+the research samples, so for example we might have a big multi-centre study so they 
+take samples throughout the trial.  They get stored at the site and then once the trials 
+finished that all gets transferred to the central labs and they do a big bulk analysis 
+and we have a few studies where that’s been delayed because of Covid so we 
+haven’t been able to upload the results because of that or even in some cases the 
+data cleaning hasn’t been able to be finished because the hospital sites don’t let the 
+monitor’s on to look at the data because they’ve got a no visitor policy.
+
+I:	Gotcha.
+
+R:	So, at the moment there are delays to reporting and I did contact the EMA 
+about this and they kind of just said upload them when you have them [laughs] like 
+okay. [laughs]
+
+I:	Yeah that’s sort of the, I think that’s a difficulty with EMA compliance 
+with something you won’t have to worry about in short enough time or worry 
+much about but the fact that other than something like getting public attention 
+to the matter, there’s really no like repercussion from the EMA from not, from 
+not, that’s why it was sort of allowed to be bad until someone pointed it out 
+there was no repercussion for not doing so.
+
+R:	Exactly. Right and then I suppose more recently with the new trials asking 
+investigators to make sure they’re registered and to show me a link to the 
+registration so I can check, a few of them have come back saying we have a 
+EudraCT number and I have to explain, “Oh yes the MHRA still asks for a EudraCT 
+number but that doesn’t mean it’s actually registered on EudraCT and that’s causing  
+a lot of confusion because why we do have a number if we’re not registered so my 
+EudraCT registration covers me and then you have to send them the link to the MHA 
+website where they’ve updated the information to say, ‘not the case anymore,’ so I 
+think there is some confusion of why do we still get that number if we’re not 
+registered on there. So, I don’t know if that’s going to change moving forward if the 
+UK will have its own numbers they give out or their own version of EudraCT rather 
+than using different databases. 
+
+I:	I assume that would be pre-, so anything that started since January 1st I 
+assume wouldn’t be getting EudraCT numbers at all?
+
+R:	No, you still get if you-,
+
+I:	You still get a EudraCT number.
+
+R:	If you start a trial today you still have to get a EudraCT number, yeah.
+
+I:	Does it go into the back end EudraCT system still?
+
+R:	Yeah, so basically anyone can register for a number
+
+I:	Okay.
+
+R:	 but to actually get on the database that’s what the regulatory so once you 
+have your regulatory approval like your MHRA approval, that’s when they post it on 
+there. So there might be lots of numbers that are never used.
+
+I:	Oh yeah that’s interesting.
+
+R:	So, you can-,
+
+I:	But they’re still giving out, I guess they just haven’t made a process for 
+new numbers, yeah
+
+R:	Yeah, they-,
+
+I:	but that’s interesting, I wonder if those numbers are still officially given 
+to the EMA or essentially the MHRA is just making their own numbers, that’s 
+really interesting to hear.  I had not heard about that yet, that’s really 
+interesting.  
+
+R:	I think that’s the main identifier they use they just haven’t changed it so that’s 
+just they’ve stuck to it yeah and that’s causing confusion.
+
+I:	Interesting, very interesting to hear that.  So I think one other question 
+so you mentioned that the investigators you deal with have generally been 
+pretty good about staying on top of things but I’m just curious do you ever 
+hear anything from that side, so I’m not sort of for this study I’m not speaking 
+with investigators, I’m mainly just speaking with the governance and research 
+integrity staff and people like that, even Trial Managers but not investigators 
+directly but I’m interested to hear if you hear second hand any complaints or 
+like whinging from from investigators about some of these requirements or-,?
+
+R:	Yeah so, I suppose the, the main complaint would be that the 12 months does 
+seem to go very quickly.  
+
+I:	Okay.
+
+R:	Especially if it’s a paediatric study and you’ve only got those six months 
+there’s a lot to fit in to that window, obviously depending on the complexity of the trial 
+but we have some studies that are over like 60 sites and it’s just you have to get all 
+that data collated into one which can take time and I suppose very, very occasionally 
+we have a few investigators who are not ready to publish yet and they might wanna 
+do a second phase of their trial and they’re a bit concerned that if they put this 
+information out there that I suppose in a way someone might steal their idea if that 
+makes sense they might have done like a small feasibility study, ‘Does this drug do 
+that?’ and the results, ‘oh it looks like it might do, we need to explore that further.’ I 
+think sometimes they may worry that someone else might see that and take that 
+opportunity.  I don’t think that’s ever happened and when we explain it’s a legal 
+requirement, we have to publish the results they’ve all been fine but yeah, I have had 
+in the background sometimes that concern comes up. Also, some journals won’t 
+publish if the results are already published and if their, if their journal submission isn’t 
+quite ready yet that can cause a few issues and again, they have to explain it so a 
+legal, legal requirement.
+
+I:	Yeah so, I’m interested have you ever heard of that happening, someone 
+getting a, someone having difficult publishing because the results went on the 
+EUCTR first?
+
+R:	Yeah so, I’m not involved in that directly, but I know in the past [there have 
+been rumours of] this journal has turned them down because it’s been published, or 
+some people have tried to push forward their publication because of our deadline to 
+post.
+
+I:	Yeah, that’s interesting to hear because I’ve heard that fear before, but 
+I’ve never ever had anyone show me sort of an example of it in the flesh as it 
+were, like actually say technically the good journals aren’t, like at least a lot of 
+the journals that sign onto the ICMJE aren’t supposed to do that, they’re-, 
+
+R:	Yeah, but there is that fear and is a worry and I don’t know a specific 
+example, but I think it may have happened in the past which has made people 
+cautious.
+
+I:	Interesting. Great and then just-,
+
+R:	And we do try to explain what we post isn’t the same because it’s just like 
+more of breakdown summary of results whereas in the journal have all the 
+background all of this needs that whereas ours is just very simple statistics
+
+I:	Yeah, there’s no interpretation, there’s no, there’s very little 
+methodological detail as it were. 
+
+R:	Yeah, there’s no like discussion or anything in there or-, yeah.
+
+I;	Great so just to, one other thing I wanna touch on just to make sure my 
+understanding is correct, so concerning Brexit so the MHRA has like within 
+anyone, not just a clinical trial but essentially like the UK is sort of still 
+operating like a lot of those laws exist still as if we were part of Europe but 
+they’re just for the UK now as it were, right?
+
+R:	Yeah.
+
+I:	So they’ve chosen to maintain those six and twelve month deadlines 
+that existed for the EMA, do the clinical, the European Clinical Trial Directive 
+but now they’re just saying they just have to appear somewhere like on a 
+registry.  It’s not EudraCT anymore that they have to show up on?
+
+R:	Yeah, and they do give ISRCTN and clinicaltrials.gov as an example on their 
+website as well.
+
+I:	Okay great so yeah I think I am pretty much, that’s pretty much all I 
+wanted to touch on but I usually like to just ask is there anything that you’d 
+like to mention about, you know, the topics I might be interested in that I didn’t 
+talk about or that you’d like to, something you were expecting me to ask and I 
+didn’t or a nice thing, answer you had thought about and prepared that I didn’t 
+get, give you a chance to talk about?
+
+R:	No, I don’t think so. I suppose the only other thing I recently went on like an 
+EMA training day for the new EU regulations that they’re bringing out and when they 
+got to the results sections, it looked like you just uploaded a PDF [laughs] so that 
+was very good news. So hopefully in the future if it’s just, if the investigators just 
+write out their results and you upload a PDF that would be a lot easier and a lot user-
+friendly for people. I imagine that would help with the posting of results.  
+
+I:	So that’s for the new system that will come online sometime in the near 
+future.
+
+R:	Yeah, it’s [laughs]
+
+I:	So, I assume, I guess one more follow-on question on that regard, I 
+assume [with your institution being large] I assume you may still be interacting 
+with the EMA system.  You don’t have to for all of your trials, but I assume 
+you’ll have trials where you’re the primary sort of site that have European co-, 
+like there’s stuff that will still end up but via the other countries, right?
+
+R:	Yeah, yeah because we do have international studies, yeah so when it 
+happens in another country it’ll still be registered on EudraCT and followed up in that 
+regard but again because there’s new laws now so if you’re a UK sponsor you have 
+to have a co-sponsor or a legal rep in the EU to do trials there.
+
+I:	Yeah.
+
+R:	So, when we have a co-sponsor, that because their responsibility to make 
+sure it’s registered and published and same if we have a legal rep, we’ll have an 
+agreement with them and that will be one of the services that we ask them to provide 
+to do the registration and posting of results.
+
+I:	Great so none of, like you, like none of the constituent sponsors of your 
+organisation would or like never say never but usually would not be ever listed 
+as the sponsor on a, on one of the like, a EudraCT registration anymore would 
+be your partner in that country that would be listed as the sponsor.
+
+R:	Yeah.
+
+I:	Okay great excellent so if there’s nothing else, I going to shut off the 
+recording.
+
+
+
+
+
+
+
