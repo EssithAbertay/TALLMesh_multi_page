@@ -19,6 +19,7 @@ from prompts import finding_themes_prompts
 from llm_utils import llm_call
 import logging
 import tooltips
+import time
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -110,9 +111,15 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p)
     logger.info(f"Starting to process codes from {len(selected_files)} files")
     logger.info(f"Model: {model}, Temperature: {model_temperature}, Top P: {model_top_p}")
 
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+
     # Combine all selected files into a single DataFrame
     all_codes = []
-    for file in selected_files:
+    for i, file in enumerate(selected_files):
+        progress = (i + 1) / (len(selected_files) + 3)  # +3 for preprocessing, AI processing, and JSON parsing
+        progress_bar.progress(progress)
+        status_text.info(f"Reading file: {file}")
         logger.info(f"Reading file: {file}")
         df = pd.read_csv(file)
         logger.info(f"File {file} read. Shape: {df.shape}")
@@ -121,6 +128,8 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p)
     logger.info(f"Combined DataFrame shape: {combined_df.shape}")
     
     # Preprocess the combined DataFrame
+    status_text.info("Preprocessing codes...")
+    progress_bar.progress((len(selected_files) + 1) / (len(selected_files) + 3))
     preprocessed_df = preprocess_codes(combined_df)
     
     # Create a list of codes for the prompt
@@ -131,18 +140,24 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p)
     logger.info(f"Full prompt constructed. Length: {len(full_prompt)}")
     
     # Process the codes using the AI model
+    status_text.info(f"Processing codes with {model} model...")
+    progress_bar.progress((len(selected_files) + 2) / (len(selected_files) + 3))
     logger.info("Calling AI model to process codes")
     processed_output = llm_call(model, full_prompt, model_temperature, model_top_p)
     
     # Extract and parse the JSON response
+    status_text.info("Parsing AI response...")
+    progress_bar.progress(1.0)
     json_string = extract_json(processed_output)
     if json_string:
         logger.info("Successfully extracted JSON from AI response")
         parsed_output = json.loads(json_string)
         logger.info(f"Number of themes found: {len(parsed_output.get('themes', []))}")
+        status_text.info("Theme finding process completed successfully.")
         return parsed_output, preprocessed_df
     else:
         logger.warning("No valid JSON found in the response")
+        status_text.info("Failed to extract themes from AI response.")
         return None, preprocessed_df
 
 def save_themes(project_name, df):
@@ -444,7 +459,7 @@ def main():
             if themes_df is None or codes_df is None:
                 st.error("Error: Required files not found in the project directory.")
             else:
-                st.success(f"Files loaded successfully for project: {selected_project}")
+                st.success(f"Theme-codes generates successfully for project: {selected_project}")
                 
                 # Process data to create the final theme-codes book
                 final_df = process_data(themes_df, codes_df)
