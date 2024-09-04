@@ -19,6 +19,7 @@ from project_utils import get_projects, get_project_files, get_processed_files, 
 from prompts import reduce_duplicate_codes_prompts
 from llm_utils import llm_call, process_chunks
 import logging
+import tooltips
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

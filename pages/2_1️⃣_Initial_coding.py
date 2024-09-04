@@ -16,6 +16,7 @@ from prompts import initial_coding_prompts
 from project_utils import get_projects, get_project_files, get_processed_files, PROJECTS_DIR
 from llm_utils import llm_call
 import logging
+import tooltips
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -214,7 +215,8 @@ def main():
         "Select a project:", 
         project_options,
         index=index,
-        key="project_selector"
+        key="project_selector",
+        help = tooltips.project_tooltip
     )
 
     # Update session state when a new project is selected
@@ -260,7 +262,7 @@ def main():
         default_models = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
         azure_models = get_azure_models()
         model_options = default_models + azure_models
-        selected_model = st.selectbox("Select Model", model_options)
+        selected_model = st.selectbox("Select Model", model_options, help = tooltips.model_tooltip)
         
         # OpenAI & Anthropic Models have different max temperature settings (2 & 1, respectively)
         max_temperature_value = 2.0 if selected_model.startswith('gpt') else 1.0
@@ -272,7 +274,7 @@ def main():
         all_prompts = {**initial_coding_prompts, **custom_prompts}
 
         # Prompt selection
-        selected_prompt = st.selectbox("Select a prompt:", list(all_prompts.keys()))
+        selected_prompt = st.selectbox("Select a prompt:", list(all_prompts.keys()), help = tooltips.presets_tooltip)
 
         # Load selected prompt values
         selected_prompt_data = all_prompts[selected_prompt]
@@ -280,13 +282,13 @@ def main():
         model_temperature = selected_prompt_data["temperature"]
         model_top_p = selected_prompt_data["top_p"]
 
-        prompt_input = st.text_area("Edit prompt if needed:", value=prompt_input, height=200)
+        prompt_input = st.text_area("Edit prompt if needed:", value=prompt_input, height=200, help = tooltips.prompt_tooltip)
         settings_col1, settings_col2 = st.columns([0.5, 0.5])
         with settings_col1:
-            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value),step=0.01,value=model_temperature)
+            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value),step=0.01,value=model_temperature, help = tooltips.model_temp_tooltip)
 
         with settings_col2:
-            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1),step=0.01,value=model_top_p)
+            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1),step=0.01,value=model_top_p, help = tooltips.top_p_tooltip)
 
         if st.button("Process"):
             st.divider()
