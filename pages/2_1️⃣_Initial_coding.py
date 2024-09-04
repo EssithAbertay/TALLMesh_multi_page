@@ -83,31 +83,50 @@ def process_file(file_path, model, prompt, model_temperature, model_top_p):
     with open(file_path, 'r', encoding='utf-8') as file:
         content = file.read()
     
+    # Create placeholders for real-time updates
+    file_progress = st.empty()
+    chunk_progress = st.empty()
+    code_progress = st.empty()
+    
+    file_progress.info(f"Processing file: {os.path.basename(file_path)}")
+    
     chunks = split_text(content)
     all_codes = []
     
+    file_progress.info(f"File split into {len(chunks)} chunks")
+    
     for i, chunk in enumerate(chunks):
+        chunk_progress.info(f"Processing chunk {i+1}/{len(chunks)}")
         chunk_prompt = f"{prompt}\n\nFile Content (Part {i+1}/{len(chunks)}):\n{chunk}"
         chunk_response = llm_call(model, chunk_prompt, model_temperature, model_top_p)
         
         if chunk_response is None:
             logger.error(f"Failed to process chunk {i+1}/{len(chunks)}")
+            chunk_progress.warning(f"Failed to process chunk {i+1}/{len(chunks)}")
             continue
 
         try:
             json_output = json.loads(chunk_response)
             if isinstance(json_output, dict) and 'final_codes' in json_output:
-                all_codes.extend(json_output['final_codes'])
+                chunk_codes = json_output['final_codes']
+                all_codes.extend(chunk_codes)
+                code_progress.info(f"Extracted {len(chunk_codes)} codes from chunk {i+1}")
             else:
                 logger.warning(f"Unexpected JSON structure in chunk {i+1}")
+                code_progress.warning(f"Unexpected JSON structure in chunk {i+1}")
         except json.JSONDecodeError:
             logger.error(f"Failed to parse JSON in response for chunk {i+1}")
+            code_progress.error(f"Failed to parse JSON in response for chunk {i+1}")
     
     if not all_codes:
         raise ValueError("No valid codes were extracted from any chunks")
     
     # Combine all codes from different chunks
     combined_output = {'final_codes': all_codes}
+    file_progress.success(f"Completed processing file: {os.path.basename(file_path)}")
+    chunk_progress.empty()
+    code_progress.success(f"Total codes extracted: {len(all_codes)}")
+    
     return json.dumps(combined_output)
 
 def main():
@@ -278,6 +297,7 @@ def main():
                     for i, file in enumerate(selected_files):
                         file_path = os.path.join(PROJECTS_DIR, selected_project, 'data', file)
                         try:
+                            st.info(f"Processing file {i+1}/{len(selected_files)}: {file}")
                             processed_output = process_file(file_path, selected_model, prompt_input, model_temperature, model_top_p)
                             json_output = json.loads(processed_output)
                             df = pd.json_normalize(json_output['final_codes'])
