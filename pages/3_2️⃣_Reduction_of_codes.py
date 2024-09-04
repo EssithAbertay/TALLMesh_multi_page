@@ -20,6 +20,7 @@ from prompts import reduce_duplicate_codes_prompts
 from llm_utils import llm_call, process_chunks
 import logging
 import tooltips
+import time
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -86,7 +87,6 @@ def amalgamate_duplicate_codes(df):
         'source': lambda x: list(x)
     }).reset_index()
 
-    #amalgamated_df['original_code'] = amalgamated_df['original_code'].apply(lambda x: json.dumps(list(set(x))))  # Ensure unique but keep as list
     amalgamated_df['original_code'] = amalgamated_df['original_code'].apply(lambda x: json.dumps(list(x)))
     amalgamated_df['quote'] = amalgamated_df['quote'].apply(json.dumps)
     amalgamated_df['source'] = amalgamated_df['source'].apply(lambda x: ', '.join(set(x)))
@@ -157,7 +157,7 @@ def save_reduced_codes(project_name, df, folder):
     df.to_csv(output_file_path, index=False, encoding='utf-8')
     return output_file_path
 
-def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_top_p):
+def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_top_p, include_quotes):
     """
     Compare and reduce codes from two DataFrames using an AI model.
     
@@ -168,22 +168,32 @@ def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_t
         prompt (str): The prompt to guide the AI in code reduction.
         model_temperature (float): The temperature setting for the AI model.
         model_top_p (float): The top_p setting for the AI model.
+        include_quotes (bool): Whether to include quotes in the process.
     
     Returns:
         tuple: A tuple containing the reduced DataFrame, total codes count, and unique codes count.
     """
     combined_codes = pd.concat([df1, df2], ignore_index=True)
     
-    codes_list = [
-        {
-            "code": row['code'],
-            "description": row['description'],
-            "quote": row['quote']
-        }
-        for _, row in combined_codes.iterrows()
-    ]
+    if not include_quotes:
+        codes_list = [
+            {
+                "code": row['code'],
+                "description": row['description']
+            }
+            for _, row in combined_codes.iterrows()
+        ]
+    else:
+        codes_list = [
+            {
+                "code": row['code'],
+                "description": row['description'],
+                "quote": row['quote']
+            }
+            for _, row in combined_codes.iterrows()
+        ]
     
-    reduced_codes = process_chunks(model, prompt, codes_list, model_temperature, model_top_p)
+    reduced_codes = process_chunks(model, prompt, codes_list, model_temperature, model_top_p, include_quotes=include_quotes)
 
     if not reduced_codes:
         logger.error("Failed to process any chunks successfully")
@@ -229,32 +239,36 @@ def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_t
 
     return reduced_df, total_codes, unique_codes
 
-def process_files(selected_project, selected_files, model, prompt, model_temperature, model_top_p):
+def process_files(selected_project, selected_files, model, prompt, model_temperature, model_top_p, include_quotes):
     """
     Process multiple files to reduce codes and track the reduction process.
     
     Args:
         selected_project (str): The name of the selected project.
         selected_files (list): A list of file paths to process.
-        model (str): The name of the AI model to use.
-        prompt (str): The prompt to guide the AI in code reduction.
-        model_temperature (float): The temperature setting for the AI model.
-        model_top_p (float): The top_p setting for the AI model.
+        model (str): The name of the llm to use.
+        prompt (str): The prompt to guide the llm in code reduction. 
+        model_temperature (float): The temperature setting for the llm
+        model_top_p (float): The top_p setting for the llm.
+        include_quotes (bool): Whether to include quotes in the process.
     
     Returns:
-        tuple: A tuple containing the final reduced DataFrame and a DataFrame of reduction results.
+        tuple: A tuple containing the final reduced (pandas) DataFrame and a DataFrame of reduction results.
     """
     logger.info(f"Starting to process files for project: {selected_project}")
     logger.info(f"Number of files to process: {len(selected_files)}")
     logger.info(f"Model: {model}, Temperature: {model_temperature}, Top P: {model_top_p}")
+    logger.info(f"Include Quotes: {include_quotes}")
 
     reduced_df = None
     total_codes_list = []
     unique_codes_list = []
     cumulative_total = 0
     progress_bar = st.progress(0)
+    status_message = st.empty()
 
     for i, file in enumerate(selected_files):
+        status_message.info(f"Processing file {i+1}/{len(selected_files)}: {os.path.basename(file)}")
         logger.info(f"Processing file {i+1}/{len(selected_files)}: {file}")
         df = pd.read_csv(file)
         logger.info(f"File {file} read. Shape: {df.shape}")
@@ -273,7 +287,8 @@ def process_files(selected_project, selected_files, model, prompt, model_tempera
             logger.info("First file processed, no reduction needed")
         else:
             logger.info(f"Comparing and reducing codes for file {i+1}")
-            reduced_df, _, _ = compare_and_reduce_codes(reduced_df, df, model, prompt, model_temperature, model_top_p)
+            status_message.info(f"Comparing and reducing codes for file {i+1}/{len(selected_files)}...")
+            reduced_df, _, _ = compare_and_reduce_codes(reduced_df, df, model, prompt, model_temperature, model_top_p, include_quotes)
             if reduced_df is None:
                 logger.error(f"Failed to process file {file}. Skipping to the next file.")
                 st.error(f"Failed to process file {file}. Skipping to the next file.")
@@ -286,6 +301,8 @@ def process_files(selected_project, selected_files, model, prompt, model_tempera
         
         progress = (i + 1) / len(selected_files)
         progress_bar.progress(progress)
+        status_message.success(f"Processed file {i+1}/{len(selected_files)}: Total codes = {cumulative_total}, Unique codes = {unique_codes}")
+        time.sleep(1)  # Add a small delay to allow the user to see the message
     
     # Save intermediate results
     results_df = pd.DataFrame({
@@ -297,6 +314,7 @@ def process_files(selected_project, selected_files, model, prompt, model_tempera
     logger.info(f"Saved code reduction results to: {results_path}")
     
     logger.info("File processing completed")
+    status_message.success("Code reduction process completed successfully!")
     return reduced_df, results_df
 
 @st.cache_data
@@ -356,6 +374,7 @@ def main():
         - Choose the AI model you want to use for code reduction.
         - Select a preset prompt or edit the provided prompt to guide the reduction process.
         - Adjust the model temperature and top_p values using the sliders. These parameters influence the AI's output.
+        - Choose whether to include quotes in the LLM processing. This is off by default for data privacy.
         """)
 
         st.subheader(":orange[3. Processing and Results]")
@@ -463,6 +482,7 @@ def main():
         prompt_input = selected_prompt_data["prompt"]
         model_temperature = selected_prompt_data["temperature"]
         model_top_p = selected_prompt_data["top_p"]
+        include_quotes = False
 
         prompt_input = st.text_area("Edit prompt if needed:", value=prompt_input, height=200, help=tooltips.prompt_tooltip)
         
@@ -473,15 +493,20 @@ def main():
         with settings_col2:
             model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=model_top_p)
 
+        include_quotes = st.checkbox(label = "Include Quotes", value=False, help='Choose whether to send quotes to the LLM during the code-reduction process. This setting is :orange[off] by default; if you do choose to include quotes, check you are adhering to data privacy policies')
+        
         # Process button
         if st.button("Process"):
             st.divider()
             st.subheader(":orange[Output]")
+            status_message = st.empty()
+            status_message.info("Starting code reduction process. This may take some time depending on the number of files and codes...")
             with st.spinner("Reducing codes... depending on the number of initial code files, this could take some time ..."):
-                reduced_df, results_df = process_files(selected_project, selected_files, selected_model, prompt_input, model_temperature, model_top_p, help = tooltips.top_p_tooltip)
+                reduced_df, results_df = process_files(selected_project, selected_files, selected_model, prompt_input, model_temperature, model_top_p, include_quotes)
 
                 if reduced_df is not None:
                     # Match reduced codes to initial codes
+                    status_message.info("Matching reduced codes to initial codes...")
                     initial_codes_directory = os.path.join(PROJECTS_DIR, selected_project, 'initial_codes')
                     updated_df = match_reduced_to_original_codes(reduced_df, initial_codes_directory)
                     amalgamated_df = amalgamate_duplicate_codes(updated_df)
@@ -498,6 +523,7 @@ def main():
                     st.write(results_df)
                     
                     # Save reduced codes
+                    status_message.info("Saving reduced codes...")
                     save_reduced_codes(selected_project, updated_df, 'expanded_reduced_codes')
                     saved_file_path = save_reduced_codes(selected_project, amalgamated_df, 'reduced_codes')
                     st.success(f"Reduced codes saved to {saved_file_path}")
@@ -518,8 +544,10 @@ def main():
                         file_name="code_reduction_results.csv",
                         mime="text/csv"
                     )
+                    
+                    status_message.success("Code reduction process completed successfully!")
                 else:
-                    st.error("Failed to reduce codes. Please check the logs for more information and try again.")
+                    status_message.error("Failed to reduce codes. Please check the logs for more information and try again.")
 
         # View previously processed files
         processed_files = get_processed_files(selected_project, 'reduced_codes')

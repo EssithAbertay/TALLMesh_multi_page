@@ -9,14 +9,13 @@ import os
 import pandas as pd
 import json
 import re
-from openai import OpenAI, AzureOpenAI
-import anthropic
 from api_key_management import manage_api_keys, load_api_keys, load_azure_settings, get_azure_models, AZURE_SETTINGS_FILE
 from prompts import initial_coding_prompts
 from project_utils import get_projects, get_project_files, get_processed_files, PROJECTS_DIR
 from llm_utils import llm_call
 import logging
 import tooltips
+import time
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -79,31 +78,26 @@ def split_text(text, max_chunk_size=50000, overlap=1000):
     logger.info(f"Total number of chunks created: {len(chunks)}")
     return chunks
 
-def process_file(file_path, model, prompt, model_temperature, model_top_p):
+def process_file(file_path, model, prompt, model_temperature, model_top_p, status_message):
     # Specify encoding to handle potential UnicodeDecodeError
     with open(file_path, 'r', encoding='utf-8') as file:
         content = file.read()
     
-    # Create placeholders for real-time updates
-    file_progress = st.empty()
-    chunk_progress = st.empty()
-    code_progress = st.empty()
-    
-    file_progress.info(f"Processing file: {os.path.basename(file_path)}")
+    status_message.info(f"Processing file: {os.path.basename(file_path)}")
     
     chunks = split_text(content)
     all_codes = []
     
-    file_progress.info(f"File split into {len(chunks)} chunks")
+    status_message.info(f"File split into {len(chunks)} chunks")
     
     for i, chunk in enumerate(chunks):
-        chunk_progress.info(f"Processing chunk {i+1}/{len(chunks)}")
+        status_message.info(f"Processing chunk {i+1}/{len(chunks)} of {os.path.basename(file_path)}")
         chunk_prompt = f"{prompt}\n\nFile Content (Part {i+1}/{len(chunks)}):\n{chunk}"
         chunk_response = llm_call(model, chunk_prompt, model_temperature, model_top_p)
         
         if chunk_response is None:
             logger.error(f"Failed to process chunk {i+1}/{len(chunks)}")
-            chunk_progress.warning(f"Failed to process chunk {i+1}/{len(chunks)}")
+            status_message.warning(f"Failed to process chunk {i+1}/{len(chunks)}")
             continue
 
         try:
@@ -111,22 +105,21 @@ def process_file(file_path, model, prompt, model_temperature, model_top_p):
             if isinstance(json_output, dict) and 'final_codes' in json_output:
                 chunk_codes = json_output['final_codes']
                 all_codes.extend(chunk_codes)
-                code_progress.info(f"Extracted {len(chunk_codes)} codes from chunk {i+1}")
+                status_message.info(f"Extracted {len(chunk_codes)} codes from chunk {i+1}")
             else:
                 logger.warning(f"Unexpected JSON structure in chunk {i+1}")
-                code_progress.warning(f"Unexpected JSON structure in chunk {i+1}")
+                status_message.warning(f"Unexpected JSON structure in chunk {i+1}")
         except json.JSONDecodeError:
             logger.error(f"Failed to parse JSON in response for chunk {i+1}")
-            code_progress.error(f"Failed to parse JSON in response for chunk {i+1}")
+            status_message.error(f"Failed to parse JSON in response for chunk {i+1}")
     
     if not all_codes:
         raise ValueError("No valid codes were extracted from any chunks")
     
     # Combine all codes from different chunks
     combined_output = {'final_codes': all_codes}
-    file_progress.success(f"Completed processing file: {os.path.basename(file_path)}")
-    chunk_progress.empty()
-    code_progress.success(f"Total codes extracted: {len(all_codes)}")
+    status_message.success(f"Completed processing file: {os.path.basename(file_path)}")
+    status_message.success(f"Total codes extracted: {len(all_codes)}")
     
     return json.dumps(combined_output)
 
@@ -293,42 +286,45 @@ def main():
         if st.button("Process"):
             st.divider()
             st.subheader(":orange[Output]")
-            with st.spinner("Generating initial codes ... please wait ..."):
-                prog_bar = st.progress(0)
-                if selected_files and prompt_input:
-                    for i, file in enumerate(selected_files):
-                        file_path = os.path.join(PROJECTS_DIR, selected_project, 'data', file)
-                        try:
-                            st.info(f"Processing file {i+1}/{len(selected_files)}: {file}")
-                            processed_output = process_file(file_path, selected_model, prompt_input, model_temperature, model_top_p)
-                            json_output = json.loads(processed_output)
-                            df = pd.json_normalize(json_output['final_codes'])
-                            df.columns = ['code', 'description', 'quote']
-                            
-                            with st.expander(f"Processed Output for {file}:", expanded=True):
-                                st.write(df)
-                            
-                                # Save initial codes
-                                saved_file_path = save_initial_codes(selected_project, file, df)
-                                st.success(f"Initial codes saved to {saved_file_path}")
-                            
-                                # Add download button for each file's results
-                                csv = df.to_csv(index=False).encode('utf-8')
-                                st.download_button(
-                                    label=f"Download initial codes for {str(os.path.splitext(file)[0])}",
-                                    data=csv,
-                                    file_name=f"{str(os.path.splitext(file)[0])}_initial_codes.csv",
-                                    mime="text/csv"
-                                )
-                            
-                        except Exception as e:
-                            st.error(f"Error processing {file}: {str(e)}")
-                            logger.error(f"Error processing {file}: {str(e)}", exc_info=True)
-                        progress = (i + 1) / len(selected_files)
-                        prog_bar.progress(progress)
+            status_message = st.empty()
+            status_message.info("Starting initial coding process. This may take some time depending on the number of files and their size...")
+            prog_bar = st.progress(0)
+            if selected_files and prompt_input:
+                for i, file in enumerate(selected_files):
+                    file_path = os.path.join(PROJECTS_DIR, selected_project, 'data', file)
+                    try:
+                        status_message.info(f"Processing file {i+1}/{len(selected_files)}: {file}")
+                        processed_output = process_file(file_path, selected_model, prompt_input, model_temperature, model_top_p, status_message)
+                        json_output = json.loads(processed_output)
+                        df = pd.json_normalize(json_output['final_codes'])
+                        df.columns = ['code', 'description', 'quote']
                         
-                else:
-                    st.warning("Please select files and enter a prompt.")
+                        with st.expander(f"Processed Output for {file}:", expanded=True):
+                            st.write(df)
+                        
+                            # Save initial codes
+                            saved_file_path = save_initial_codes(selected_project, file, df)
+                            status_message.success(f"Initial codes saved to {saved_file_path}")
+                        
+                            # Add download button for each file's results
+                            csv = df.to_csv(index=False).encode('utf-8')
+                            st.download_button(
+                                label=f"Download initial codes for {str(os.path.splitext(file)[0])}",
+                                data=csv,
+                                file_name=f"{str(os.path.splitext(file)[0])}_initial_codes.csv",
+                                mime="text/csv"
+                            )
+                        
+                    except Exception as e:
+                        status_message.error(f"Error processing {file}: {str(e)}")
+                        logger.error(f"Error processing {file}: {str(e)}", exc_info=True)
+                    progress = (i + 1) / len(selected_files)
+                    prog_bar.progress(progress)
+                    time.sleep(1)  # Add a small delay to allow the user to see the message
+                
+                status_message.success("Initial coding process completed successfully!")
+            else:
+                status_message.warning("Please select files and enter a prompt.")
 
         # View previously processed files
         with st.expander("Saved Initial Codes", expanded=False):
