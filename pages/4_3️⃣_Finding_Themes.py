@@ -177,6 +177,96 @@ def convert_df(df):
     """
     return df.to_csv().encode('utf-8')
 
+'''
+Functions to generate theme code book(s)
+'''
+
+def format_quotes(quotes_json):
+    """
+    Parses the JSON string of quotes, extracts the text,
+    and joins each quote with a newline for better readability.
+    
+    Args:
+    quotes_json (str): A JSON string containing quote information.
+    
+    Returns:
+    str: A formatted string of quotes, each on a new line.
+    """
+    try:
+        quotes = json.loads(quotes_json)
+        formatted_quotes = "\n".join(quote['text'] for quote in quotes)
+        return formatted_quotes
+    except (json.JSONDecodeError, KeyError, TypeError):
+        # Return the original string if there's an error in parsing or formatting
+        return quotes_json
+
+def load_data(project_name):
+    """
+    Loads the most recent themes and reduced codes files for a given project.
+    
+    Args:
+    project_name (str): The name of the project to load data for.
+    
+    Returns:
+    tuple: A tuple containing two pandas DataFrames (themes_df, codes_df) or (None, None) if files are not found.
+    """
+    # Define paths for themes and codes folders
+    themes_folder = os.path.join(PROJECTS_DIR, project_name, 'themes')
+    codes_folder = os.path.join(PROJECTS_DIR, project_name, 'reduced_codes')
+    
+    # Get the most recent themes file
+    themes_files = get_processed_files(project_name, 'themes')
+    if not themes_files:
+        return None, None
+    latest_themes_file = max(themes_files, key=lambda f: os.path.getmtime(os.path.join(themes_folder, f)))
+    themes_df = pd.read_csv(os.path.join(themes_folder, latest_themes_file))
+    
+    # Get the most recent reduced codes file
+    codes_files = get_processed_files(project_name, 'reduced_codes')
+    if not codes_files:
+        return None, None
+    latest_codes_file = max(codes_files, key=lambda f: os.path.getmtime(os.path.join(codes_folder, f)))
+    codes_df = pd.read_csv(os.path.join(codes_folder, latest_codes_file))
+    
+    return themes_df, codes_df
+
+def process_data(themes_df, codes_df):
+    """
+    Processes the themes and codes data to create a final theme-codes book.
+    
+    Args:
+    themes_df (pandas.DataFrame): DataFrame containing theme data.
+    codes_df (pandas.DataFrame): DataFrame containing code data.
+    
+    Returns:
+    pandas.DataFrame: A processed DataFrame combining themes, codes, and associated information.
+    """
+    # Initialize empty DataFrame for final theme-codes book with correct column names
+    final_df = pd.DataFrame(columns=['Theme', 'Theme Description', 'Code', 'Code Description', 'Merge Explanation', 'Quotes', 'Source'])
+
+    # Iterate through each theme and its associated codes
+    for _, theme_row in themes_df.iterrows():
+        theme = theme_row['name']
+        theme_description = theme_row['description']
+        code_indices = [int(idx) for idx in theme_row['codes'].strip('[]').split(',')]
+        
+        # For each code associated with the theme, create a new row in the final DataFrame
+        for idx in code_indices:
+            if idx < len(codes_df):
+                code_row = codes_df.iloc[idx]
+                new_row = pd.Series({
+                    'Theme': theme,
+                    'Theme Description': theme_description,
+                    'Code': code_row['code'],
+                    'Code Description': code_row['description'],
+                    'Merge Explanation': code_row['merge_explanation'],
+                    'Quotes': code_row.get('quote', code_row.get('source', '')),  # Try 'quote', then 'source' if 'quote' doesn't exist
+                    'Source': code_row.get('source', code_row.get('quote_2', ''))  # Try 'source', then 'quote_2' if 'source' doesn't exist
+                })
+                final_df = pd.concat([final_df, new_row.to_frame().T], ignore_index=True)
+
+    return final_df
+
 def main():
     """
     The main function that sets up the Streamlit interface and handles user interactions.
@@ -347,6 +437,53 @@ def main():
                         file_name="themes.csv",
                         mime="text/csv"
                     )
+
+            # Load data for the selected project
+            themes_df, codes_df = load_data(selected_project)
+            
+            if themes_df is None or codes_df is None:
+                st.error("Error: Required files not found in the project directory.")
+            else:
+                st.success(f"Files loaded successfully for project: {selected_project}")
+                
+                # Process data to create the final theme-codes book
+                final_df = process_data(themes_df, codes_df)
+                
+                # Display various views of the data
+                st.write("Condensed Themes")
+                st.write(themes_df)
+                
+                st.write("Expanded Themes w/ Codes, Quotes & Sources")
+                final_display_df = final_df.copy()
+                final_display_df['Quotes'] = final_display_df['Quotes'].apply(format_quotes)
+                st.write(final_df)
+                
+                with st.expander("Merged Codes (for reference)"):
+                    st.write("Merged Codes")
+                    st.write(codes_df)
+                
+                # Save the final DataFrame
+                output_folder = os.path.join(PROJECTS_DIR, selected_project, 'theme_books')
+                os.makedirs(output_folder, exist_ok=True)
+
+                # Save condensed theme book
+                output_file_condensed = os.path.join(output_folder, f"{selected_project}_condensed_theme_book_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv")
+                themes_df.to_csv(output_file_condensed, index=False)
+
+                # Save expanded theme book
+                output_file_expanded = os.path.join(output_folder, f"{selected_project}_expanded_theme_book_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv")
+                final_df.to_csv(output_file_expanded, index=False)
+
+                st.success(f"Theme books (condensed and expanded) saved to: \n-{output_file_condensed} \n{output_file_expanded}")
+                
+                # Provide download button for the final theme-codes book
+                csv = final_df.to_csv(index=False).encode('utf-8')
+                st.download_button(
+                    label="Download Final Theme-Codes Book",
+                    data=csv,
+                    file_name="final_theme_codes_book.csv",
+                    mime="text/csv"
+                )
 
         # Display previously processed files
         processed_files = get_processed_files(selected_project, 'themes')
