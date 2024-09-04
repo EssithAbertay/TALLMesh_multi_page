@@ -10,23 +10,20 @@ from project_utils import get_projects
 PROJECTS_DIR = 'projects'
 
 # Function to handle file uploads for a project
-def handle_file_upload(uploaded_files, project_name):
+def handle_file_upload():
     """
     Process uploaded files for a given project.
     
     This function saves valid .txt files to the project's data folder and provides
     feedback messages about the upload process.
 
-    Args:
-    uploaded_files (list): List of uploaded file objects from Streamlit's file_uploader
-    project_name (str): Name of the current project
-
     Side effects:
     - Saves valid files to the project's data folder
     - Updates session state with success/warning messages about the upload process
     """
-    if uploaded_files:
-        saved_files, invalid_files = save_uploaded_files(uploaded_files, project_name)
+    if st.session_state.uploaded_files:
+        project_name = st.session_state.selected_project
+        saved_files, invalid_files = save_uploaded_files(st.session_state.uploaded_files, project_name)
         if saved_files:
             st.session_state.message = f"Files uploaded successfully: {', '.join(saved_files)}"
             st.session_state.message_type = "success"
@@ -173,6 +170,9 @@ if 'selected_project' not in st.session_state:
 if 'delete_project' not in st.session_state:
     st.session_state.delete_project = None
 
+if 'uploaded_files' not in st.session_state:
+    st.session_state.uploaded_files = None
+
 # Main function to run the Streamlit app
 def main():
     """
@@ -215,7 +215,7 @@ def main():
         st.write("""
         - With a project selected, you'll see a file uploader labeled "Upload interviews .txt files".
         - You can drag and drop multiple .txt files or click to browse and select them.
-        - Click the "Upload Files" button to add these files to your project's data folder.
+        - Files will be automatically uploaded when selected or dropped.
         - Successful uploads will be confirmed with a message.
         - Note: Only .txt files are allowed. For other file types, please use the file_upload_and_conversion page to format them properly before uploading.
         """)
@@ -332,14 +332,8 @@ def main():
         else:
             st.write("No files in this project yet. Upload files below to get started")
         
-        # File upload form
-        with st.form("upload_form", clear_on_submit=True, border=False):
-            uploaded_files = st.file_uploader("Upload interviews .txt files", accept_multiple_files=True, label_visibility="hidden")
-            submitted = st.form_submit_button("Upload Files")
-
-            if submitted:
-                handle_file_upload(uploaded_files, st.session_state.selected_project)
-                st.rerun()
+        # File upload UI
+        st.file_uploader("Upload interviews .txt files", accept_multiple_files=True, key="uploaded_files", on_change=handle_file_upload)
 
     else:
         st.write("Please select or create a project to continue.")
