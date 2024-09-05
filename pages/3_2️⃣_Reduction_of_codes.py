@@ -500,7 +500,7 @@ def main():
             st.divider()
             st.subheader(":orange[Output]")
             status_message = st.empty()
-            status_message.info("Starting code reduction process. This may take some time depending on the number of files and codes...")
+            #status_message.info("Starting code reduction process. This may take some time depending on the number of files and codes...")
             with st.spinner("Reducing codes... depending on the number of initial code files, this could take some time ..."):
                 reduced_df, results_df = process_files(selected_project, selected_files, selected_model, prompt_input, model_temperature, model_top_p, include_quotes)
 
