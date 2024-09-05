@@ -109,7 +109,55 @@ Here is an example of the expected JSON format:
     // Additional codes follow the same structure
   ]
 }
-""", "temperature": 0.00, "top_p": 0.1},
+""", "temperature": 0.00, "top_p": 0.1},"Preset 6: >15 Codes, Emotions (Eckman), Long Quotes" : {"prompt": """Generate a comprehensive set of initial codes (at least 15) for thematic analysis based on the provided text. Focus on capturing all significant explicit and latent expressions of emotions (using Eckman's 6; happiness, sadness, disgust, fear, surprise, and anger), emphasizing the respondent's perspective rather than the interviewer's.
+
+For each code, provide:
+
+1. A concise name (maximum 5 words)
+2. A detailed description (25 words) explaining the code's meaning and relevance
+3. A quote (minimum necessary to capture context and example) from the respondent that exemplifies the code
+
+Important! Format the response as a JSON file with the following structure:
+
+{
+  "final_codes": [
+    {
+      "code_name": "Example Code Name",
+      "description": "This is where you would provide a 25-word description of the code, explaining its meaning and significance in the context of the analysis.",
+      "quote": "relevant quote here"
+    },
+    // Additional codes follow the same structure
+  ]
+}
+
+Ensure that the codes cover a wide range of themes and ideas present in the text, including both obvious and subtle concepts. The goal is to provide a comprehensive starting point for further thematic analysis.
+
+Important! Your response should be a JSON-like object with no additional text before or after. Failure to adhere to this instruction will invalidate your response, making it worthless.
+""", "temperature":0.00, "top_p":0.1},"Preset 7: >15 Codes, Emotional Expression (Full Spectrum), Long Quotes" : {"prompt": """Generate a comprehensive set of initial codes (at least 15) for thematic analysis based on the provided text. Focus on capturing all significant explicit and latent expressions of emotions (admiration, adoration, aesthetic appreciation, amusement, anger, anxiety, awe, awkwardness, boredom, calmness, confusion, craving, disgust, empathic pain, entrancement, excitement, fear, horror, interest, joy, nostalgia, relief, romance, sadness, satisfaction, sexual desire, surprise), emphasizing the respondent's perspective rather than the interviewer's.
+
+For each code, provide:
+
+1. A concise name (maximum 5 words)
+2. A detailed description (25 words) explaining the code's meaning and relevance
+3. A quote (minimum necessary to capture context and example) from the respondent that exemplifies the code
+
+Important! Format the response as a JSON file with the following structure:
+
+{
+  "final_codes": [
+    {
+      "code_name": "Example Code Name",
+      "description": "This is where you would provide a 25-word description of the code, explaining its meaning and significance in the context of the analysis.",
+      "quote": "relevant quote here"
+    },
+    // Additional codes follow the same structure
+  ]
+}
+
+Ensure that the codes cover a wide range of themes and ideas present in the text, including both obvious and subtle concepts. The goal is to provide a comprehensive starting point for further thematic analysis.
+
+Important! Your response should be a JSON-like object with no additional text before or after. Failure to adhere to this instruction will invalidate your response, making it worthless.
+""", "temperature":0.00, "top_p":0.1}
 }
 
 reduce_duplicate_codes_prompts = {

@@ -314,7 +314,7 @@ def process_files(selected_project, selected_files, model, prompt, model_tempera
     logger.info(f"Saved code reduction results to: {results_path}")
     
     logger.info("File processing completed")
-    status_message.success("Code reduction process completed successfully!")
+    #status_message.success("Code reduction process completed successfully!")
     return reduced_df, results_df
 
 @st.cache_data
