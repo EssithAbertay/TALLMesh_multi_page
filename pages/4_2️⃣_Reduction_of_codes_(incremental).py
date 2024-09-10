@@ -494,7 +494,7 @@ def main():
         with settings_col1:
             model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value), step=0.01, value=model_temperature, help=tooltips.model_temp_tooltip)
         with settings_col2:
-            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=model_top_p)
+            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=model_top_p, help=tooltips.top_p_tooltip)
 
         include_quotes = st.checkbox(label = "Include Quotes", value=False, help='Choose whether to send quotes to the LLM during the code-reduction process. This setting is :orange[off] by default; if you do choose to include quotes, check you are adhering to data privacy policies')
         
@@ -576,6 +576,14 @@ def main():
                         saved_file_path = save_reduced_codes(selected_project, amalgamated_df, 'reduced_codes')
                         st.success(f"Reduced codes saved to {saved_file_path}")
                         
+                        # Add this new block of code here
+                        results_df = pd.DataFrame({
+                            'total_codes': state['total_codes_list'],
+                            'unique_codes': state['unique_codes_list']
+                        })
+                        results_file_path = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')
+                        results_df.to_csv(results_file_path, index=False)
+                        st.success(f"Code reduction results saved to {results_file_path}")
 
                         # Download buttons for reduced codes and results
                         #csv = amalgamated_df.to_csv(index=False).encode('utf-8')
