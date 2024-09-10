@@ -275,8 +275,11 @@ def main():
         st.rerun()
 
     # Project creation UI
-    new_project = st.text_input("Enter new project name:")
-    if st.button("Create Project"):
+    with st.form(key='create_project_form'):
+        new_project = st.text_input("Enter new project name:")
+        create_project_button = st.form_submit_button("Create Project")
+
+    if create_project_button:
         if new_project and new_project not in st.session_state.projects:
             create_project(new_project)
             st.session_state.message = f"Project '{new_project}' created successfully!"
@@ -300,35 +303,48 @@ def main():
 
     # Project management UI
     if st.session_state.selected_project:
-        col1, col2, col3 = st.columns([0.2,0.2,0.05])
+        col1, col2 = st.columns([0.92, 0.08])
         col1.subheader(f"Project: {st.session_state.selected_project}")
-        if col2.button("Delete Project"):
-            st.session_state.delete_project = st.session_state.selected_project
-            st.rerun()
-        delete_button = col3.empty()
         
+        # Create a placeholder for the delete button and confirmation
+        delete_placeholder = col2.empty()
+
+        # Initialize session state for delete confirmation
+        if 'show_delete_confirm' not in st.session_state:
+            st.session_state.show_delete_confirm = False
+
+        # Show delete button or confirmation based on state
+        if not st.session_state.show_delete_confirm:
+            if delete_placeholder.button("Delete Project"):
+                st.session_state.show_delete_confirm = True
+                st.rerun()
+        else:
+            with delete_placeholder.container():
+                st.button("Cancel", key="cancel_delete", on_click=lambda: setattr(st.session_state, 'show_delete_confirm', False))
+                st.button("Confirm", key="confirm_delete", on_click=lambda: [remove_project(st.session_state.selected_project), setattr(st.session_state, 'selected_project', None), setattr(st.session_state, 'show_delete_confirm', False)])
+            
+            st.warning(f"Are you sure you want to delete the project '{st.session_state.selected_project}'? This action cannot be undone.")
+
         # Display existing files with checkboxes
         try:
             existing_files = get_project_files(st.session_state.selected_project)
         except:
             existing_files = []
 
+        files_to_delete = []
+        
         if existing_files:
-            files_to_delete = []
-            
+            st.write("Select files to delete:")
             # List files with checkboxes
             for file in existing_files:
-                file_col, checkbox_col = st.columns([0.95, 0.05])
-                file_col.write(file)
-                if checkbox_col.checkbox(".", key=f"checkbox_{file}", label_visibility="hidden"):
+                if st.checkbox(file, key=f"checkbox_{file}"):
                     files_to_delete.append(file)
             
-            # Show delete button if files are selected
-            if files_to_delete:
-                if delete_button.button("🗑️"):
-                    remove_files(st.session_state.selected_project, files_to_delete)
-                    st.success(f"Deleted {len(files_to_delete)} file(s)")
-                    st.rerun()
+            # Show delete button, disabled if no files are selected
+            if st.button("Delete Selected", disabled=len(files_to_delete) == 0):
+                remove_files(st.session_state.selected_project, files_to_delete)
+                st.success(f"Deleted {len(files_to_delete)} file(s)")
+                st.rerun()
         else:
             st.write("No files in this project yet. Upload files below to get started")
         
