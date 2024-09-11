@@ -27,8 +27,8 @@ order_gif = "pages/animations/order_rounded.gif"
 
 
 search_text = 'During initial coding, the LLM analyzes each document…'
-highlighter_text = 'Identifying interesting elements based on the user prompt…'
-order_text = "Which are named and compiled into a list of 'initial codes'."
+highlighter_text = '...identifying interesting elements based on the user prompt…'
+order_text = "...which are named and compiled into a list of 'initial codes'."
 
 # Function create circled numbers... seems overkill, there must be a simpler way
 def create_circle_number(number):
@@ -170,7 +170,7 @@ def main():
 
     with st.expander("Instructions"):
         st.write("""
-        The Initial Coding page is where you begin the analysis of your data. This step involves generating initial codes for each of your uploaded files using AI assistance. Here's how to use this page:
+        The Initial Coding page is where you begin the analysis of your data. This step involves generating initial codes for each of your uploaded files using Large Language Models (LLMs). Read the guide below to find out more.
         """)
 
         # Create columns for layout
@@ -181,6 +181,16 @@ def main():
         centered_column_with_number(col2, 2, highlighter_text, highlighter_gif)
         centered_column_with_number(col3, 3, order_text, order_gif)
 
+        st.markdown(
+            """
+            <p style="font-size: 8px; color: gray; text-align: center;">
+            <a href="https://www.flaticon.com/animated-icons" title="document animated icons" style="color: gray; text-decoration: none;">
+            Animated icons created by Freepik - Flaticon
+            </a>
+            </p>
+            """,
+            unsafe_allow_html=True
+        )
         st.subheader(":orange[1. Project Selection]")
         st.write("""
         - Use the dropdown menu to select the project you want to work on.
