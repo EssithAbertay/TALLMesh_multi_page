@@ -21,9 +21,21 @@ from llm_utils import llm_call, process_chunks
 import logging
 import tooltips
 import time
+from ui_utils import centered_column_with_number, create_circle_number
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Import gifs and set text for top of isntruction expander 
+
+process_gif = "pages/animations/process_rounded.gif"
+compare_gif = "pages/animations/copy_rounded.gif"
+merge_gif = "pages/animations/merge_rounded.gif"
+
+
+process_text = 'The LLM compares each set of initial codes...'
+compare_text = '...to identify duplicates based on the user prompt...'
+merge_text = "...which are merged into a set of unqique codes."
 
 def load_custom_prompts():
     """
@@ -359,8 +371,27 @@ def main():
     # Instructions expander
     with st.expander("Instructions"):
         st.write("""
-        The Reduction of Codes page is where you refine and consolidate the initial codes generated in the previous step. This process helps to identify patterns and reduce redundancy in your coding. Here's how to use this page:
+        The Reduction of Codes page is where you refine and consolidate the initial codes generated in the previous step. This process helps to identify patterns and reduce redundancy in your coding.
         """)
+
+        # Create columns for layout for gifs and main points
+        col1, col2, col3 = st.columns(3)
+
+        # Display content in each column
+        centered_column_with_number(col1, 1, process_text, process_gif)
+        centered_column_with_number(col2, 2, compare_text, compare_gif)
+        centered_column_with_number(col3, 3, merge_text, merge_gif)
+
+        st.markdown(
+            """
+            <p style="font-size: 8px; color: gray; text-align: center;">
+            <a href="https://www.flaticon.com/animated-icons" title="document animated icons" style="color: gray; text-decoration: none;">
+            Animated icons created by Freepik - Flaticon
+            </a>
+            </p>
+            """,
+            unsafe_allow_html=True
+        )
 
         st.subheader(":orange[1. Project and File Selection]")
         st.write("""

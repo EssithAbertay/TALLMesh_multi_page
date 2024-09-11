@@ -16,7 +16,7 @@ from llm_utils import llm_call
 import logging
 import tooltips
 import time
-import base64
+from ui_utils import centered_column_with_number, create_circle_number
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -27,36 +27,8 @@ order_gif = "pages/animations/order_rounded.gif"
 
 
 search_text = 'During initial coding, the LLM analyzes each document…'
-highlighter_text = '...identifying interesting elements based on the user prompt…'
-order_text = "...which are named and compiled into a list of 'initial codes'."
-
-# Function create circled numbers... seems overkill, there must be a simpler way
-def create_circle_number(number):
-    return f"""
-        <div style="
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: orange;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 20px auto;
-        ">
-            <span style="
-                color: white;
-                font-size: 24px;
-                font-weight: bold;
-            ">{number}</span>
-        </div>
-    """
-
-# Function to create centered content in a column with a numbered circle
-def centered_column_with_number(column, number, title, image):
-    with column:
-        st.markdown(create_circle_number(number), unsafe_allow_html=True)
-        st.markdown(f"<h3 style='text-align: center; color: orange;'>{title}</h3>", unsafe_allow_html=True)
-        st.image(image, use_column_width=True)
+highlighter_text = '...to extract quotes based on the user prompt…'
+order_text = "...which are named and compiled into lists of 'initial codes'."
 
 # function to load users own custom prompts
 def load_custom_prompts():
@@ -173,7 +145,7 @@ def main():
         The Initial Coding page is where you begin the analysis of your data. This step involves generating initial codes for each of your uploaded files using Large Language Models (LLMs). Read the guide below to find out more.
         """)
 
-        # Create columns for layout
+        # Create columns for layout for gifs and main points
         col1, col2, col3 = st.columns(3)
 
         # Display content in each column
