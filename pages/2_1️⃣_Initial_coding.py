@@ -16,9 +16,47 @@ from llm_utils import llm_call
 import logging
 import tooltips
 import time
+import base64
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+search_gif = "pages/animations/search_rounded.gif"
+highlighter_gif = "pages/animations/highlight_rounded.gif"
+order_gif = "pages/animations/order_rounded.gif"
+
+
+search_text = 'During initial coding, the LLM analyzes each document…'
+highlighter_text = 'Identifying interesting elements based on the user prompt…'
+order_text = "Which are named and compiled into a list of 'initial codes'."
+
+# Function create circled numbers... seems overkill, there must be a simpler way
+def create_circle_number(number):
+    return f"""
+        <div style="
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: orange;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px auto;
+        ">
+            <span style="
+                color: white;
+                font-size: 24px;
+                font-weight: bold;
+            ">{number}</span>
+        </div>
+    """
+
+# Function to create centered content in a column with a numbered circle
+def centered_column_with_number(column, number, title, image):
+    with column:
+        st.markdown(create_circle_number(number), unsafe_allow_html=True)
+        st.markdown(f"<h3 style='text-align: center; color: orange;'>{title}</h3>", unsafe_allow_html=True)
+        st.image(image, use_column_width=True)
 
 # function to load users own custom prompts
 def load_custom_prompts():
@@ -134,6 +172,14 @@ def main():
         st.write("""
         The Initial Coding page is where you begin the analysis of your data. This step involves generating initial codes for each of your uploaded files using AI assistance. Here's how to use this page:
         """)
+
+        # Create columns for layout
+        col1, col2, col3 = st.columns(3)
+
+        # Display content in each column
+        centered_column_with_number(col1, 1, search_text, search_gif)
+        centered_column_with_number(col2, 2, highlighter_text, highlighter_gif)
+        centered_column_with_number(col3, 3, order_text, order_gif)
 
         st.subheader(":orange[1. Project Selection]")
         st.write("""
