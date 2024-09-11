@@ -30,8 +30,8 @@ processing_gif = "pages/animations/data_processing_rounded.gif"
 connection_gif = "pages/animations/connection_rounded.gif"
 
 
-processing_text = 'The LLM analyses the collated unique codes'
-connection_text = '...which are grouped into overarching themes...'
+processing_text = 'The LLM analyses the reduced unique codes'
+connection_text = '...and groups them into overarching themes...'
 
 # Constants
 PROJECTS_DIR = 'projects'

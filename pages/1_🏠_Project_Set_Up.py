@@ -243,7 +243,7 @@ def main():
         """)
 
         st.info("""
-            **Note:** Azure API calls work a little differently to other providers. To manage Azure API credentials please see the :orange[12_⚙️_Azure_Settings page].
+            **Note:** Azure API calls work a little differently to other providers. To manage Azure API credentials please see the :orange[⚙️_Azure_Settings page].
             """)
 
         # Additional tips

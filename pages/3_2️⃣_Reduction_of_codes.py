@@ -426,12 +426,12 @@ def main():
         """)
 
         st.subheader(":orange[Key Features]")
-        st.write("""
+        st.write(f"""
         - :orange[Automatic merging:] The AI identifies similar codes and combines them, providing explanations for the merges.
         - :orange[Quote preservation:] All quotes associated with the original codes are retained and linked to the reduced codes.
         - :orange[Tracking changes:] The system keeps track of how initial codes map to reduced codes, maintaining traceability.
-        - :orange[Saturation analysis:] The code reduction results can be used to assess thematic saturation in your analysis (see 'Saturation Metric).
-        """)
+        - :orange[Saturation analysis:] The code reduction results can be used to assess thematic saturation in your analysis. (see <a href="pages/6_💹_Saturation_Metric.py" target="_self">Saturation Metric 💹</a>).
+        """, unsafe_allow_html=True)
 
         st.subheader(":orange[Tips]")
         st.write("""
