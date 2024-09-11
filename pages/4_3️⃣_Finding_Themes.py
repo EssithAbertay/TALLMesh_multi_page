@@ -20,10 +20,18 @@ from llm_utils import llm_call
 import logging
 import tooltips
 import time
+from ui_utils import centered_column_with_number, create_circle_number
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+processing_gif = "pages/animations/data_processing_rounded.gif"
+connection_gif = "pages/animations/connection_rounded.gif"
+
+
+processing_text = 'The LLM analyses the collated unique codes'
+connection_text = '...which are grouped into overarching themes...'
 
 # Constants
 PROJECTS_DIR = 'projects'
@@ -294,8 +302,26 @@ def main():
     # Display instructions in an expandable section
     with st.expander("Instructions"):
         st.write("""
-        The Finding Themes page is where you identify overarching themes from your reduced codes. This step helps you synthesize your data into meaningful patterns. Here's how to use this page:
+        The Finding Themes page is where you identify overarching themes from your reduced codes. This step helps you synthesize your data into meaningful patterns. 
         """)
+
+        # Create columns for layout for gifs and main points
+        col1, col2= st.columns(2)
+
+        # Display content in each column
+        centered_column_with_number(col1, 1, processing_text, processing_gif)
+        centered_column_with_number(col2, 2, connection_text, connection_gif)
+
+        st.markdown(
+            """
+            <p style="font-size: 8px; color: gray; text-align: center;">
+            <a href="https://www.flaticon.com/animated-icons" title="document animated icons" style="color: gray; text-decoration: none;">
+            Animated icons created by Freepik - Flaticon
+            </a>
+            </p>
+            """,
+            unsafe_allow_html=True
+        )
 
         st.subheader(":orange[1. Project and File Selection]")
         st.write("""
