@@ -26,12 +26,19 @@ def load_azure_settings():
     Load Azure settings from a JSON file.
 
     Returns:
-        dict: A dictionary containing the Azure settings. If the file doesn't exist,
+        dict: A dictionary containing the Azure settings. If the file doesn't exist or is empty,
               an empty dictionary is returned.
     """
     if os.path.exists(AZURE_SETTINGS_FILE):
         with open(AZURE_SETTINGS_FILE, 'r') as f:
-            return json.load(f)
+            content = f.read().strip()
+            if content:
+                try:
+                    return json.loads(content)
+                except json.JSONDecodeError:
+                    st.warning("Azure settings file is corrupted. Starting with empty settings.")
+            else:
+                st.info("Azure settings file is empty. You can add new settings below.")
     return {}
 
 def save_azure_settings(settings):
@@ -114,6 +121,8 @@ def display_instructions():
     4. You can add multiple deployments if needed.
 
     5. To remove a deployment, click the 'Delete' button next to its name.
+             
+    6. To update your Azure API Key or Endpoint, simply modify them in the available text fields and click :orange[Save Azure Settings].
 
     Once set up, your Azure deployments will appear as options in the model selection dropdowns throughout the application, prefixed with :orange['azure_'].
 

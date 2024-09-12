@@ -230,17 +230,17 @@ def main():
         - Enter a unique name for your project in the "Enter new project name:" text box.
         - Hit enter or click the "Create Project" button to set up your project.
         - The system will create a new folder structure for your project, including subfolders for data, initial codes, reduced codes, themes, and more.
-        
+        """)
+
+        st.code("""
         YOUR_PROJECT_NAME/          # The name you assign to your project.
         ├── data/                   # This folder holds all of your raw data files (e.g., interview transcripts).
         ├── initial_codes/          # After initial codes have been parsed, the resultant files are stored here.
         ├── reduced_codes/          # This folder contains the results from your reduction of codes processing.
         ├── themes/                 # Themes derived from reduced codes.
         ├── theme_books/            # Combines outputs from above to generate a file with structure theme > reduced codes > initial codes > quotes > source files.
-        └── expanded_reduced_codes/ # Contains expnaded view of reduced_codes; needed for matching sources, quotes, and codes.
-
-
-        """)
+        └── expanded_reduced_codes/ # Contains expanded view of reduced_codes; needed for matching sources, quotes, and codes.
+        """, language="")
 
         # Instructions for selecting an existing project
         st.subheader(":orange[2. Selecting an Existing Project]")
@@ -342,7 +342,7 @@ def main():
 
     # Project management UI
     if st.session_state.selected_project:
-        col1, col2 = st.columns([0.92, 0.08])
+        col1, col2 = st.columns([0.88, 0.12])
         col1.subheader(f"Project: {st.session_state.selected_project}")
         
         # Create a placeholder for the delete button and confirmation

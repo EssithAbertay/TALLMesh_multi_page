@@ -88,7 +88,7 @@ def main():
     create_initial_coding_guide()
     create_code_reduction_guide()
     create_finding_themes_guide()
-    create_finalized_theme_book_guide()
+    #create_finalized_theme_book_guide() # deprecated - finalised theme book now generated in finding themes page automatically
     create_metrics_visualizations_guide()
     create_custom_prompt_management_guide()
 
