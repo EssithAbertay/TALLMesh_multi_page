@@ -29,13 +29,14 @@ logger = logging.getLogger(__name__)
 # Import gifs and set text for top of isntruction expander 
 
 process_gif = "pages/animations/process_rounded.gif"
-compare_gif = "pages/animations/copy_rounded.gif"
+compare_gif = "pages/animations/compare_rounded.gif"
 merge_gif = "pages/animations/merge_rounded.gif"
+#compare_gif = "pages/animations/copy_rounded.gif" # alternative animated icon...
 
 
 process_text = 'The LLM compares each set of initial codes...'
 compare_text = '...to identify duplicates based on the user prompt...'
-merge_text = "...which are merged into a set of unqique codes."
+merge_text = "...which are merged into a set of unique codes."
 
 def load_custom_prompts():
     """
