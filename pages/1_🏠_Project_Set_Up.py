@@ -55,7 +55,7 @@ def create_project(project_name):
     os.makedirs(project_path, exist_ok=True)
     
     # Create subfolders for different stages of the analysis
-    subfolders = ['data', 'initial_codes', 'reduced_codes', 'themes', 'refined_themes', 'theme_books', 'expanded_reduced_codes', ]
+    subfolders = ['data', 'initial_codes', 'reduced_codes', 'themes', 'theme_books', 'expanded_reduced_codes', ]
     for folder in subfolders:
         os.makedirs(os.path.join(project_path, folder), exist_ok=True)
 
@@ -199,8 +199,18 @@ def main():
         st.subheader(":orange[1. Creating a New Project]")
         st.write("""
         - Enter a unique name for your project in the "Enter new project name:" text box.
-        - Click the "Create Project" button to set up your project.
+        - Hit enter or click the "Create Project" button to set up your project.
         - The system will create a new folder structure for your project, including subfolders for data, initial codes, reduced codes, themes, and more.
+        
+        YOUR_PROJECT_NAME/          # The name you assign to your project.
+        ├── data/                   # This folder holds all of your raw data files (e.g., interview transcripts).
+        ├── initial_codes/          # After initial codes have been parsed, the resultant files are stored here.
+        ├── reduced_codes/          # This folder contains the results from your reduction of codes processing.
+        ├── themes/                 # Themes derived from reduced codes.
+        ├── theme_books/            # Combines outputs from above to generate a file with structure theme > reduced codes > initial codes > quotes > source files.
+        └── expanded_reduced_codes/ # Contains expnaded view of reduced_codes; needed for matching sources, quotes, and codes.
+
+
         """)
 
         # Instructions for selecting an existing project
