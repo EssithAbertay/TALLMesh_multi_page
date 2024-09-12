@@ -11,12 +11,20 @@ AZURE_SETTINGS_FILE = 'azure_settings.json'
 def load_azure_settings():
     if os.path.exists(AZURE_SETTINGS_FILE):
         with open(AZURE_SETTINGS_FILE, 'r') as f:
-            return json.load(f)
+            content = f.read().strip()
+            if content:
+                try:
+                    return json.loads(content)
+                except json.JSONDecodeError:
+                    print("Warning: Azure settings file is corrupted. Returning empty settings.")
+            else:
+                print("Info: Azure settings file is empty.")
     return {}
 
 def get_azure_models():
     azure_settings = load_azure_settings()
-    return [f"azure_{deployment}" for deployment in azure_settings.get('deployments', [])]
+    deployments = azure_settings.get('deployments', [])
+    return [f"azure_{deployment}" for deployment in deployments] if deployments else []
 
 # List of LLM providers
 providers = ['OpenAI', 'Anthropic']
