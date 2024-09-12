@@ -10,20 +10,28 @@ It provides a Streamlit interface for users to process their coded data and gene
 
 # Import necessary libraries
 import streamlit as st
-from openai import OpenAI, AzureOpenAI
 import pandas as pd
 import json
 import os
-import anthropic
 from api_key_management import manage_api_keys, load_api_keys, load_azure_settings, get_azure_models, AZURE_SETTINGS_FILE
 from project_utils import get_projects, get_project_files, get_processed_files
 from prompts import finding_themes_prompts
 from llm_utils import llm_call
 import logging
+import tooltips
+import time
+from ui_utils import centered_column_with_number, create_circle_number
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+processing_gif = "pages/animations/data_processing_rounded.gif"
+connection_gif = "pages/animations/connection_rounded.gif"
+
+
+processing_text = 'The LLM analyses the reduced unique codes'
+connection_text = '...and groups them into overarching themes...'
 
 # Constants
 PROJECTS_DIR = 'projects'
@@ -111,9 +119,15 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p)
     logger.info(f"Starting to process codes from {len(selected_files)} files")
     logger.info(f"Model: {model}, Temperature: {model_temperature}, Top P: {model_top_p}")
 
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+
     # Combine all selected files into a single DataFrame
     all_codes = []
-    for file in selected_files:
+    for i, file in enumerate(selected_files):
+        progress = (i + 1) / (len(selected_files) + 3)  # +3 for preprocessing, AI processing, and JSON parsing
+        progress_bar.progress(progress)
+        status_text.info(f"Reading file: {file}")
         logger.info(f"Reading file: {file}")
         df = pd.read_csv(file)
         logger.info(f"File {file} read. Shape: {df.shape}")
@@ -122,6 +136,8 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p)
     logger.info(f"Combined DataFrame shape: {combined_df.shape}")
     
     # Preprocess the combined DataFrame
+    status_text.info("Preprocessing codes...")
+    progress_bar.progress((len(selected_files) + 1) / (len(selected_files) + 3))
     preprocessed_df = preprocess_codes(combined_df)
     
     # Create a list of codes for the prompt
@@ -132,18 +148,24 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p)
     logger.info(f"Full prompt constructed. Length: {len(full_prompt)}")
     
     # Process the codes using the AI model
+    status_text.info(f"Processing codes with {model} model...")
+    progress_bar.progress((len(selected_files) + 2) / (len(selected_files) + 3))
     logger.info("Calling AI model to process codes")
     processed_output = llm_call(model, full_prompt, model_temperature, model_top_p)
     
     # Extract and parse the JSON response
+    status_text.info("Parsing AI response...")
+    progress_bar.progress(1.0)
     json_string = extract_json(processed_output)
     if json_string:
         logger.info("Successfully extracted JSON from AI response")
         parsed_output = json.loads(json_string)
         logger.info(f"Number of themes found: {len(parsed_output.get('themes', []))}")
+        status_text.info("Theme finding process completed successfully.")
         return parsed_output, preprocessed_df
     else:
         logger.warning("No valid JSON found in the response")
+        status_text.info("Failed to extract themes from AI response.")
         return None, preprocessed_df
 
 def save_themes(project_name, df):
@@ -177,6 +199,96 @@ def convert_df(df):
     """
     return df.to_csv().encode('utf-8')
 
+
+# Functions to generate theme code book(s) - previously a separate page
+
+
+def format_quotes(quotes_json):
+    """
+    Parses the JSON string of quotes, extracts the text,
+    and joins each quote with a newline for better readability.
+    
+    Args:
+    quotes_json (str): A JSON string containing quote information.
+    
+    Returns:
+    str: A formatted string of quotes, each on a new line.
+    """
+    try:
+        quotes = json.loads(quotes_json)
+        formatted_quotes = "\n".join(quote['text'] for quote in quotes)
+        return formatted_quotes
+    except (json.JSONDecodeError, KeyError, TypeError):
+        # Return the original string if there's an error in parsing or formatting
+        return quotes_json
+
+def load_data(project_name):
+    """
+    Loads the most recent themes and reduced codes files for a given project.
+    
+    Args:
+    project_name (str): The name of the project to load data for.
+    
+    Returns:
+    tuple: A tuple containing two pandas DataFrames (themes_df, codes_df) or (None, None) if files are not found.
+    """
+    # Define paths for themes and codes folders
+    themes_folder = os.path.join(PROJECTS_DIR, project_name, 'themes')
+    codes_folder = os.path.join(PROJECTS_DIR, project_name, 'reduced_codes')
+    
+    # Get the most recent themes file
+    themes_files = get_processed_files(project_name, 'themes')
+    if not themes_files:
+        return None, None
+    latest_themes_file = max(themes_files, key=lambda f: os.path.getmtime(os.path.join(themes_folder, f)))
+    themes_df = pd.read_csv(os.path.join(themes_folder, latest_themes_file))
+    
+    # Get the most recent reduced codes file
+    codes_files = get_processed_files(project_name, 'reduced_codes')
+    if not codes_files:
+        return None, None
+    latest_codes_file = max(codes_files, key=lambda f: os.path.getmtime(os.path.join(codes_folder, f)))
+    codes_df = pd.read_csv(os.path.join(codes_folder, latest_codes_file))
+    
+    return themes_df, codes_df
+
+def process_data(themes_df, codes_df):
+    """
+    Processes the themes and codes data to create a final theme-codes book.
+    
+    Args:
+    themes_df (pandas.DataFrame): DataFrame containing theme data.
+    codes_df (pandas.DataFrame): DataFrame containing code data.
+    
+    Returns:
+    pandas.DataFrame: A processed DataFrame combining themes, codes, and associated information.
+    """
+    # Initialize empty DataFrame for final theme-codes book with correct column names
+    final_df = pd.DataFrame(columns=['Theme', 'Theme Description', 'Code', 'Code Description', 'Merge Explanation', 'Quotes', 'Source'])
+
+    # Iterate through each theme and its associated codes
+    for _, theme_row in themes_df.iterrows():
+        theme = theme_row['name']
+        theme_description = theme_row['description']
+        code_indices = [int(idx) for idx in theme_row['codes'].strip('[]').split(',')]
+        
+        # For each code associated with the theme, create a new row in the final DataFrame
+        for idx in code_indices:
+            if idx < len(codes_df):
+                code_row = codes_df.iloc[idx]
+                new_row = pd.Series({
+                    'Theme': theme,
+                    'Theme Description': theme_description,
+                    'Code': code_row['code'],
+                    'Code Description': code_row['description'],
+                    'Merge Explanation': code_row['merge_explanation'],
+                    'Quotes': code_row.get('quote', code_row.get('source', '')),  # Try 'quote', then 'source' if 'quote' doesn't exist
+                    'Source': code_row.get('source', code_row.get('quote_2', ''))  # Try 'source', then 'quote_2' if 'source' doesn't exist
+                })
+                final_df = pd.concat([final_df, new_row.to_frame().T], ignore_index=True)
+
+    return final_df
+
 def main():
     """
     The main function that sets up the Streamlit interface and handles user interactions.
@@ -190,8 +302,26 @@ def main():
     # Display instructions in an expandable section
     with st.expander("Instructions"):
         st.write("""
-        The Finding Themes page is where you identify overarching themes from your reduced codes. This step helps you synthesize your data into meaningful patterns. Here's how to use this page:
+        The Finding Themes page is where you identify overarching themes from your reduced codes. This step helps you synthesize your data into meaningful patterns. 
         """)
+
+        # Create columns for layout for gifs and main points
+        col1, col2= st.columns(2)
+
+        # Display content in each column
+        centered_column_with_number(col1, 1, processing_text, processing_gif)
+        centered_column_with_number(col2, 2, connection_text, connection_gif)
+
+        st.markdown(
+            """
+            <p style="font-size: 8px; color: gray; text-align: center;">
+            <a href="https://www.flaticon.com/animated-icons" title="document animated icons" style="color: gray; text-decoration: none;">
+            Animated icons created by Freepik - Flaticon
+            </a>
+            </p>
+            """,
+            unsafe_allow_html=True
+        )
 
         st.subheader(":orange[1. Project and File Selection]")
         st.write("""
@@ -256,7 +386,8 @@ def main():
         "Select a project:", 
         project_options,
         index=index,
-        key="project_selector"
+        key="project_selector",
+        help= tooltips.project_tooltip
     )
 
     # Update session state when a new project is selected
@@ -287,7 +418,7 @@ def main():
         default_models = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
         azure_models = get_azure_models()
         model_options = default_models + azure_models
-        selected_model = st.selectbox("Select Model", model_options)
+        selected_model = st.selectbox("Select Model", model_options, help=tooltips.model_tooltip)
 
         max_temperature_value = 2.0 if selected_model.startswith('gpt') else 1.0
 
@@ -298,7 +429,7 @@ def main():
         all_prompts = {**finding_themes_prompts, **custom_prompts}
 
         # Prompt selection
-        selected_prompt = st.selectbox("Select a prompt:", list(all_prompts.keys()))
+        selected_prompt = st.selectbox("Select a prompt:", list(all_prompts.keys()), help=tooltips.presets_tooltip)
 
         # Load selected prompt values
         selected_prompt_data = all_prompts[selected_prompt]
@@ -306,13 +437,13 @@ def main():
         model_temperature = selected_prompt_data["temperature"]
         model_top_p = selected_prompt_data["top_p"]
 
-        prompt_input = st.text_area("Edit prompt if needed:", value=prompt_input, height=200)
+        prompt_input = st.text_area("Edit prompt if needed:", value=prompt_input, height=200, help=tooltips.prompt_tooltip)
         
         settings_col1, settings_col2 = st.columns([0.5, 0.5])
         with settings_col1:
-            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value), step=0.01, value=model_temperature)
+            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value), step=0.01, value=model_temperature, help = tooltips.model_temp_tooltip)
         with settings_col2:
-            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=model_top_p)
+            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=model_top_p, help=tooltips.top_p_tooltip)
 
         if st.button("Process"):
             st.divider()
@@ -347,6 +478,53 @@ def main():
                         file_name="themes.csv",
                         mime="text/csv"
                     )
+
+            # Load data for the selected project
+            themes_df, codes_df = load_data(selected_project)
+            
+            if themes_df is None or codes_df is None:
+                st.error("Error: Required files not found in the project directory.")
+            else:
+                st.success(f"Theme-codes generates successfully for project: {selected_project}")
+                
+                # Process data to create the final theme-codes book
+                final_df = process_data(themes_df, codes_df)
+                
+                # Display various views of the data
+                st.write("Condensed Themes")
+                st.write(themes_df)
+                
+                st.write("Expanded Themes w/ Codes, Quotes & Sources")
+                final_display_df = final_df.copy()
+                final_display_df['Quotes'] = final_display_df['Quotes'].apply(format_quotes)
+                st.write(final_df)
+                
+                with st.expander("Merged Codes (for reference)"):
+                    st.write("Merged Codes")
+                    st.write(codes_df)
+                
+                # Save the final DataFrame
+                output_folder = os.path.join(PROJECTS_DIR, selected_project, 'theme_books')
+                os.makedirs(output_folder, exist_ok=True)
+
+                # Save condensed theme book
+                output_file_condensed = os.path.join(output_folder, f"{selected_project}_condensed_theme_book_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv")
+                themes_df.to_csv(output_file_condensed, index=False)
+
+                # Save expanded theme book
+                output_file_expanded = os.path.join(output_folder, f"{selected_project}_expanded_theme_book_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv")
+                final_df.to_csv(output_file_expanded, index=False)
+
+                st.success(f"Theme books (condensed and expanded) saved to: \n-{output_file_condensed} \n{output_file_expanded}")
+                
+                # Provide download button for the final theme-codes book
+                csv = final_df.to_csv(index=False).encode('utf-8')
+                st.download_button(
+                    label="Download Final Theme-Codes Book",
+                    data=csv,
+                    file_name="final_theme_codes_book.csv",
+                    mime="text/csv"
+                )
 
         # Display previously processed files
         processed_files = get_processed_files(selected_project, 'themes')

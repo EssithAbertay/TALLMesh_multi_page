@@ -9,16 +9,26 @@ import os
 import pandas as pd
 import json
 import re
-from openai import OpenAI, AzureOpenAI
-import anthropic
 from api_key_management import manage_api_keys, load_api_keys, load_azure_settings, get_azure_models, AZURE_SETTINGS_FILE
 from prompts import initial_coding_prompts
 from project_utils import get_projects, get_project_files, get_processed_files, PROJECTS_DIR
 from llm_utils import llm_call
 import logging
+import tooltips
+import time
+from ui_utils import centered_column_with_number, create_circle_number
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+search_gif = "pages/animations/search_rounded.gif"
+highlighter_gif = "pages/animations/highlight_rounded.gif"
+order_gif = "pages/animations/order_rounded.gif"
+
+
+search_text = 'During initial coding, the LLM analyzes each document…'
+highlighter_text = '...to extract quotes based on the user prompt…'
+order_text = "...which are named and compiled into lists of 'initial codes'."
 
 # function to load users own custom prompts
 def load_custom_prompts():
@@ -78,36 +88,49 @@ def split_text(text, max_chunk_size=50000, overlap=1000):
     logger.info(f"Total number of chunks created: {len(chunks)}")
     return chunks
 
-def process_file(file_path, model, prompt, model_temperature, model_top_p):
+def process_file(file_path, model, prompt, model_temperature, model_top_p, status_message):
     # Specify encoding to handle potential UnicodeDecodeError
     with open(file_path, 'r', encoding='utf-8') as file:
         content = file.read()
     
+    status_message.info(f"Processing file: {os.path.basename(file_path)}")
+    
     chunks = split_text(content)
     all_codes = []
     
+    status_message.info(f"File split into {len(chunks)} chunks")
+    
     for i, chunk in enumerate(chunks):
+        status_message.info(f"Processing chunk {i+1}/{len(chunks)} of {os.path.basename(file_path)}")
         chunk_prompt = f"{prompt}\n\nFile Content (Part {i+1}/{len(chunks)}):\n{chunk}"
         chunk_response = llm_call(model, chunk_prompt, model_temperature, model_top_p)
         
         if chunk_response is None:
             logger.error(f"Failed to process chunk {i+1}/{len(chunks)}")
+            status_message.warning(f"Failed to process chunk {i+1}/{len(chunks)}")
             continue
 
         try:
             json_output = json.loads(chunk_response)
             if isinstance(json_output, dict) and 'final_codes' in json_output:
-                all_codes.extend(json_output['final_codes'])
+                chunk_codes = json_output['final_codes']
+                all_codes.extend(chunk_codes)
+                status_message.info(f"Extracted {len(chunk_codes)} codes from chunk {i+1}")
             else:
                 logger.warning(f"Unexpected JSON structure in chunk {i+1}")
+                status_message.warning(f"Unexpected JSON structure in chunk {i+1}")
         except json.JSONDecodeError:
             logger.error(f"Failed to parse JSON in response for chunk {i+1}")
+            status_message.error(f"Failed to parse JSON in response for chunk {i+1}")
     
     if not all_codes:
         raise ValueError("No valid codes were extracted from any chunks")
     
     # Combine all codes from different chunks
     combined_output = {'final_codes': all_codes}
+    status_message.success(f"Completed processing file: {os.path.basename(file_path)}")
+    status_message.success(f"Total codes extracted: {len(all_codes)}")
+    
     return json.dumps(combined_output)
 
 def main():
@@ -119,9 +142,27 @@ def main():
 
     with st.expander("Instructions"):
         st.write("""
-        The Initial Coding page is where you begin the analysis of your data. This step involves generating initial codes for each of your uploaded files using AI assistance. Here's how to use this page:
+        The Initial Coding page is where you begin the analysis of your data. This step involves generating initial codes for each of your uploaded files using Large Language Models (LLMs). Read the guide below to find out more.
         """)
 
+        # Create columns for layout for gifs and main points
+        col1, col2, col3 = st.columns(3)
+
+        # Display content in each column
+        centered_column_with_number(col1, 1, search_text, search_gif)
+        centered_column_with_number(col2, 2, highlighter_text, highlighter_gif)
+        centered_column_with_number(col3, 3, order_text, order_gif)
+
+        st.markdown(
+            """
+            <p style="font-size: 8px; color: gray; text-align: center;">
+            <a href="https://www.flaticon.com/animated-icons" title="document animated icons" style="color: gray; text-decoration: none;">
+            Animated icons created by Freepik - Flaticon
+            </a>
+            </p>
+            """,
+            unsafe_allow_html=True
+        )
         st.subheader(":orange[1. Project Selection]")
         st.write("""
         - Use the dropdown menu to select the project you want to work on.
@@ -195,7 +236,8 @@ def main():
         "Select a project:", 
         project_options,
         index=index,
-        key="project_selector"
+        key="project_selector",
+        help = tooltips.project_tooltip
     )
 
     # Update session state when a new project is selected
@@ -241,7 +283,7 @@ def main():
         default_models = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
         azure_models = get_azure_models()
         model_options = default_models + azure_models
-        selected_model = st.selectbox("Select Model", model_options)
+        selected_model = st.selectbox("Select Model", model_options, help = tooltips.model_tooltip)
         
         # OpenAI & Anthropic Models have different max temperature settings (2 & 1, respectively)
         max_temperature_value = 2.0 if selected_model.startswith('gpt') else 1.0
@@ -253,7 +295,7 @@ def main():
         all_prompts = {**initial_coding_prompts, **custom_prompts}
 
         # Prompt selection
-        selected_prompt = st.selectbox("Select a prompt:", list(all_prompts.keys()))
+        selected_prompt = st.selectbox("Select a prompt:", list(all_prompts.keys()), help = tooltips.presets_tooltip)
 
         # Load selected prompt values
         selected_prompt_data = all_prompts[selected_prompt]
@@ -261,52 +303,56 @@ def main():
         model_temperature = selected_prompt_data["temperature"]
         model_top_p = selected_prompt_data["top_p"]
 
-        prompt_input = st.text_area("Edit prompt if needed:", value=prompt_input, height=200)
+        prompt_input = st.text_area("Edit prompt if needed:", value=prompt_input, height=200, help = tooltips.prompt_tooltip)
         settings_col1, settings_col2 = st.columns([0.5, 0.5])
         with settings_col1:
-            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value),step=0.01,value=model_temperature)
+            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value),step=0.01,value=model_temperature, help = tooltips.model_temp_tooltip)
 
         with settings_col2:
-            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1),step=0.01,value=model_top_p)
+            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1),step=0.01,value=model_top_p, help = tooltips.top_p_tooltip)
 
         if st.button("Process"):
             st.divider()
             st.subheader(":orange[Output]")
-            with st.spinner("Generating initial codes ... please wait ..."):
-                prog_bar = st.progress(0)
-                if selected_files and prompt_input:
-                    for i, file in enumerate(selected_files):
-                        file_path = os.path.join(PROJECTS_DIR, selected_project, 'data', file)
-                        try:
-                            processed_output = process_file(file_path, selected_model, prompt_input, model_temperature, model_top_p)
-                            json_output = json.loads(processed_output)
-                            df = pd.json_normalize(json_output['final_codes'])
-                            df.columns = ['code', 'description', 'quote']
-                            
-                            with st.expander(f"Processed Output for {file}:", expanded=True):
-                                st.write(df)
-                            
-                                # Save initial codes
-                                saved_file_path = save_initial_codes(selected_project, file, df)
-                                st.success(f"Initial codes saved to {saved_file_path}")
-                            
-                                # Add download button for each file's results
-                                csv = df.to_csv(index=False).encode('utf-8')
-                                st.download_button(
-                                    label=f"Download initial codes for {str(os.path.splitext(file)[0])}",
-                                    data=csv,
-                                    file_name=f"{str(os.path.splitext(file)[0])}_initial_codes.csv",
-                                    mime="text/csv"
-                                )
-                            
-                        except Exception as e:
-                            st.error(f"Error processing {file}: {str(e)}")
-                            logger.error(f"Error processing {file}: {str(e)}", exc_info=True)
-                        progress = (i + 1) / len(selected_files)
-                        prog_bar.progress(progress)
+            status_message = st.empty()
+            status_message.info("Starting initial coding process. This may take some time depending on the number of files and their size...")
+            prog_bar = st.progress(0)
+            if selected_files and prompt_input:
+                for i, file in enumerate(selected_files):
+                    file_path = os.path.join(PROJECTS_DIR, selected_project, 'data', file)
+                    try:
+                        status_message.info(f"Processing file {i+1}/{len(selected_files)}: {file}")
+                        processed_output = process_file(file_path, selected_model, prompt_input, model_temperature, model_top_p, status_message)
+                        json_output = json.loads(processed_output)
+                        df = pd.json_normalize(json_output['final_codes'])
+                        df.columns = ['code', 'description', 'quote']
                         
-                else:
-                    st.warning("Please select files and enter a prompt.")
+                        with st.expander(f"Processed Output for {file}:", expanded=True):
+                            st.write(df)
+                        
+                            # Save initial codes
+                            saved_file_path = save_initial_codes(selected_project, file, df)
+                            status_message.success(f"Initial codes saved to {saved_file_path}")
+                        
+                            # Add download button for each file's results
+                            csv = df.to_csv(index=False).encode('utf-8')
+                            st.download_button(
+                                label=f"Download initial codes for {str(os.path.splitext(file)[0])}",
+                                data=csv,
+                                file_name=f"{str(os.path.splitext(file)[0])}_initial_codes.csv",
+                                mime="text/csv"
+                            )
+                        
+                    except Exception as e:
+                        status_message.error(f"Error processing {file}: {str(e)}")
+                        logger.error(f"Error processing {file}: {str(e)}", exc_info=True)
+                    progress = (i + 1) / len(selected_files)
+                    prog_bar.progress(progress)
+                    time.sleep(1)  # Add a small delay to allow the user to see the message
+                
+                status_message.success("Initial coding process completed successfully!")
+            else:
+                status_message.warning("Please select files and enter a prompt.")
 
         # View previously processed files
         with st.expander("Saved Initial Codes", expanded=False):

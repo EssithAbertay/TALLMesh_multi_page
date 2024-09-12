@@ -135,7 +135,7 @@ def main():
             return
 
         # Create slider for minimum common codes
-        min_common_codes = st.slider("Minimum Common Codes", min_value=0, max_value=10, value=0)
+        min_common_codes = st.slider("Minimum Common Codes", min_value=1, max_value=10, value=1)
 
         # Create the graph
         graph_dot = create_graph(themes_df, min_common_codes)

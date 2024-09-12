@@ -9,24 +9,30 @@ from project_utils import get_projects
 # Define the directory where all projects will be stored
 PROJECTS_DIR = 'projects'
 
+# Function to delete multiple files
+def delete_files(file_paths):
+    deleted_files = []
+    for file_path in file_paths:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            deleted_files.append(file_path)
+    return deleted_files
+
 # Function to handle file uploads for a project
-def handle_file_upload(uploaded_files, project_name):
+def handle_file_upload():
     """
     Process uploaded files for a given project.
     
     This function saves valid .txt files to the project's data folder and provides
     feedback messages about the upload process.
 
-    Args:
-    uploaded_files (list): List of uploaded file objects from Streamlit's file_uploader
-    project_name (str): Name of the current project
-
     Side effects:
     - Saves valid files to the project's data folder
     - Updates session state with success/warning messages about the upload process
     """
-    if uploaded_files:
-        saved_files, invalid_files = save_uploaded_files(uploaded_files, project_name)
+    if st.session_state.uploaded_files:
+        project_name = st.session_state.selected_project
+        saved_files, invalid_files = save_uploaded_files(st.session_state.uploaded_files, project_name)
         if saved_files:
             st.session_state.message = f"Files uploaded successfully: {', '.join(saved_files)}"
             st.session_state.message_type = "success"
@@ -58,7 +64,7 @@ def create_project(project_name):
     os.makedirs(project_path, exist_ok=True)
     
     # Create subfolders for different stages of the analysis
-    subfolders = ['data', 'initial_codes', 'reduced_codes', 'themes', 'refined_themes', 'theme_books', 'expanded_reduced_codes', ]
+    subfolders = ['data', 'initial_codes', 'reduced_codes', 'themes', 'theme_books', 'expanded_reduced_codes']
     for folder in subfolders:
         os.makedirs(os.path.join(project_path, folder), exist_ok=True)
 
@@ -158,6 +164,26 @@ def remove_project(project_name):
         st.session_state.message = f"Project '{project_name}' does not exist."
         st.session_state.message_type = "warning"
 
+# New function to get contents of all subfolders in a project
+def get_project_structure(project_name):
+    """
+    Get the structure of a project, including all subfolders and their contents.
+
+    Args:
+    project_name (str): Name of the project
+
+    Returns:
+    dict: A dictionary representing the project structure
+    """
+    project_path = os.path.join(PROJECTS_DIR, project_name)
+    structure = {}
+    for root, dirs, files in os.walk(project_path):
+        folder = os.path.relpath(root, project_path)
+        if folder == '.':
+            continue
+        structure[folder] = files
+    return structure
+
 # Initialize session state variables
 # These variables persist across Streamlit reruns and store important application state
 if 'message' not in st.session_state:
@@ -172,6 +198,9 @@ if 'selected_project' not in st.session_state:
 
 if 'delete_project' not in st.session_state:
     st.session_state.delete_project = None
+
+if 'uploaded_files' not in st.session_state:
+    st.session_state.uploaded_files = None
 
 # Main function to run the Streamlit app
 def main():
@@ -199,8 +228,18 @@ def main():
         st.subheader(":orange[1. Creating a New Project]")
         st.write("""
         - Enter a unique name for your project in the "Enter new project name:" text box.
-        - Click the "Create Project" button to set up your project.
+        - Hit enter or click the "Create Project" button to set up your project.
         - The system will create a new folder structure for your project, including subfolders for data, initial codes, reduced codes, themes, and more.
+        
+        YOUR_PROJECT_NAME/          # The name you assign to your project.
+        ├── data/                   # This folder holds all of your raw data files (e.g., interview transcripts).
+        ├── initial_codes/          # After initial codes have been parsed, the resultant files are stored here.
+        ├── reduced_codes/          # This folder contains the results from your reduction of codes processing.
+        ├── themes/                 # Themes derived from reduced codes.
+        ├── theme_books/            # Combines outputs from above to generate a file with structure theme > reduced codes > initial codes > quotes > source files.
+        └── expanded_reduced_codes/ # Contains expnaded view of reduced_codes; needed for matching sources, quotes, and codes.
+
+
         """)
 
         # Instructions for selecting an existing project
@@ -215,7 +254,7 @@ def main():
         st.write("""
         - With a project selected, you'll see a file uploader labeled "Upload interviews .txt files".
         - You can drag and drop multiple .txt files or click to browse and select them.
-        - Click the "Upload Files" button to add these files to your project's data folder.
+        - Files will be automatically uploaded when selected or dropped.
         - Successful uploads will be confirmed with a message.
         - Note: Only .txt files are allowed. For other file types, please use the file_upload_and_conversion page to format them properly before uploading.
         """)
@@ -243,7 +282,7 @@ def main():
         """)
 
         st.info("""
-            **Note:** Azure API calls work a little differently to other providers. To manage Azure API credentials please see the :orange[12_⚙️_Azure_Settings page].
+            **Note:** Azure API calls work a little differently to other providers. To manage Azure API credentials please see the :orange[⚙️_Azure_Settings page].
             """)
 
         # Additional tips
@@ -275,8 +314,11 @@ def main():
         st.rerun()
 
     # Project creation UI
-    new_project = st.text_input("Enter new project name:")
-    if st.button("Create Project"):
+    with st.form(key='create_project_form'):
+        new_project = st.text_input("Enter new project name:")
+        create_project_button = st.form_submit_button("Create Project")
+
+    if create_project_button:
         if new_project and new_project not in st.session_state.projects:
             create_project(new_project)
             st.session_state.message = f"Project '{new_project}' created successfully!"
@@ -300,46 +342,76 @@ def main():
 
     # Project management UI
     if st.session_state.selected_project:
-        col1, col2, col3 = st.columns([0.2,0.2,0.05])
+        col1, col2 = st.columns([0.92, 0.08])
         col1.subheader(f"Project: {st.session_state.selected_project}")
-        if col2.button("Delete Project"):
-            st.session_state.delete_project = st.session_state.selected_project
-            st.rerun()
-        delete_button = col3.empty()
         
+        # Create a placeholder for the delete button and confirmation
+        delete_placeholder = col2.empty()
+
+        # Initialize session state for delete confirmation
+        if 'show_delete_confirm' not in st.session_state:
+            st.session_state.show_delete_confirm = False
+
+        # Show delete button or confirmation based on state
+        if not st.session_state.show_delete_confirm:
+            if delete_placeholder.button("Delete Project"):
+                st.session_state.show_delete_confirm = True
+                st.rerun()
+        else:
+            with delete_placeholder.container():
+                st.button("Cancel", key="cancel_delete", on_click=lambda: setattr(st.session_state, 'show_delete_confirm', False))
+                st.button("Confirm", key="confirm_delete", on_click=lambda: [remove_project(st.session_state.selected_project), setattr(st.session_state, 'selected_project', None), setattr(st.session_state, 'show_delete_confirm', False)])
+            
+            st.warning(f"Are you sure you want to delete the project '{st.session_state.selected_project}'? This action cannot be undone.")
+
         # Display existing files with checkboxes
         try:
             existing_files = get_project_files(st.session_state.selected_project)
         except:
             existing_files = []
 
+        files_to_delete = []
+        
+
         if existing_files:
-            files_to_delete = []
-            
+            #st.write("Select files to delete:")
             # List files with checkboxes
-            for file in existing_files:
-                file_col, checkbox_col = st.columns([0.95, 0.05])
-                file_col.write(file)
-                if checkbox_col.checkbox(".", key=f"checkbox_{file}", label_visibility="hidden"):
-                    files_to_delete.append(file)
+            #for file in existing_files:
+            #    if st.checkbox(file, key=f"checkbox_{file}"):
+            #        files_to_delete.append(file)
             
-            # Show delete button if files are selected
-            if files_to_delete:
-                if delete_button.button("🗑️"):
-                    remove_files(st.session_state.selected_project, files_to_delete)
-                    st.success(f"Deleted {len(files_to_delete)} file(s)")
-                    st.rerun()
+            # Show delete button, disabled if no files are selected
+            #if st.button("Delete Selected", disabled=len(files_to_delete) == 0):
+            #    remove_files(st.session_state.selected_project, files_to_delete)
+            #    st.success(f"Deleted {len(files_to_delete)} file(s)")
+            #    st.rerun()
+            pass
         else:
             st.write("No files in this project yet. Upload files below to get started")
         
-        # File upload form
-        with st.form("upload_form", clear_on_submit=True, border=False):
-            uploaded_files = st.file_uploader("Upload interviews .txt files", accept_multiple_files=True, label_visibility="hidden")
-            submitted = st.form_submit_button("Upload Files")
+        # File upload UI
+        st.file_uploader("Upload interviews .txt files", accept_multiple_files=True, key="uploaded_files", on_change=handle_file_upload)
 
-            if submitted:
-                handle_file_upload(uploaded_files, st.session_state.selected_project)
-                st.rerun()
+        # New expander section for project structure to let users delete files without having to go into file explorer
+        with st.expander("View Project Structure & Files"):
+            project_structure = get_project_structure(st.session_state.selected_project)
+            for folder, files in project_structure.items():
+                st.subheader(f":file_folder: {folder}")
+                if files:
+                    files_to_delete = []
+                    for file in files:
+                        file_path = os.path.join(PROJECTS_DIR, st.session_state.selected_project, folder, file)
+                        if st.checkbox(f":page_facing_up: {file}", key=f"checkbox_{file_path}"):
+                            files_to_delete.append(file_path)
+                    
+                    # Show delete button, disabled if no files are selected
+                    if st.button("Delete Selected", key=f"delete_button_{folder}", disabled=len(files_to_delete) == 0):
+                        deleted_files = delete_files(files_to_delete)
+                        if deleted_files:
+                            st.success(f"Deleted {len(deleted_files)} file(s) from {folder}")
+                            st.rerun()
+                else:
+                    st.write("  (empty)")
 
     else:
         st.write("Please select or create a project to continue.")

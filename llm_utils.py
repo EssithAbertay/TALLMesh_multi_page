@@ -140,7 +140,7 @@ def chunk_codes(codes, chunk_size):
     """
     return [codes[i:i + chunk_size] for i in range(0, len(codes), chunk_size)]
 
-def process_chunks(model, prompt_template, codes, model_temperature, model_top_p, chunk_size=50):
+def process_chunks(model, prompt_template, codes, model_temperature, model_top_p, chunk_size=50, include_quotes=False):
     """
     Process codes in chunks for models with output limitations.
     
@@ -151,6 +151,7 @@ def process_chunks(model, prompt_template, codes, model_temperature, model_top_p
         model_temperature (float): The temperature setting for the AI model.
         model_top_p (float): The top_p setting for the AI model.
         chunk_size (int): Maximum number of codes per chunk.
+        include_quotes (bool): Whether to include quotes in the processing.
     
     Returns:
         list: List of reduced codes.
@@ -181,7 +182,10 @@ def process_chunks(model, prompt_template, codes, model_temperature, model_top_p
         current_missing_codes = original_code_set - processed_original_codes
         for code in chunk:
             if code['code'] in current_missing_codes:
-                missing_codes[code['code']] = {'description': code['description'], 'quote': code['quote']}
+                missing_code = {'description': code['description']}
+                if include_quotes:
+                    missing_code['quote'] = code['quote']
+                missing_codes[code['code']] = missing_code
 
     # Process missing codes
     if missing_codes:

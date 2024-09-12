@@ -1,12 +1,13 @@
 # TALLMesh: Thematic Analysis with Large Language Models
 
-TALLMesh is an experimental tool that leverages AI assistance to conduct qualitative analysis on text-based data, specifically emulating stages from the Braun & Clarke approach to inductive thematic analysis. 
+TALLMesh is an experimental tool that leverages AI assistance to conduct qualitative analysis on text-based data, specifically emulating stages from the Braun & Clarke approach to inductive thematic analysis.
 
 It uses streamlit for the GUI elements, and for the analysis it uses code and ideas from these two papers:
 
-De Paoli, S. (2023). Performing an Inductive Thematic Analysis of Semi-Structured Interviews With a Large Language Model: An Exploration and Provocation on the Limits of the Approach. Social Science Computer Review, 08944393231220483.
+1. [De Paoli, S. (2023). *Performing an Inductive Thematic Analysis of Semi-Structured Interviews With a Large Language Model: An Exploration and Provocation on the Limits of the Approach*. Social Science Computer Review, 08944393231220483.](https://journals.sagepub.com/doi/full/10.1177/08944393231220483)
 
-De Paoli, S., & Mathis, W. S. (2024). Reflections on Inductive Thematic Saturation as a potential metric for measuring the validity of an inductive Thematic Analysis with LLMs. arXiv preprint arXiv:2401.03239.
+2. [De Paoli, S., & Mathis, W. S. (2024). *Reflections on Inductive Thematic Saturation as a potential metric for measuring the validity of an inductive Thematic Analysis with LLMs*. arXiv preprint arXiv:2401.03239.](https://arxiv.org/ftp/arxiv/papers/2401/2401.03239.pdf)
+
 
 ## Table of Contents
 
@@ -38,9 +39,28 @@ This project is based on research conducted by Prof. Stefano De Paoli and Dr. Da
   5. Defining and naming themes
   6. Producing the report
 - Interactive visualizations including icicle charts and thematic network maps
-- Calculation of Initial Thematic Saturation (ITS) metric
+- Calculation of Inductive Thematic Saturation (ITS) metric
 - Flexible prompt engineering for each analysis phase
 - Export options for codes, themes, and visualizations
+
+## TALLMesh Process
+
+- Project Set Up
+
+Use this page to set up your project and add. [video to come]
+
+- Initial Coding
+
+This page emulates Braun & Clarke's phase 2, in which initial codes are derived from each uploaded .txt file
+
+- Reduction of Codes
+
+This stage involves the reduction of duplicate codes to yield a list of unique codes
+
+- Finding Themes
+
+During this stage the LLM is tasked with identifying patterns and grouping associated codes together under broader themes.
+
 
 ## Installation
 
@@ -86,16 +106,16 @@ This project is based on research conducted by Prof. Stefano De Paoli and Dr. Da
 - `2_1️⃣_Initial_coding.py`: Initial coding phase
 - `3_2️⃣_Reduction_of_codes.py`: Code reduction and consolidation
 - `4_3️⃣_Finding_Themes.py`: Theme identification
-- `5_4️⃣_Finalised_Theme_Book.py`: Final theme book generation
-- `6_💹_Saturation_Metric.py`: Calculation of saturation metrics
-- `7_🔗_Thematic_Overlap_Map.py`: Thematic network visualization
-- `8_🧊_Theme-Codes_Icicle.py`: Icicle chart visualization
-- `9_🕸️_Spider_Diagram.py`: Spider diagram visualisation
-- `11_🌳_Nested_Treemap.py`: Nested treemap visualisation
-- `12_💡_Resources.py`: Overview of Thematic Analysis & Comparison
-- `13_⚙️_Azure_Settings.py`: Manage Azure API credentials
-- `14_📌_Guide.py`: User guide
-- `15_📢_Prompt Settings.py`: Prompt configuration settings p
+- `5_💹_Saturation_Metric.py`: Calculation of saturation metrics
+- `6_🔗_Thematic_Overlap_Map.py`: Thematic network visualization
+- `7_🧊_Theme-Codes_Icicle.py`: Icicle chart visualization
+- `8_🕸️_Spider_Diagram.py`: Spider diagram visualisation
+- `9_🌳_Nested_Treemap.py`: Nested treemap visualisation
+- `10_💡_Resources.py`: Overview of Thematic Analysis & Comparison
+- `11_⚙️_Azure_Settings.py`: Manage Azure API credentials
+- `12_📌_Guide.py`: User guide
+- `13_📢_Prompt Settings.py`: Prompt configuration settings page
+- `14_📤_File_Upload_and_Conversion.py`: Convert docs (PDF, DOCX) to.txt 
 
 ## Configuration
 
