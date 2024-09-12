@@ -9,6 +9,15 @@ from project_utils import get_projects
 # Define the directory where all projects will be stored
 PROJECTS_DIR = 'projects'
 
+# Function to delete multiple files
+def delete_files(file_paths):
+    deleted_files = []
+    for file_path in file_paths:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            deleted_files.append(file_path)
+    return deleted_files
+
 # Function to handle file uploads for a project
 def handle_file_upload():
     """
@@ -55,7 +64,7 @@ def create_project(project_name):
     os.makedirs(project_path, exist_ok=True)
     
     # Create subfolders for different stages of the analysis
-    subfolders = ['data', 'initial_codes', 'reduced_codes', 'themes', 'theme_books', 'expanded_reduced_codes', ]
+    subfolders = ['data', 'initial_codes', 'reduced_codes', 'themes', 'theme_books', 'expanded_reduced_codes']
     for folder in subfolders:
         os.makedirs(os.path.join(project_path, folder), exist_ok=True)
 
@@ -154,6 +163,26 @@ def remove_project(project_name):
     else:
         st.session_state.message = f"Project '{project_name}' does not exist."
         st.session_state.message_type = "warning"
+
+# New function to get contents of all subfolders in a project
+def get_project_structure(project_name):
+    """
+    Get the structure of a project, including all subfolders and their contents.
+
+    Args:
+    project_name (str): Name of the project
+
+    Returns:
+    dict: A dictionary representing the project structure
+    """
+    project_path = os.path.join(PROJECTS_DIR, project_name)
+    structure = {}
+    for root, dirs, files in os.walk(project_path):
+        folder = os.path.relpath(root, project_path)
+        if folder == '.':
+            continue
+        structure[folder] = files
+    return structure
 
 # Initialize session state variables
 # These variables persist across Streamlit reruns and store important application state
@@ -343,23 +372,46 @@ def main():
 
         files_to_delete = []
         
+
         if existing_files:
-            st.write("Select files to delete:")
+            #st.write("Select files to delete:")
             # List files with checkboxes
-            for file in existing_files:
-                if st.checkbox(file, key=f"checkbox_{file}"):
-                    files_to_delete.append(file)
+            #for file in existing_files:
+            #    if st.checkbox(file, key=f"checkbox_{file}"):
+            #        files_to_delete.append(file)
             
             # Show delete button, disabled if no files are selected
-            if st.button("Delete Selected", disabled=len(files_to_delete) == 0):
-                remove_files(st.session_state.selected_project, files_to_delete)
-                st.success(f"Deleted {len(files_to_delete)} file(s)")
-                st.rerun()
+            #if st.button("Delete Selected", disabled=len(files_to_delete) == 0):
+            #    remove_files(st.session_state.selected_project, files_to_delete)
+            #    st.success(f"Deleted {len(files_to_delete)} file(s)")
+            #    st.rerun()
+            pass
         else:
             st.write("No files in this project yet. Upload files below to get started")
         
         # File upload UI
         st.file_uploader("Upload interviews .txt files", accept_multiple_files=True, key="uploaded_files", on_change=handle_file_upload)
+
+        # New expander section for project structure to let users delete files without having to go into file explorer
+        with st.expander("View Project Structure & Files"):
+            project_structure = get_project_structure(st.session_state.selected_project)
+            for folder, files in project_structure.items():
+                st.subheader(f":file_folder: {folder}")
+                if files:
+                    files_to_delete = []
+                    for file in files:
+                        file_path = os.path.join(PROJECTS_DIR, st.session_state.selected_project, folder, file)
+                        if st.checkbox(f":page_facing_up: {file}", key=f"checkbox_{file_path}"):
+                            files_to_delete.append(file_path)
+                    
+                    # Show delete button, disabled if no files are selected
+                    if st.button("Delete Selected", key=f"delete_button_{folder}", disabled=len(files_to_delete) == 0):
+                        deleted_files = delete_files(files_to_delete)
+                        if deleted_files:
+                            st.success(f"Deleted {len(deleted_files)} file(s) from {folder}")
+                            st.rerun()
+                else:
+                    st.write("  (empty)")
 
     else:
         st.write("Please select or create a project to continue.")
