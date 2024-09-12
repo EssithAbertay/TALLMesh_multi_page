@@ -39,7 +39,7 @@ This project is based on research conducted by Prof. Stefano De Paoli and Dr. Da
   5. Defining and naming themes
   6. Producing the report
 - Interactive visualizations including icicle charts and thematic network maps
-- Calculation of Initial Thematic Saturation (ITS) metric
+- Calculation of Inductive Thematic Saturation (ITS) metric
 - Flexible prompt engineering for each analysis phase
 - Export options for codes, themes, and visualizations
 
