@@ -11,6 +11,7 @@ The module uses Streamlit for the user interface and JSON for storing custom pro
 import streamlit as st
 import json
 from prompts import initial_coding_prompts, reduce_duplicate_codes_prompts, finding_themes_prompts
+import tooltips
 
 # Constants
 CUSTOM_PROMPTS_FILE = 'custom_prompts.json'
@@ -143,12 +144,34 @@ def display_existing_prompts(custom_prompts: dict, selected_type: str) -> None:
 
     for name, data in custom_prompts.get(selected_type, {}).items():
         with st.expander(name):
-            st.text_area("Prompt", value=data["prompt"], key=f"prompt_{name}", height=300)
+            st.text_area(
+                "Prompt",
+                value=data["prompt"],
+                key=f"prompt_{name}",
+                height=300,
+                help="Edit the custom prompt text here."
+            )
             col1, col2 = st.columns(2)
             with col1:
-                st.number_input("Temperature", value=data["temperature"], key=f"temp_{name}", min_value=0.0, max_value=2.0, step=0.01)
+                st.number_input(
+                    "Temperature",
+                    value=data["temperature"],
+                    key=f"temp_{name}",
+                    min_value=0.0,
+                    max_value=2.0,
+                    step=0.01,
+                    help=tooltips.model_temp_tooltip
+                )
             with col2:
-                st.number_input("Top P", value=data["top_p"], key=f"top_p_{name}", min_value=0.0, max_value=1.0, step=0.01)
+                st.number_input(
+                    "Top P",
+                    value=data["top_p"],
+                    key=f"top_p_{name}",
+                    min_value=0.0,
+                    max_value=1.0,
+                    step=0.01,
+                    help=tooltips.top_p_tooltip
+                )
             if st.button("Update", key=f"update_{name}"):
                 custom_prompts[selected_type][name] = {
                     "prompt": st.session_state[f"prompt_{name}"],
@@ -161,7 +184,7 @@ def display_existing_prompts(custom_prompts: dict, selected_type: str) -> None:
                 del custom_prompts[selected_type][name]
                 save_custom_prompts(custom_prompts)
                 st.success(f"Deleted custom prompt: {name}")
-                st.rerun()
+                st.experimental_rerun()
 
 def add_new_prompt(custom_prompts: dict, selected_type: str) -> None:
     """
@@ -172,14 +195,36 @@ def add_new_prompt(custom_prompts: dict, selected_type: str) -> None:
         selected_type (str): The currently selected prompt type.
     """
     st.subheader("Add New Custom Prompt")
-    new_name = st.text_input("Name for new prompt:")
-    new_prompt = st.text_area("New prompt:", value=get_prepopulated_prompt(selected_type), height=300)
+    new_name = st.text_input(
+        "Name for new prompt:",
+        help="Enter a unique name for your custom prompt."
+    )
+    new_prompt = st.text_area(
+        "New prompt:",
+        value=get_prepopulated_prompt(selected_type),
+        height=300,
+        help="Write or paste your custom prompt here."
+    )
     col1, col2 = st.columns(2)
     with col1:
-        new_temp = st.slider("Temperature", value=0.1, min_value=0.0, max_value=2.0, step=0.01)
+        new_temp = st.slider(
+            "Temperature",
+            value=0.1,
+            min_value=0.0,
+            max_value=2.0,
+            step=0.01,
+            help="Controls the randomness of the output. Higher values make the output more random."
+        )
     with col2:
-        new_top_p = st.slider("Top P", value=1.0, min_value=0.0, max_value=1.0, step=0.01)
-    
+        new_top_p = st.slider(
+            "Top P",
+            value=1.0,
+            min_value=0.0,
+            max_value=1.0,
+            step=0.01,
+            help="Controls the nucleus sampling for the output. Lower values result in more focused outputs."
+        )
+
     if st.button("Add Custom Prompt"):
         if new_name and new_prompt:
             if selected_type not in custom_prompts:
@@ -191,7 +236,7 @@ def add_new_prompt(custom_prompts: dict, selected_type: str) -> None:
             }
             save_custom_prompts(custom_prompts)
             st.success(f"Added new custom prompt: {new_name}")
-            st.rerun()
+            st.experimental_rerun()
         else:
             st.error("Please provide both a name and a prompt.")
 
@@ -205,7 +250,11 @@ def main():
 
     custom_prompts = load_custom_prompts()
 
-    selected_type = st.selectbox("Select prompt type:", list(PROMPT_TYPES.keys()))
+    selected_type = st.selectbox(
+        "Select prompt type:",
+        list(PROMPT_TYPES.keys()),
+        help="Choose the type of prompt you wish to manage."
+    )
 
     display_existing_prompts(custom_prompts, selected_type)
 
