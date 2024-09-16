@@ -55,14 +55,15 @@ def main():
         app_approach="""
         - Each interview is coded independently, one-by-one.
         - Initial codes for each interview are saved in a .csv file.
-        - We provide pre-populated prompts that users can modify if needed (or create your own from the 📢 Prompt Settings page)
+        - We provide pre-populated prompts that users can modify on-the-fly if needed (or create your own from the 📢 Prompt Settings page)
+        - Users can also adjust the model teperature and top_p, these variables control how deterministic the model is with lower values associated with higher determinism. Lower values should yield more consistent outputs. 
         - Note: The pre-populated prompt may not always produce the expected output due to various factors.
         """
     )
 
     with st.expander("Additional Step: Reduction of Initial Coding"):
         st.write("""
-        - This step helps reduce the number of codes and facilitates theme identification.
+        - This step helps reduce the number of codes by identifying and merging duplicated codes.
         - It follows the procedure detailed in our papers and has some resemblance to the CoMeTs method.
         - This step also allows for measuring Initial Thematic Saturation (ITS).
         """)
@@ -71,8 +72,7 @@ def main():
     render_phase(
         title="Phase 3 - Searching for Themes",
         braun_clarke_approach="""
-        This phase involves collating codes into potential themes and gathering all data 
-        relevant to each potential theme.
+        This phase involves collating codes into potential themes and gathering all data relevant to each potential theme.
         """,
         app_approach="""
         - The app analyzes the reduced codes to identify overarching themes.

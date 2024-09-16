@@ -114,7 +114,7 @@ def display_instructions():
 
     2. Click 'Save Azure Settings' to store your credentials securely.
 
-    3. To add an Azure deployment:
+    3. To add an Azure deployment (after completing steps 1 and 2):
     - Enter the :orange[Deployment Name] in the provided field.
     - Click 'Add Deployment' to save it.
 
@@ -136,6 +136,14 @@ def display_instructions():
     st.success("""
     With your Azure settings configured, you're ready to use Azure OpenAI models in your analysis!
     """)
+
+    st.subheader(":orange[3. Azure API Setup]")
+    st.write("""
+    To set up Azure API credentials, follow this video guide:
+    """)
+    st.video("https://www.youtube.com/watch?v=jQyYeYWD97I")
+    st.write("For more information, check out: [How to Get an Azure OpneAI API Key](https://docs.mindmac.app/how-to.../add-api-key/create-azure-openai-api-key)")
+    
 
 def manage_azure_deployments(azure_settings):
     """
