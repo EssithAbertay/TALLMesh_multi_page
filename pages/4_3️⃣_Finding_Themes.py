@@ -102,7 +102,7 @@ def preprocess_codes(df):
     logger.info(f"Preprocessing complete. Number of unique codes: {len(preprocessed_df)}")
     return preprocessed_df
 
-def process_codes(selected_files, model, prompt, model_temperature, model_top_p):
+def process_codes(selected_files, model, prompt, model_temperature, model_top_p, include_quotes):
     """
     Process the selected code files to find themes using an AI model.
     This function has been modified to handle unassigned codes by making a follow-up LLM call.
@@ -142,7 +142,11 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p)
     preprocessed_df = preprocess_codes(combined_df)
     
     # Create a list of codes for the prompt
-    codes_list = [f"[{i}]: {row['code']}: {row['description']}" for i, (_, row) in enumerate(preprocessed_df.iterrows())]
+    if not include_quotes:
+        codes_list = [f"[{i}]: {row['code']}: {row['description']}" for i, (_, row) in enumerate(preprocessed_df.iterrows())]
+    else:
+        codes_list = [f"[{i}]: {row['code']}: {row['description']}: {row['quotes']}"  for i, (_, row) in enumerate(preprocessed_df.iterrows())]
+
     
     # Construct the full prompt
     full_prompt = f"{prompt}\n\nCodes:\n{', '.join(codes_list)}"
@@ -540,12 +544,15 @@ def main():
         with settings_col2:
             model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=model_top_p, help=tooltips.top_p_tooltip)
 
+        include_quotes = st.checkbox(label = "Include Quotes", value=False, help='Choose whether to send quotes to the LLM during the theme-generating process. This setting is :orange[off] by default; if you do choose to include quotes, check you are adhering to data privacy policies')
+
+
         if st.button("Process"):
             st.divider()
             st.subheader(":orange[Output]")
             with st.spinner("Finding themes... please wait..."):
                 # Process the selected files and display results
-                themes_output, processed_df = process_codes(selected_files, selected_model, prompt_input, model_temperature, model_top_p)
+                themes_output, processed_df = process_codes(selected_files, selected_model, prompt_input, model_temperature, model_top_p, include_quotes)
                 
                 if themes_output is not None:
                     themes_df = pd.json_normalize(themes_output['themes'])
