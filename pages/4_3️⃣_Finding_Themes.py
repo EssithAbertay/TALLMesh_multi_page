@@ -15,7 +15,7 @@ import json
 import os
 from api_key_management import manage_api_keys, load_api_keys, load_azure_settings, get_azure_models, AZURE_SETTINGS_FILE
 from project_utils import get_projects, get_project_files, get_processed_files
-from prompts import finding_themes_prompts
+from prompts import finding_themes_prompts, json_template
 from llm_utils import llm_call
 import logging
 import tooltips
@@ -105,14 +105,15 @@ def preprocess_codes(df):
 def process_codes(selected_files, model, prompt, model_temperature, model_top_p):
     """
     Process the selected code files to find themes using an AI model.
-    
+    This function has been modified to handle unassigned codes by making a follow-up LLM call.
+
     Args:
         selected_files (list): List of file paths to process.
         model (str): The AI model to use for processing.
         prompt (str): The prompt to guide the AI in finding themes.
         model_temperature (float): The temperature setting for the AI model.
         model_top_p (float): The top_p setting for the AI model.
-    
+
     Returns:
         tuple: A tuple containing the processed output (dict) and the preprocessed dataframe.
     """
@@ -125,7 +126,7 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p)
     # Combine all selected files into a single DataFrame
     all_codes = []
     for i, file in enumerate(selected_files):
-        progress = (i + 1) / (len(selected_files) + 3)  # +3 for preprocessing, AI processing, and JSON parsing
+        progress = (i + 1) / (len(selected_files) + 3)
         progress_bar.progress(progress)
         status_text.info(f"Reading file: {file}")
         logger.info(f"Reading file: {file}")
@@ -161,6 +162,100 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p)
         logger.info("Successfully extracted JSON from AI response")
         parsed_output = json.loads(json_string)
         logger.info(f"Number of themes found: {len(parsed_output.get('themes', []))}")
+        
+        # Now check for unassigned codes
+        total_codes = len(preprocessed_df)
+        all_code_indices = set(range(total_codes))
+        assigned_code_indices = set()
+        for theme in parsed_output.get('themes', []):
+            codes_in_theme = theme.get('codes', [])
+            assigned_code_indices.update(codes_in_theme)
+        
+        missing_code_indices = all_code_indices - assigned_code_indices
+        if missing_code_indices:
+            logger.info(f"Codes not assigned to any theme: {missing_code_indices}")
+            st.info(f"{len(missing_code_indices)} codes were not assigned to any theme. Making a follow-up request to the LLM to assign these codes.")
+            
+            # Prepare follow-up prompt to incorporate missing codes 
+            missing_codes_list = [f"[{i}]: {preprocessed_df.iloc[i]['code']}: {preprocessed_df.iloc[i]['description']}" for i in missing_code_indices]
+            existing_themes_list = [f"Theme: {theme['name']}\nDescription: {theme['description']}\nCodes: {theme['codes']}" for theme in parsed_output.get('themes', [])]
+            follow_up_prompt = f"""
+            During thematic analysis, some codes were not assigned to any theme. Please assign these codes to the most appropriate existing themes, or create new themes if necessary. Ensure all codes are included.
+
+            Existing Themes:
+            {', '.join(existing_themes_list)}
+
+            Unassigned Codes:
+            {', '.join(missing_codes_list)}
+
+            Provide the updated themes in the same JSON format as below, only including the new assignments for the missing codes.
+
+            {json_template}
+            """
+
+            # Call the LLM again with the follow-up prompt
+            logger.info("Calling AI model to process unassigned codes")
+            status_text.info("Processing unassigned codes with LLM...")
+            follow_up_output = llm_call(model, follow_up_prompt, model_temperature, model_top_p) # Use the same model temp and top p as initial calls?
+            
+            # Parse and integrate the follow-up output
+            json_string_follow_up = extract_json(follow_up_output)
+            if json_string_follow_up:
+                logger.info("Successfully extracted JSON from follow-up AI response")
+                new_parsed_output = json.loads(json_string_follow_up)
+                logger.info(f"Number of additional themes found: {len(new_parsed_output.get('themes', []))}")
+                
+                # Integrate new themes or update existing ones
+                for new_theme in new_parsed_output.get('themes', []):
+                    # Check if the theme already exists
+                    existing_theme = next((t for t in parsed_output['themes'] if t['name'] == new_theme['name']), None)
+                    if existing_theme:
+                        # Update existing theme's codes
+                        existing_theme['codes'].extend(new_theme['codes'])
+                        existing_theme['codes'] = list(set(existing_theme['codes']))  # Remove duplicates
+                    else:
+                        # Add new theme
+                        parsed_output['themes'].append(new_theme)
+                
+                # Recalculate assigned codes
+                assigned_code_indices = set()
+                for theme in parsed_output.get('themes', []):
+                    codes_in_theme = theme.get('codes', [])
+                    assigned_code_indices.update(codes_in_theme)
+                
+                missing_code_indices = all_code_indices - assigned_code_indices
+                if missing_code_indices:
+                    logger.info(f"Still missing codes after follow-up LLM call: {missing_code_indices}")
+                    st.info(f"{len(missing_code_indices)} codes were still not assigned after the follow-up LLM call. They will be assigned as individual themes.")
+                    
+                    # Handle remaining unassigned codes programmatically as distinct themes
+                    for i in missing_code_indices:
+                        code_row = preprocessed_df.iloc[i]
+                        new_theme = {
+                            'name': f"Unique Theme for Code {i}",
+                            'description': f"A unique theme created for code [{i}] because it did not fit into existing themes.",
+                            'codes': [i]
+                        }
+                        parsed_output['themes'].append(new_theme)
+                else:
+                    logger.info("All codes have been assigned after the follow-up LLM call.")
+                    st.success("All codes have been assigned to themes after the follow-up LLM call.")
+            else:
+                logger.warning("Failed to extract valid JSON from the follow-up LLM response.")
+                st.warning("Could not process unassigned codes through LLM. Remaining unassigned codes will be assigned as individual themes.")
+                # Handle remaining unassigned codes programmatically as distinct themes
+                for i in missing_code_indices:
+                    code_row = preprocessed_df.iloc[i]
+                    new_theme = {
+                        'name': f"Unique Theme for Code {i}",
+                        'description': f"A unique theme created for code [{i}] because it did not fit into existing themes.",
+                        'codes': [i]
+                    }
+                    parsed_output['themes'].append(new_theme)
+        else:
+            logger.info("All codes were assigned in the initial LLM call.")
+            st.success("All codes have been assigned to themes.")
+
         status_text.info("Theme finding process completed successfully.")
         return parsed_output, preprocessed_df
     else:
@@ -387,7 +482,7 @@ def main():
         project_options,
         index=index,
         key="project_selector",
-        help= tooltips.project_tooltip
+        help=tooltips.project_tooltip
     )
 
     # Update session state when a new project is selected
@@ -485,7 +580,7 @@ def main():
             if themes_df is None or codes_df is None:
                 st.error("Error: Required files not found in the project directory.")
             else:
-                st.success(f"Theme-codes generates successfully for project: {selected_project}")
+                st.success(f"Theme-codes generated successfully for project: {selected_project}")
                 
                 # Process data to create the final theme-codes book
                 final_df = process_data(themes_df, codes_df)
@@ -515,7 +610,7 @@ def main():
                 output_file_expanded = os.path.join(output_folder, f"{selected_project}_expanded_theme_book_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv")
                 final_df.to_csv(output_file_expanded, index=False)
 
-                st.success(f"Theme books (condensed and expanded) saved to: \n-{output_file_condensed} \n{output_file_expanded}")
+                st.success(f"Theme books (condensed and expanded) saved to: \n- {output_file_condensed} \n- {output_file_expanded}")
                 
                 # Provide download button for the final theme-codes book
                 csv = final_df.to_csv(index=False).encode('utf-8')

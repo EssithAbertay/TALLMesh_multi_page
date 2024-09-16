@@ -3,6 +3,18 @@ File to store preset prompts for AI models
 
 '''
 
+json_template = '''
+{
+  "themes": [
+    {
+      "name": "Theme Name",
+      "description": "Detailed description of the theme...",
+      "codes": [1, 4, 7, 12]
+    }
+  ]
+}
+'''
+
 initial_coding_prompts = {  
 "Preset 1: >15 Codes, Inductive, Long Quotes" : {"prompt": """Generate a comprehensive set of initial codes (at least 15) for thematic analysis based on the provided text. Focus on capturing all significant explicit and latent meanings or events, emphasizing the respondent's perspective rather than the interviewer's.
 
