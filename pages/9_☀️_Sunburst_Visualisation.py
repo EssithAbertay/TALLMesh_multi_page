@@ -88,7 +88,7 @@ def create_sunburst_chart(data, levels, color_scheme, text_size):
         hover_data={'Quote': True},
         branchvalues='total'
     )
-    fig.update_traces(textinfo='label+percent entry')
+    fig.update_traces(textinfo='label') # use fig.update_traces(textinfo='label+percent entry') for percentages in slices
     fig.update_layout(
         margin=dict(t=10, l=10, r=10, b=10),
         font=dict(size=text_size)
