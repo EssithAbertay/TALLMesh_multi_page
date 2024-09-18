@@ -3,6 +3,18 @@ File to store preset prompts for AI models
 
 '''
 
+json_template = '''
+{
+  "themes": [
+    {
+      "name": "Theme Name",
+      "description": "Detailed description of the theme...",
+      "codes": [1, 4, 7, 12]
+    }
+  ]
+}
+'''
+
 initial_coding_prompts = {  
 "Preset 1: >15 Codes, Inductive, Long Quotes" : {"prompt": """Generate a comprehensive set of initial codes (at least 15) for thematic analysis based on the provided text. Focus on capturing all significant explicit and latent meanings or events, emphasizing the respondent's perspective rather than the interviewer's.
 
@@ -227,7 +239,33 @@ Important! Your response should be a JSON-like object with no additional text be
     },
 }
 
-finding_themes_prompts = {"Preset 1: Basic Theme Generation (Overlap Allowed)": {"prompt":"""Analyze the provided list of codes and generate themes that capture the main ideas and patterns in the data. For each theme:
+finding_themes_prompts = {"Preset 1: Basic, Use ALL Codes":{"prompt": """Analyze the provided list of codes and generate themes that capture the main ideas and patterns in the data. For each theme:
+
+1. Provide a concise theme name (maximum 5 words)
+2. Write a detailed theme description (50-75 words) explaining the theme's meaning and relevance
+3. List the codes (by index number) that are associated with this theme
+
+Important:
+
+- It is okay for themes to have shared codes; this will facilitate an evaluation of higher-order concepts.
+- **Ensure that every code is assigned to at least one theme. Do not leave any codes unassigned.**
+
+Format the response as a JSON file with the following structure:
+
+{
+  "themes": [
+    {
+      "name": "Theme Name",
+      "description": "Detailed description of the theme...",
+      "codes": [1, 4, 7, 12]
+    }
+  ]
+}
+
+Important! Your response should be a JSON-like object with no additional text before or after.""",
+"temperature": 0.00,
+        "top_p": 0.1},    
+"Preset 2: Basic Theme Generation (Overlap Allowed)": {"prompt":"""Analyze the provided list of codes and generate themes that capture the main ideas and patterns in the data. For each theme:
 
 1. Provide a concise theme name (maximum 5 words)
 2. Write a detailed theme description (50-75 words) explaining the theme's meaning and relevance
@@ -251,7 +289,9 @@ Important! Your response should be a JSON-like object with no additional text be
         "temperature": 0.00,
         "top_p": 0.1
     },
-    "Preset 2: Basic Theme Generation (No Overlap)": {"prompt":"""Analyze the provided list of codes and generate themes that capture the main ideas and patterns in the data. For each theme:
+
+
+"Preset 3: Basic Theme Generation (No Overlap)": {"prompt":"""Analyze the provided list of codes and generate themes that capture the main ideas and patterns in the data. For each theme:
 
 1. Provide a concise theme name (maximum 5 words)
 2. Write a detailed theme description (50-75 words) explaining the theme's meaning and relevance

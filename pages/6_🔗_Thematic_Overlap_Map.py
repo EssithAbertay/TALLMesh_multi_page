@@ -61,6 +61,7 @@ def create_graph(data, min_common_codes):
 
     Returns:
     str or None: A string containing the DOT language representation of the graph, or None if no edges are found.
+    list: A list of edges with details (theme1, theme2, number of common codes, shared_codes)
     """
     # Get unique themes from the data
     themes = data['Theme'].unique()
@@ -73,24 +74,26 @@ def create_graph(data, min_common_codes):
         theme2_codes = set(data[data['Theme'] == pair[1]]['Code'])
         theme1, theme2 = pair
         
-        # Calculate the number of common codes
-        common = common_codes(theme1_codes, theme2_codes)
+        # Calculate the number of common codes and get the shared codes
+        shared_codes = theme1_codes & theme2_codes
+        common = len(shared_codes)
         
         # If the number of common codes meets the threshold, add an edge
         if common >= min_common_codes:
-            edges.append((theme1, theme2, common))
+            edges.append((theme1, theme2, common, shared_codes))
     
     # If no edges are found, return None
     if not edges:
-        return None
+        return None, []
 
     # Create the DOT language representation of the graph
     output_dot = "digraph {\n"
     for edge in edges:
-        output_dot += f'\t"{edge[0]}" -> "{edge[1]}" [label="Common Codes: {edge[2]}" penwidth={max(1, edge[2])} dir=none]\n'
+        theme1, theme2, common, shared_codes = edge
+        output_dot += f'\t"{theme1}" -> "{theme2}" [label="Common Codes: {common}" penwidth={max(1, common)} dir=none]\n'
     output_dot += "}"
     
-    return output_dot
+    return output_dot, edges
 
 def main():
     """
@@ -137,8 +140,8 @@ def main():
         # Create slider for minimum common codes
         min_common_codes = st.slider("Minimum Common Codes", min_value=1, max_value=10, value=1)
 
-        # Create the graph
-        graph_dot = create_graph(themes_df, min_common_codes)
+        # Create the graph and get edges with shared codes
+        graph_dot, edges = create_graph(themes_df, min_common_codes)
         
         # Display the graph or a warning if no connections are found
         if graph_dot is None:
@@ -149,6 +152,21 @@ def main():
             st.write("This graph shows connections between themes based on their shared codes. "
                      "The thickness of the lines represents the number of common codes. "
                      "Adjust the 'Minimum Common Codes' slider to filter connections.")
+
+            # Create a DataFrame to display the shared codes between themes
+            edges_df = pd.DataFrame(edges, columns=['Theme 1', 'Theme 2', 'Number of Shared Codes', 'Shared Codes'])
+            # Convert the set of shared codes to a comma-separated string
+            edges_df['Shared Codes'] = edges_df['Shared Codes'].apply(lambda codes: ', '.join(codes))
+
+            # Display the DataFrame
+            st.subheader("Shared Codes between Themes")
+            st.dataframe(edges_df)
+
+            # Provide an option to download the shared codes data
+            st.download_button(label="Download Shared Codes Data",
+                               data=edges_df.to_csv(index=False),
+                               file_name='shared_codes_between_themes.csv',
+                               mime='text/csv')
 
     # Display API key management section
     manage_api_keys()

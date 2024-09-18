@@ -374,7 +374,7 @@ def main():
         
 
         if existing_files:
-            #st.write("Select files to delete:")
+            #st.write("Select files to delete:") # commented out as there's now a dedicated file management section at bottom of page
             # List files with checkboxes
             #for file in existing_files:
             #    if st.checkbox(file, key=f"checkbox_{file}"):

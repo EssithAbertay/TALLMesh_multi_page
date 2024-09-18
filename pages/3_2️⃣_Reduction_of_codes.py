@@ -587,7 +587,7 @@ def main():
                     else:
                         status_message.error("Failed to reduce codes. Please check the logs for more information and try again.")
 
-        # Process button
+        # Incremental processing...
         else:
             with st.form("process_form"):
                 start_button = st.form_submit_button("Start/Continue Processing")
@@ -697,10 +697,33 @@ def main():
             # Add a button to stop and save current progress
             if 'process_state' in st.session_state and st.session_state.process_state['current_file_index'] > 0:
                 if st.button("Stop and Save Current Progress"):
-                    # Save current progress
-                    save_reduced_codes(selected_project, st.session_state.process_state['reduced_df'], 'reduced_codes')
-                    st.success("Progress saved. You can continue later by selecting the same files.")
+                     
+                    # Perform final processing steps
+                    status_message = st.empty()
+                    status_message.info("Matching reduced codes to initial codes...")
+                    initial_codes_directory = os.path.join(PROJECTS_DIR, selected_project, 'initial_codes')
+                    updated_df = match_reduced_to_original_codes(st.session_state.process_state['reduced_df'], initial_codes_directory)
+                    amalgamated_df = amalgamate_duplicate_codes(updated_df)
+                    
+                    # Save both expanded and amalgamated versions
+                    status_message.info("Saving reduced codes...")
+                    save_reduced_codes(selected_project, updated_df, 'expanded_reduced_codes')
+                    saved_file_path = save_reduced_codes(selected_project, amalgamated_df, 'reduced_codes')
+                    
+                    # Save intermediate results
+                    results_df = pd.DataFrame({
+                        'total_codes': st.session_state.process_state['total_codes_list'],
+                        'unique_codes': st.session_state.process_state['unique_codes_list']
+                    })
+                    results_file_path = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')
+                    results_df.to_csv(results_file_path, index=False)
+                    
+                    st.success(f"Progress saved. Reduced codes saved to {saved_file_path}")
+                    st.success(f"Code reduction results saved to {results_file_path}")
                     del st.session_state.process_state
+                
+
+
 
         # View previously processed files
         processed_files = get_processed_files(selected_project, 'reduced_codes')
