@@ -281,7 +281,7 @@ def process_files(selected_project, selected_files, model, prompt, model_tempera
     status_message = st.empty()
 
     for i, file in enumerate(selected_files):
-        status_message.info(f"Processing file {i+1}/{len(selected_files)}: {os.path.basename(file)}")
+        status_message.info(f"Processing file {i+1}/{len(selected_files)}: {os.path.basename(file)}... please wait")
         logger.info(f"Processing file {i+1}/{len(selected_files)}: {file}")
         df = pd.read_csv(file)
         logger.info(f"File {file} read. Shape: {df.shape}")
@@ -478,12 +478,12 @@ def main():
         
         # File selection expander
         with st.expander("Select files to process", expanded=True):
-            col1, col2 = st.columns([0.9, 0.1])
+            col1, col2 = st.columns([0.9, 0.2])
             select_all = col2.checkbox("Select All", value=True)
             
             file_checkboxes = {}
             for i, file in enumerate(project_files):
-                col1, col2 = st.columns([0.9, 0.1])
+                col1, col2 = st.columns([0.9, 0.2])
                 col1.write(file)
                 file_checkboxes[file] = col2.checkbox(".", key=f"checkbox_{file}", value=select_all, label_visibility="hidden")
         
@@ -589,8 +589,11 @@ def main():
 
         # Incremental processing...
         else:
+            status_container = st.empty()
+            
             with st.form("process_form"):
                 start_button = st.form_submit_button("Start/Continue Processing")
+                
                 if start_button:
                     if 'process_state' not in st.session_state:
                         st.session_state.process_state = {
@@ -605,8 +608,7 @@ def main():
                     
                     if state['current_file_index'] < len(selected_files):
                         file = selected_files[state['current_file_index']]
-                        status_message = st.empty()
-                        status_message.info(f"Processing file {state['current_file_index']+1}/{len(selected_files)}: {os.path.basename(file)}")
+                        status_container.info(f"Processing file {state['current_file_index']+1}/{len(selected_files)}: {os.path.basename(file)}")
                         
                         df = pd.read_csv(file)
                         
@@ -621,7 +623,7 @@ def main():
                         else:
                             state['reduced_df'], _, _ = compare_and_reduce_codes(state['reduced_df'], df, selected_model, prompt_input, model_temperature, model_top_p, include_quotes)
                             if state['reduced_df'] is None:
-                                st.error(f"Failed to process file {file}. Stopping the process.")
+                                status_container.error(f"Failed to process file {file}. Stopping the process.")
                                 del st.session_state.process_state
                                 st.stop()
                         
@@ -646,11 +648,11 @@ def main():
                         state['current_file_index'] += 1
                         
                         if state['current_file_index'] < len(selected_files):
-                            st.info("File processed. Click 'Start/Continue Processing' to process the next file.")
+                            status_container.warning("File processed. Click 'Start/Continue Processing' to process the next file.")
                         else:
-                            st.success("All files processed. Finalizing results...")
+                            status_container.success("All files processed. Finalizing results...")
                             # Final processing steps
-                            status_message.info("Matching reduced codes to initial codes...")
+                            status_container.info("Matching reduced codes to initial codes...")
                             initial_codes_directory = os.path.join(PROJECTS_DIR, selected_project, 'initial_codes')
                             updated_df = match_reduced_to_original_codes(state['reduced_df'], initial_codes_directory)
                             amalgamated_df = amalgamate_duplicate_codes(updated_df)
@@ -661,38 +663,29 @@ def main():
                             st.write("Final Reduced Codes:")
                             st.write(amalgamated_df_for_display)
                             
-                            status_message.info("Saving reduced codes...")
+                            status_container.info("Saving reduced codes...")
                             save_reduced_codes(selected_project, updated_df, 'expanded_reduced_codes')
                             saved_file_path = save_reduced_codes(selected_project, amalgamated_df, 'reduced_codes')
-                            st.success(f"Reduced codes saved to {saved_file_path}")
+                            status_container.success(f"Reduced codes saved to {saved_file_path}")
                             
-                            # Add this new block of code here
                             results_df = pd.DataFrame({
                                 'total_codes': state['total_codes_list'],
                                 'unique_codes': state['unique_codes_list']
                             })
                             results_file_path = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')
                             results_df.to_csv(results_file_path, index=False)
-                            st.success(f"Code reduction results saved to {results_file_path}")
+                            status_container.success(f"Code reduction results saved to {results_file_path}")
 
-                            # Download buttons for reduced codes and results
-                            #csv = amalgamated_df.to_csv(index=False).encode('utf-8')
-                            #st.download_button(
-                            #    label="Download reduced codes",
-                            #    data=csv,
-                            #    file_name="reduced_codes.csv",
-                            #    mime="text/csv"
-                            #)
+                            #del st.session_state.process_state
+                
+            # Outside the form, but still within the else block
+            if 'process_state' not in st.session_state:
+                status_container.info("Click 'Start/Continue Processing' to begin processing files.")
+            elif st.session_state.process_state['current_file_index'] < len(selected_files):
+                status_container.info(f"Ready to process file {st.session_state.process_state['current_file_index']+1}/{len(selected_files)}. Click 'Start/Continue Processing' to continue.")
+            else:
+                status_container.success("All files have been processed and saved 🎉 Scroll down for outputs.")
                             
-                            #results_csv = results_df.to_csv(index=False).encode('utf-8')
-                            #st.download_button(
-                            #    label="Download code reduction results",
-                            #    data=results_csv,
-                            #    file_name="code_reduction_results.csv",
-                            #    mime="text/csv"
-                            #)
-                            
-                            del st.session_state.process_state
 
             # Add a button to stop and save current progress
             if 'process_state' in st.session_state and st.session_state.process_state['current_file_index'] > 0:

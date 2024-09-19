@@ -499,12 +499,12 @@ def main():
         project_files = get_project_files(selected_project, 'reduced_codes')
         
         with st.expander("Select files to process", expanded=True):
-            col1, col2 = st.columns([0.9, 0.1])
+            col1, col2 = st.columns([0.9, 0.2])
             select_all = col2.checkbox("Select All", value=True)
             
             file_checkboxes = {}
             for i, file in enumerate(project_files):
-                col1, col2 = st.columns([0.9, 0.1])
+                col1, col2 = st.columns([0.9, 0.2])
                 col1.write(file)
                 file_checkboxes[file] = col2.checkbox(".", key=f"checkbox_{file}", value=select_all, label_visibility="hidden")
 
