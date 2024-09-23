@@ -593,10 +593,10 @@ def main():
                 final_df = process_data(themes_df, codes_df)
                 
                 # Display various views of the data
-                st.write("Condensed Themes")
+                st.write("Condensed Themes",help="This view shows one theme per row and uses numerical indexing to identify contributing themes")
                 st.write(themes_df)
                 
-                st.write("Expanded Themes w/ Codes, Quotes & Sources")
+                st.write("Expanded Themes w/ Codes, Quotes & Sources", help="This view explodes each theme, each row represents a reduced code. Can be used to identify which initial and reduced codes contribute to each theme")
                 final_display_df = final_df.copy()
                 final_display_df['Quotes'] = final_display_df['Quotes'].apply(format_quotes)
                 st.write(final_df)

@@ -104,6 +104,8 @@ python-docx==1.1.2
 python-pptx==0.6.23
 pytz==2024.1
 pyvis==0.3.2
+pywin32==306
+pywin32-ctypes==0.2.3
 pyxnat==1.6.2
 PyYAML==6.0.1
 rdflib==6.3.2
@@ -121,7 +123,7 @@ soupsieve==2.5
 SpeechRecognition==3.8.1
 st-ant-tree==0.0.12
 stack-data==0.6.3
-streamlit==1.36.0
+streamlit==1.38.0
 striprtf==0.0.26
 tenacity==8.5.0
 tokenizers==0.19.1
