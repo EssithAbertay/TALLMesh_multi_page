@@ -6,6 +6,9 @@ from api_key_management import manage_api_keys
 import shutil
 from project_utils import get_projects
 
+logo = "pages/static/logo.png"
+st.logo(logo)
+
 # Define the directory where all projects will be stored
 PROJECTS_DIR = 'projects'
 FOLDER_ORDER = ['data', 'initial_codes', 'reduced_codes', 'expanded_reduced_codes', 'themes', 'theme_books']

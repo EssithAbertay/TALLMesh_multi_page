@@ -104,8 +104,6 @@ python-docx==1.1.2
 python-pptx==0.6.23
 pytz==2024.1
 pyvis==0.3.2
-pywin32==306
-pywin32-ctypes==0.2.3
 pyxnat==1.6.2
 PyYAML==6.0.1
 rdflib==6.3.2
