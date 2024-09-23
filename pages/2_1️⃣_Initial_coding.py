@@ -21,6 +21,10 @@ from ui_utils import centered_column_with_number, create_circle_number
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Set logo
+logo = "pages/static/tmeshlogo.png"
+st.logo(logo)
+
 search_gif = "pages/animations/search_rounded.gif"
 highlighter_gif = "pages/animations/highlight_rounded.gif"
 order_gif = "pages/animations/order_rounded.gif"

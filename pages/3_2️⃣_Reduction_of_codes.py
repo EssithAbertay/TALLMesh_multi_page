@@ -23,6 +23,10 @@ import tooltips
 import time
 from ui_utils import centered_column_with_number, create_circle_number
 
+# Set logo
+logo = "pages/static/tmeshlogo.png"
+st.logo(logo)
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

@@ -4,6 +4,10 @@ from itertools import combinations
 from graphviz import Digraph
 import os
 
+# Set logo
+logo = "pages/static/tmeshlogo.png"
+st.logo(logo)
+
 # Import custom utility functions and constants
 from project_utils import get_projects, PROJECTS_DIR, get_processed_files
 from api_key_management import manage_api_keys, load_api_keys

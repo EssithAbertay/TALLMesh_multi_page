@@ -22,6 +22,10 @@ from project_utils import get_projects
 # Constants
 PROJECTS_DIR = 'projects'
 
+# Set logo
+logo = "pages/static/tmeshlogo.png"
+st.logo(logo)
+
 def count_rows_in_folder(folder_path):
     """
     Count the number of rows in each CSV file within a given folder.

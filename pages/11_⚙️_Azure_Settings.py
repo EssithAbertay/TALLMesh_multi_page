@@ -18,6 +18,10 @@ import streamlit as st
 import json
 import os
 
+# Set logo
+logo = "pages/static/tmeshlogo.png"
+st.logo(logo)
+
 # Constants
 AZURE_SETTINGS_FILE = 'azure_settings.json'
 

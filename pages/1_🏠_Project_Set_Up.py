@@ -6,7 +6,7 @@ from api_key_management import manage_api_keys
 import shutil
 from project_utils import get_projects
 
-logo = "pages/static/logo.png"
+logo = "pages/static/tmeshlogo.png"
 st.logo(logo)
 
 # Define the directory where all projects will be stored

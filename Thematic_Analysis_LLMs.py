@@ -7,6 +7,8 @@ Created on Fri Feb  2 08:55:30 2024
 import streamlit as st
 
 
+
+
 st.set_page_config(
     page_title="**Thematic Analysis with LLMs**",
     page_icon="📝",
@@ -18,6 +20,9 @@ st.set_page_config(
         'About': "# This is an experimental research project offering a solution for TA with LLM. It is not a software in production"
         }
 )
+
+logo = "pages/static/tmeshlogo.png"
+st.logo(logo)
 
 
 st.header(":orange[TALLMesh: Thematic Analysis with Large Language Models]")

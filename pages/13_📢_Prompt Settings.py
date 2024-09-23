@@ -13,6 +13,10 @@ import json
 from prompts import initial_coding_prompts, reduce_duplicate_codes_prompts, finding_themes_prompts
 import tooltips
 
+# Set logo
+logo = "pages/static/tmeshlogo.png"
+st.logo(logo)
+
 # Constants
 CUSTOM_PROMPTS_FILE = 'custom_prompts.json'
 PROMPT_TYPES = {

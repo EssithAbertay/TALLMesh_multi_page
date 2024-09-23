@@ -9,6 +9,10 @@ from api_key_management import manage_api_keys, load_api_keys
 THEME_BOOKS_FOLDER = 'theme_books'
 EXPANDED_REDUCED_CODES_FOLDER = 'expanded_reduced_codes'
 
+# Set logo
+logo = "pages/static/tmeshlogo.png"
+st.logo(logo)
+
 def load_project_data(project_name):
     """Load the latest theme and code data for a given project."""
     project_dir = os.path.join(PROJECTS_DIR, project_name)
