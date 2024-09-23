@@ -30,6 +30,10 @@ from project_utils import get_projects
 # Constants
 PROJECTS_DIR = 'projects'
 
+# Set logo
+logo = "pages/static/tmeshlogo.png"
+st.logo(logo)
+
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

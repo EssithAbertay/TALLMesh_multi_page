@@ -22,6 +22,10 @@ import tooltips
 import time
 from ui_utils import centered_column_with_number, create_circle_number
 
+# Set logo
+logo = "pages/static/tmeshlogo.png"
+st.logo(logo)
+
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -499,12 +503,12 @@ def main():
         project_files = get_project_files(selected_project, 'reduced_codes')
         
         with st.expander("Select files to process", expanded=True):
-            col1, col2 = st.columns([0.9, 0.1])
+            col1, col2 = st.columns([0.9, 0.2])
             select_all = col2.checkbox("Select All", value=True)
             
             file_checkboxes = {}
             for i, file in enumerate(project_files):
-                col1, col2 = st.columns([0.9, 0.1])
+                col1, col2 = st.columns([0.9, 0.2])
                 col1.write(file)
                 file_checkboxes[file] = col2.checkbox(".", key=f"checkbox_{file}", value=select_all, label_visibility="hidden")
 
@@ -593,10 +597,10 @@ def main():
                 final_df = process_data(themes_df, codes_df)
                 
                 # Display various views of the data
-                st.write("Condensed Themes")
+                st.write("Condensed Themes",help="This view shows one theme per row and uses numerical indexing to identify contributing themes")
                 st.write(themes_df)
                 
-                st.write("Expanded Themes w/ Codes, Quotes & Sources")
+                st.write("Expanded Themes w/ Codes, Quotes & Sources", help="This view explodes each theme, each row represents a reduced code. Can be used to identify which initial and reduced codes contribute to each theme")
                 final_display_df = final_df.copy()
                 final_display_df['Quotes'] = final_display_df['Quotes'].apply(format_quotes)
                 st.write(final_df)

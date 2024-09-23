@@ -6,8 +6,24 @@ from api_key_management import manage_api_keys
 import shutil
 from project_utils import get_projects
 
+logo = "pages/static/tmeshlogo.png"
+st.logo(logo)
+
 # Define the directory where all projects will be stored
 PROJECTS_DIR = 'projects'
+FOLDER_ORDER = ['data', 'initial_codes', 'reduced_codes', 'expanded_reduced_codes', 'themes', 'theme_books']
+
+def get_project_structure(project):
+    structure = {folder: [] for folder in FOLDER_ORDER}
+    project_path = os.path.join(PROJECTS_DIR, project)
+    
+    for folder in FOLDER_ORDER:
+        folder_path = os.path.join(project_path, folder)
+        if os.path.exists(folder_path):
+            structure[folder] = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+    
+    return structure
+
 
 # Function to delete multiple files
 def delete_files(file_paths):
@@ -64,7 +80,7 @@ def create_project(project_name):
     os.makedirs(project_path, exist_ok=True)
     
     # Create subfolders for different stages of the analysis
-    subfolders = ['data', 'initial_codes', 'reduced_codes', 'themes', 'theme_books', 'expanded_reduced_codes']
+    subfolders = ['data', 'initial_codes', 'reduced_codes', 'expanded_reduced_codes', 'themes', 'theme_books']
     for folder in subfolders:
         os.makedirs(os.path.join(project_path, folder), exist_ok=True)
 
@@ -395,7 +411,8 @@ def main():
         # New expander section for project structure to let users delete files without having to go into file explorer
         with st.expander("View Project Structure & Files"):
             project_structure = get_project_structure(st.session_state.selected_project)
-            for folder, files in project_structure.items():
+            for folder in FOLDER_ORDER:
+                files = project_structure.get(folder, [])
                 st.subheader(f":file_folder: {folder}")
                 if files:
                     files_to_delete = []

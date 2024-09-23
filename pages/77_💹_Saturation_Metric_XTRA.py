@@ -20,6 +20,10 @@ from plotly.subplots import make_subplots
 from api_key_management import manage_api_keys
 from project_utils import get_projects, get_project_files, get_processed_files
 
+# Set logo
+logo = "pages/static/tmeshlogo.png"
+st.logo(logo)
+
 # Constants
 PROJECTS_DIR = 'projects'
 

@@ -28,6 +28,10 @@ from pyvis.network import Network
 import os
 import tempfile
 
+# Set logo
+logo = "pages/static/tmeshlogo.png"
+st.logo(logo)
+
 # Custom modules
 from project_utils import get_projects, PROJECTS_DIR, get_processed_files
 from api_key_management import manage_api_keys, load_api_keys
