@@ -76,6 +76,7 @@ openai==1.37.0
 packaging==24.1
 pandas==2.2.2
 parso==0.8.4
+pathlib==1.0.1
 pdfminer.six==20191110
 pefile==2024.8.26
 pillow==10.4.0
