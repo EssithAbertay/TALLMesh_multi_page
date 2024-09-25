@@ -30,6 +30,20 @@ from api_key_management import manage_api_keys, load_api_keys
 logo = "pages/static/tmeshlogo.png"
 st.logo(logo)
 
+# Videos
+project_setup_video_file = open("pages/animations/project_set_up.webm", "rb")
+project_set_up_video = project_setup_video_file.read()
+
+initial_coding_video_file = open("pages/animations/initial_coding.webm", "rb")
+initial_coding_video = initial_coding_video_file.read()
+
+reduction_of_codes_video_file = open("pages/animations/reduction_of_codes.webm", "rb")
+reduction_of_codes_video = reduction_of_codes_video_file.read()
+
+finding_themes_video_file = open("pages/animations/finding_themes.webm", "rb")
+finding_themes_video = finding_themes_video_file.read()
+
+
 def main():
     """
     Main function to render the TALLMesh guide page.
@@ -158,8 +172,10 @@ def create_project_setup_guide():
         st.header(":orange[Project and File Management]")
 
         st.write("""
-        The "Folder Set Up" page is where you'll begin your thematic analysis journey. This page allows you to create new projects, manage existing ones, and upload the files you want to analyze. Here's how to use it:
+        The "Project Set Up" page is where you'll begin your thematic analysis journey. This page allows you to create new projects, manage existing ones, and upload the files you want to analyze. Here's how to use it:
         """)
+
+        st.video(project_set_up_video, loop = True, autoplay = True)
 
         st.subheader(":orange[1. Creating a New Project]")
         st.write("""
@@ -184,9 +200,9 @@ def create_project_setup_guide():
 
         st.subheader(":orange[4. Managing Existing Files]")
         st.write("""
-        - Below the file uploader, you'll see a list of all files currently in your project.
-        - Each file has a checkbox next to it. Select the checkbox for any files you want to delete.
-        - Click the trash can icon (🗑️) that appears to remove selected files from your project.
+        - Below the file uploader, you'll see a list of all files currently in your project, separated into folders
+        - Each folder holds files for a given stage of the thematic analysis process
+        - You can delete files by selecting the checkbox to the left of the file you want to delete and clicking 'Delete Selected'
         """)
 
         st.subheader(":orange[5. Deleting a Project]")
@@ -225,6 +241,8 @@ def create_initial_coding_guide():
         st.write("""
         The Initial Coding page is where you begin the analysis of your data. This step involves generating initial codes for each of your uploaded files using AI assistance. Here's how to use this page:
         """)
+
+        st.video(initial_coding_video, loop=True, autoplay=True)
 
         st.subheader(":orange[1. Project Selection]")
         st.write("""
@@ -288,6 +306,8 @@ def create_code_reduction_guide():
         The Reduction of Codes page is where you refine and consolidate the initial codes generated in the previous step. This process helps to identify patterns and reduce redundancy in your coding. Here's how to use this page:
         """)
 
+        st.video(reduction_of_codes_video, loop=True, autoplay=True)
+
         st.subheader(":orange[1. Project and File Selection]")
         st.write("""
         - Select your project from the dropdown menu.
@@ -300,6 +320,7 @@ def create_code_reduction_guide():
         - Choose the AI model you want to use for code reduction.
         - Select a preset prompt or edit the provided prompt to guide the reduction process.
         - Adjust the model temperature and top_p values using the sliders. These parameters influence the AI's output.
+        - Choose whether you want the AI to process all files recursively or if you would like it to pause between files
         """)
 
         st.subheader(":orange[3. Processing and Results]")
@@ -347,6 +368,8 @@ def create_finding_themes_guide():
         st.write("""
         The Finding Themes page is where you identify overarching themes from your reduced codes. This step helps you synthesize your data into meaningful patterns. Here's how to use this page:
         """)
+
+        st.video(finding_themes_video, loop=True, autoplay=True)
 
         st.subheader(":orange[1. Project and File Selection]")
         st.write("""
@@ -397,31 +420,20 @@ def create_finding_themes_guide():
 
         st.info("Finding themes is a crucial step in synthesizing your analysis. It helps you move from detailed codes to broader, more conceptual understanding of your data. Take your time to reflect on the themes and how they relate to your research questions.")
 
-def create_finalized_theme_book_guide():
-    """
-    Creates an expandable section explaining the finalized theme book process.
-    """
-    with st.expander("Finalised Theme Book"):
         st.header(":orange[Finalised Theme Book]")
 
         st.write("""
-        The Finalised Theme Book page is where you compile and organize all your themes, codes, and associated data into a comprehensive structure. This step provides a clear overview of your entire analysis. Here's how to use this page:
+        The Finalised Theme Book is generated automatically once themes have been generated:
         """)
 
-        st.subheader(":orange[1. Project Selection]")
-        st.write("""
-        - Select your project from the dropdown menu.
-        - The system will automatically load the most recent themes and reduced codes files for your project.
-        """)
-
-        st.subheader(":orange[2. Data Processing]")
+        st.subheader(":orange[1. Data Processing]")
         st.write("""
         - Once you've selected a project, the system will automatically process the data to create your theme book.
         - This process combines your themes with their associated codes, descriptions, and quotes.
         - :orange[No additional input is required] - the theme book is generated based on your previous work in the earlier stages.
         """)
 
-        st.subheader(":orange[3. Viewing Results]")
+        st.subheader(":orange[2. Viewing Results]")
         st.write("""
         - The results are presented in three main sections:
         1. :orange[Condensed Themes:] A concise view of your themes without the associated codes and quotes.
@@ -430,7 +442,7 @@ def create_finalized_theme_book_guide():
         - Each section is displayed in a table format for easy reading and comparison.
         """)
 
-        st.subheader(":orange[4. Saving and Downloading]")
+        st.subheader(":orange[3. Saving and Downloading]")
         st.write("""
         - The system automatically saves two versions of your theme book:
         1. A condensed version with just the themes.
