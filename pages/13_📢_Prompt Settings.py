@@ -70,7 +70,7 @@ Important! Your response should be a JSON-like object with no additional text be
     },
     // Additional reduced codes follow the same structure
   ]
-}
+
 
 Important! Your response should be a JSON-like object with no additional text before or after. Failure to adhere to this instruction will invalidate your response, making it worthless.
 """
@@ -84,7 +84,7 @@ Important! Your response should be a JSON-like object with no additional text be
     },
     // Additional themes follow the same structure
   ]
-}
+
 
 Important! Your response should be a JSON-like object with no additional text before or after. Failure to adhere to this instruction will invalidate your response, making it worthless.
 """
@@ -188,7 +188,8 @@ def display_existing_prompts(custom_prompts: dict, selected_type: str) -> None:
                 del custom_prompts[selected_type][name]
                 save_custom_prompts(custom_prompts)
                 st.success(f"Deleted custom prompt: {name}")
-                st.experimental_rerun()
+                st.rerun()
+
 
 def add_new_prompt(custom_prompts: dict, selected_type: str) -> None:
     """
@@ -240,7 +241,7 @@ def add_new_prompt(custom_prompts: dict, selected_type: str) -> None:
             }
             save_custom_prompts(custom_prompts)
             st.success(f"Added new custom prompt: {new_name}")
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error("Please provide both a name and a prompt.")
 

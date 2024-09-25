@@ -43,6 +43,9 @@ reduction_of_codes_video = reduction_of_codes_video_file.read()
 finding_themes_video_file = open("pages/animations/finding_themes.webm", "rb")
 finding_themes_video = finding_themes_video_file.read()
 
+add_prompt_video_file = open("pages/animations/add_prompt.webm", "rb")
+add_prompt_video = add_prompt_video_file.read()
+
 
 def main():
     """
@@ -551,6 +554,8 @@ def create_custom_prompt_management_guide():
     with st.expander("Custom Prompt Management"):
         st.header("Custom Prompts Management")
         st.write("The Custom Prompts Management page allows you to create, edit, and delete custom prompts for different stages of your thematic analysis. Here's how to use this page effectively:")
+
+        st.video(add_prompt_video, loop=True, autoplay=True)
 
         st.subheader(":orange[1. Selecting Prompt Type]")
         st.write("At the top of the page, you'll find a dropdown menu to select the prompt type:")
