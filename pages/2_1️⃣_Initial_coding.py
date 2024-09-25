@@ -359,6 +359,7 @@ def main():
                 status_message.warning("Please select files and enter a prompt.")
 
         # View previously processed files
+        processed_files = get_processed_files(selected_project, 'initial_codes')
         with st.expander("Saved Initial Codes", expanded=False):
             for processed_file in processed_files:
                 col1, col2 = st.columns([0.9, 0.1])
