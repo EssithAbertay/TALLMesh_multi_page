@@ -126,7 +126,7 @@ def main():
     # Rerun the app if a new project is selected
     if selected_project != st.session_state.selected_project:
         st.session_state.selected_project = selected_project
-        st.experimental_rerun()
+        st.rerun()
 
     if selected_project != "Select a project...":
         # Load data for the selected project
