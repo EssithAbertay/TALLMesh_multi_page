@@ -6,6 +6,7 @@ from api_key_management import manage_api_keys
 import shutil
 from project_utils import get_projects
 
+# Set logo
 logo = "pages/static/tmeshlogo.png"
 st.logo(logo)
 
