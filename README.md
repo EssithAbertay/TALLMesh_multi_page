@@ -64,7 +64,7 @@ During this stage the LLM is tasked with identifying patterns and grouping assoc
 
 ## Installation
 
-- Non-technical users
+# Non-technical users
 
 We've created custom GPTs to help you with different stages of the thematic analysis process:
 
@@ -74,7 +74,7 @@ We've created custom GPTs to help you with different stages of the thematic anal
 
 These custom GPTs provide a user-friendly interface to perform thematic analysis without needing to set up the full TALLMesh environment.
 
-- For those with some Python familiarity
+# For those with some Python familiarity
 
 1. Clone the repository:
 
