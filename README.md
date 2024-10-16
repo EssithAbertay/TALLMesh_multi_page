@@ -139,7 +139,8 @@ TBC
 ## Acknowledgements
 
 - Prof. Stefano De Paoli and Dr. Daniel Rough for their research and development of this tool
-- The British Academy for their support 
+- The British Academy for their support with funding for developing the GUI
+- Alex Fawzi for significant improvements to the first version of the software 
 - Virginia Braun and Victoria Clarke for their seminal work on Thematic Analysis
 
 For questions or suggestions, please contact the project PIs: Prof. Stefano De Paoli (s.depaoli@abertay.ac.uk) & Dr. Daniel Rough (drough001@dundee.ac.uk).
