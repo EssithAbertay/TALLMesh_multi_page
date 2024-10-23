@@ -28,11 +28,23 @@ def get_project_structure(project):
 
 # Function to delete multiple files
 def delete_files(file_paths):
+    """
+    Delete multiple files across different folders.
+    
+    Args:
+    file_paths (list): List of full file paths to delete
+    
+    Returns:
+    list: List of successfully deleted file paths
+    """
     deleted_files = []
     for file_path in file_paths:
         if os.path.exists(file_path):
-            os.remove(file_path)
-            deleted_files.append(file_path)
+            try:
+                os.remove(file_path)
+                deleted_files.append(file_path)
+            except Exception as e:
+                st.error(f"Error deleting {os.path.basename(file_path)}: {str(e)}")
     return deleted_files
 
 # Function to handle file uploads for a project
@@ -273,7 +285,7 @@ def main():
         - You can drag and drop multiple .txt files or click to browse and select them.
         - Files will be automatically uploaded when selected or dropped.
         - Successful uploads will be confirmed with a message.
-        - Note: Only .txt files are allowed. For other file types, please use the file_upload_and_conversion page to format them properly before uploading.
+        - Note: Only .txt files are allowed. For other file types, please use the file_upload_and_conversion page to convert a range of other text formats to .txt
         """)
 
         # Instructions for managing existing files
@@ -281,7 +293,7 @@ def main():
         st.write("""
         - Below the file uploader, you'll see a list of all files currently in your project.
         - Each file has a checkbox next to it. Select the checkbox for any files you want to delete.
-        - Click the trash can icon (🗑️) that appears to remove selected files from your project.
+        - Click 'Delete Selected' to remove selected files from your project. 
         """)
 
         # Instructions for deleting a project
@@ -412,24 +424,32 @@ def main():
         # New expander section for project structure to let users delete files without having to go into file explorer
         with st.expander("View Project Structure & Files"):
             project_structure = get_project_structure(st.session_state.selected_project)
+            files_to_delete = []  # Move this outside the folder loop
+            
+            # Display files by folder
             for folder in FOLDER_ORDER:
                 files = project_structure.get(folder, [])
                 st.subheader(f":file_folder: {folder}")
                 if files:
-                    files_to_delete = []
                     for file in files:
                         file_path = os.path.join(PROJECTS_DIR, st.session_state.selected_project, folder, file)
                         if st.checkbox(f":page_facing_up: {file}", key=f"checkbox_{file_path}"):
                             files_to_delete.append(file_path)
-                    
-                    # Show delete button, disabled if no files are selected
-                    if st.button("Delete Selected", key=f"delete_button_{folder}", disabled=len(files_to_delete) == 0):
-                        deleted_files = delete_files(files_to_delete)
-                        if deleted_files:
-                            st.success(f"Deleted {len(deleted_files)} file(s) from {folder}")
-                            st.rerun()
                 else:
                     st.write("  (empty)")
+            
+            # Single delete button for all selected files
+            if files_to_delete:
+                col1, col2 = st.columns([0.7, 0.3])
+                with col1:
+                    st.write(f"Selected {len(files_to_delete)} file(s) for deletion")
+                with col2:
+                    if st.button("Delete Selected Files", type="primary", use_container_width=True):
+                        deleted_files = delete_files(files_to_delete)
+                        if deleted_files:
+                            folders_affected = len(set(os.path.dirname(f) for f in deleted_files))
+                            st.success(f"Successfully deleted {len(deleted_files)} file(s) from {folders_affected} folder(s)")
+                            st.rerun()
 
     else:
         st.write("Please select or create a project to continue.")
