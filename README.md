@@ -64,18 +64,6 @@ During this stage the LLM is tasked with identifying patterns and grouping assoc
 
 ## Installation
 
-### Non-technical users
-
-We've created custom GPTs to help you with different stages of the thematic analysis process:
-
-1. [TALLMesh 1: Initial Codes](https://chatgpt.com/g/g-zgTm3PdhK-thematic-analysis-tallmesh-1-initial-codes) - Assists with the initial coding phase.
-2. [TALLMesh 2: Code Reduction](https://chatgpt.com/g/g-tn0CEC5Am-thematic-analysis-tallmesh-2-code-reduction) - Helps with reducing and consolidating codes.
-3. [TALLMesh 3: Find Themes](https://chatgpt.com/g/g-IP7o7e2SD-thematic-analysis-tallmesh-3-find-themes) - Guides you through the theme identification process.
-
-These custom GPTs provide a user-friendly interface to perform thematic analysis without needing to set up the full TALLMesh environment.
-
-### For those with some Python familiarity
-
 1. Clone the repository:
 
    ```
@@ -150,10 +138,12 @@ TBC
 
 ## Acknowledgements
 
-- Prof. Stefano De Paoli and Dr. Daniel Rough for their research and development of this tool
-- The British Academy for their support 
+- [Prof. Stefano De Paoli](https://www.linkedin.com/in/stefanodepaoli/) and [Dr. Daniel Rough](https://www.linkedin.com/in/daniel-rough-87ba47291/) for their research and development of this tool
+- The British Academy for their support with funding for developing the GUI
+- [Alex Fawzi](https://www.linkedin.com/in/alex-fawzi-94710199/) for significant improvements to the first version of the software 
 - Virginia Braun and Victoria Clarke for their seminal work on Thematic Analysis
 
-For questions or suggestions, please contact the project PIs: Prof. Stefano De Paoli (s.depaoli@abertay.ac.uk) & Dr. Daniel Rough (drough001@dundee.ac.uk).
+For questions or suggestions, please contact the project PIs: [Prof. Stefano De Paoli](mailto:s.depaoli@abertay.ac.uk) & [Dr. Daniel Rough](mailto:drough001@dundee.ac.uk).
+
 
 ---
