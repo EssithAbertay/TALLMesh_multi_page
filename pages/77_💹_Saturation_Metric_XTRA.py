@@ -242,7 +242,7 @@ def main():
 
                 # Find and display elbow point
                 elbow_point = find_elbow_point(range(len(rolling_its)), rolling_its)
-                st.write(f"Suggested saturation point (elbow method): File {elbow_point + 1}")
+                st.write(f"Elbow point (elbow method): File {elbow_point + 1}")
 
                 # Display summary statistics
                 st.subheader("Summary Statistics")

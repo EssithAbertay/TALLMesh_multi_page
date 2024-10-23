@@ -45,6 +45,6 @@ st.write ("For questions or suggestions please contact the PIs: Prof. Stefano De
 st.divider()
 st.write("We received initial support from the British Academy to design the Graphical User Interface.")
 st.divider()
-st.write("The software is available under GNU-GPL license")
+st.write("The software is available under MIT license [Read]https://opensource.org/license/mit") 
 
 

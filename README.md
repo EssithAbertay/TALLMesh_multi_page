@@ -134,7 +134,7 @@ We welcome contributions to TALLMesh! Please follow these steps to contribute:
 
 ## License
 
-TBC
+MIT
 
 ## Acknowledgements
 
