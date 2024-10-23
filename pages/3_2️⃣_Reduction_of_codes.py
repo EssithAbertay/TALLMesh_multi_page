@@ -519,7 +519,7 @@ def main():
 
         st.subheader(":orange[3. Processing and Results]")
         st.write("""
-        - Select 'automatic' or 'incremental' processing (whether pause between files and display incremental results)
+        - Select 'automatic' or 'incremental' processing (whether to pause between files and display incremental results)
         - Select 'include quotes' if you want to send the associated quotes to the LLM. This will provide more context for identifying highly similar codes, but also increases the API usage (and thus, cost and time)
         - Click the "Process" button to start the code reduction.
         - The system will analyze the selected files sequentially, comparing and merging similar codes.

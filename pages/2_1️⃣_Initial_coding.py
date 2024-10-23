@@ -177,7 +177,7 @@ def main():
         st.write("""
         - Once a project is selected, you'll see a list of files available for processing.
         - You can select individual files or use the "Select All" checkbox to choose all files at once.
-        - :orange[Files that have already been processed will be marked with a warning icon.]
+        - :orange[Files that have already been processed will be marked with a '⚠️ Already processed' label .]
         """)
 
         st.subheader(":orange[3. LLM Settings]")
@@ -380,7 +380,7 @@ def main():
                     mime="text/csv"
                 )
     else:
-        st.write(f"Please select a project to continue. If you haven't set up a project yet, head over to the '🏠 Folder Set Up' page to get started")
+        st.write(f"Please select a project to continue. If you haven't set up a project yet, head over to the '🏠 Project Set Up' page to get started")
 
     # Call API key management function
     manage_api_keys()
