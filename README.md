@@ -10,7 +10,7 @@ It uses streamlit for the GUI elements, and for the analysis it uses code and id
 
 3. [📃 De Paoli, S. (2024). *Further Explorations on the Use of Large Language Models for Thematic Analysis. Open-Ended Prompts, Better Terminologies and Thematic Maps*. Forum: Qualitative Social Research.](https://link.springer.com/article/10.1007/s11135-024-01950-6)
 
-4. [📃 De Paoli, S. (2024). *Inductive thematic analysis of healthcare qualitative interviews using open-source large language models: How does it compare to traditional methods?* PubMed.](https://pubmed.ncbi.nlm.nih.gov/39067136/)
+4. [📃 Mathis, W. S., Zhao, S., Pratt, N., Weleff, J., & De Paoli, S. (2024). *Inductive thematic analysis of healthcare qualitative interviews using open-source large language models: How does it compare to traditional methods?* PubMed.](https://pubmed.ncbi.nlm.nih.gov/39067136/)
 
 
 ## Table of Contents

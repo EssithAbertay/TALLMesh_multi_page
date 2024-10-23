@@ -16,7 +16,7 @@ import os
 from api_key_management import manage_api_keys, load_api_keys, load_azure_settings, get_azure_models, AZURE_SETTINGS_FILE
 from project_utils import get_projects, get_project_files, get_processed_files
 from prompts import finding_themes_prompts, json_template
-from llm_utils import llm_call
+from llm_utils import llm_call, default_models
 import logging
 import tooltips
 import time
@@ -236,7 +236,7 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p,
                     logger.info(f"Still missing codes after follow-up LLM call: {missing_code_indices}")
                     st.info(f"{len(missing_code_indices)} codes were still not assigned after the follow-up LLM call.")
                     
-                    # Handle remaining unassigned codes as per user's request
+                    # Handle remaining unassigned codes as per user's settings
                     for i in missing_code_indices:
                         code_row = preprocessed_df.iloc[i]
                         new_theme = {
@@ -518,7 +518,6 @@ def main():
         st.subheader(":orange[LLM Settings]")
 
         # Model selection
-        default_models = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
         azure_models = get_azure_models()
         model_options = default_models + azure_models
         selected_model = st.selectbox("Select Model", model_options, help=tooltips.model_tooltip)

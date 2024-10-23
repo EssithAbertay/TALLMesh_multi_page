@@ -1,7 +1,7 @@
 altair==5.3.0
 altgraph==0.17.4
 annotated-types==0.7.0
-anthropic==0.31.2
+#anthropic==0.31.2
 anyio==4.4.0
 argcomplete==1.10.3
 asttokens==2.4.1

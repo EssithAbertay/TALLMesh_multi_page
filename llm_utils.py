@@ -1,5 +1,5 @@
 from openai import OpenAI, AzureOpenAI
-import anthropic
+#import anthropic
 import streamlit as st
 from api_key_management import load_api_keys, load_azure_settings
 import time
@@ -10,6 +10,8 @@ import re
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+default_models = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo"] #, "claude-sonnet-3.5"] # Anthropic model removed, dependency issue with anthropic package
 
 def exponential_backoff(attempt, max_attempts=5, base_delay=5, max_delay=120):
     if attempt >= max_attempts:
