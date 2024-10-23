@@ -293,7 +293,7 @@ def main():
         st.write("""
         - Below the file uploader, you'll see a list of all files currently in your project.
         - Each file has a checkbox next to it. Select the checkbox for any files you want to delete.
-        - Click 'Delete Selected' to remove selected files from your project. 
+        - Click 'Delete Selected Files' to remove selected files from your project. 
         """)
 
         # Instructions for deleting a project
@@ -311,7 +311,7 @@ def main():
         """)
 
         st.info("""
-            **Note:** Azure API calls work a little differently to other providers. To manage Azure API credentials please see the :orange[⚙️_Azure_Settings page].
+            **Note:** The Azure API works a little differently to other providers. To manage Azure API credentials please see the :orange[⚙️_Azure_Settings page].
             """)
 
         # Additional tips
