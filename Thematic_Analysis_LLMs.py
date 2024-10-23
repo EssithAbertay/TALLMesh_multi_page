@@ -37,14 +37,16 @@ st.write("It follows the aproach we detailed in the papers below. **:green[ If y
 #st.write("*** If you use our software please remember to cite our work ***")
 
 # display text in italic formatting
-st.markdown("📃 De Paoli, S. (2023). Performing an Inductive Thematic Analysis of Semi-Structured Interviews With a Large Language Model: An Exploration and Provocation on the Limits of the Approach. Social Science Computer Review, 08944393231220483. [Read](https://journals.sagepub.com/doi/full/10.1177/08944393231220483) ")
-st.markdown("📃 De Paoli, S., & Mathis, W. S. (2024). Reflections on Inductive Thematic Saturation as a potential metric for measuring the validity of an inductive Thematic Analysis with LLMs. arXiv preprint arXiv:2401.03239. [Read](https://arxiv.org/ftp/arxiv/papers/2401/2401.03239.pdf) ")
+st.markdown("📃 De Paoli, S. (2023). Performing an Inductive Thematic Analysis of Semi-Structured Interviews With a Large Language Model: An Exploration and Provocation on the Limits of the Approach. Social Science Computer Review. [Read](https://journals.sagepub.com/doi/full/10.1177/08944393231220483) ")
+st.markdown("📃 De Paoli, S., & Mathis, W. S. (2024). Reflections on Inductive Thematic Saturation as a potential metric for measuring the validity of an inductive Thematic Analysis with LLMs. Springer Link. [Read](https://link.springer.com/article/10.1007/s11135-024-01950-6) ")
+st.markdown("📃 De Paoli, S. (2024). Further Explorations on the Use of Large Language Models for Thematic Analysis. Open-Ended Prompts, Better Terminologies and Thematic Maps. Foru: Qualitative Social Research. [Read](https://www.qualitative-research.net/index.php/fqs/article/view/4196)")
+st.markdown("📃 De Paoli, S. (2024). Inductive thematic analysis of healthcare qualitative interviews using open-source large language models: How does it compare to traditional methods? PubMed. [Read](https://pubmed.ncbi.nlm.nih.gov/39067136/)")
 st.divider()
 st.write ("This is a research project and the interface and underlying scripts are only experimental and offered as they are")
 st.write ("For questions or suggestions please contact the PIs: Prof. Stefano De Paoli & Dr. Daniel Rough")
 st.divider()
 st.write("We received initial support from the British Academy to design the Graphical User Interface.")
 st.divider()
-st.write("The software is available under MIT license [Read]https://opensource.org/license/mit") 
+st.markdown("The software is available under MIT license [Read](https://opensource.org/license/mit)") 
 
 

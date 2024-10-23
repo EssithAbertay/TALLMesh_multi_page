@@ -234,9 +234,9 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p,
                 missing_code_indices = all_code_indices - assigned_code_indices
                 if missing_code_indices:
                     logger.info(f"Still missing codes after follow-up LLM call: {missing_code_indices}")
-                    st.info(f"{len(missing_code_indices)} codes were still not assigned after the follow-up LLM call. They will be assigned as individual themes.")
+                    st.info(f"{len(missing_code_indices)} codes were still not assigned after the follow-up LLM call.")
                     
-                    # Handle remaining unassigned codes programmatically as distinct themes
+                    # Handle remaining unassigned codes as per user's request
                     for i in missing_code_indices:
                         code_row = preprocessed_df.iloc[i]
                         new_theme = {
