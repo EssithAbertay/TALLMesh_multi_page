@@ -9,8 +9,8 @@ def main():
     st.set_page_config(page_title="Data Processing Disclaimer", page_icon="⚠️")
     
     # Display logo
-    logo = "pages/static/tmeshlogo.png"
-    st.image(logo)
+    #logo = "pages/static/tmeshlogo.png"
+    #st.image(logo)
     
     # Main disclaimer
     st.title("⚠️ Important Disclaimer")
@@ -48,6 +48,16 @@ def main():
         - The Service does NOT interact with any services operated by OpenAI
         
         For full details, see: https://learn.microsoft.com/en-us/legal/cognitive-services/openai/data-privacy
+    """)
+
+    st.header("How TALLMesh Handles Data")
+    st.info("""
+        When you git clone and set up TALLMesh, it creates several directories within the project working directory which store potentially sensitive information you should be aware of..
+        - api_keys.json ; whenever you add or remove keys via the GUI, they are stored (or deleted from) this file.
+        - azure_settings.json ; any custom azure endpoints, deployments, and API keys are stored here.  
+        - projects ; within the projects directory, you will find all of your raw and processed data files (e.g., transcripts, codes, themes).
+        - custom_prompts.json ; if you create custom prompts, they will be saved here. They can be deleted from file or via the :orange[📢 Prompt Settings] page.
+        -       
     """)
     
     # API Key Management
