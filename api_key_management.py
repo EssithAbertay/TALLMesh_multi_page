@@ -27,7 +27,7 @@ def get_azure_models():
     return [f"azure_{deployment}" for deployment in deployments] if deployments else []
 
 # List of LLM providers
-providers = ['OpenAI', 'Anthropic']
+providers = ['OpenAI']#, 'Anthropic']
 
 def load_api_keys():
     if os.path.exists(API_KEYS_FILE):

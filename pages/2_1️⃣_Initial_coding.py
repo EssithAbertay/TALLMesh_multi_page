@@ -12,11 +12,12 @@ import re
 from api_key_management import manage_api_keys, load_api_keys, load_azure_settings, get_azure_models, AZURE_SETTINGS_FILE
 from prompts import initial_coding_prompts
 from project_utils import get_projects, get_project_files, get_processed_files, PROJECTS_DIR
-from llm_utils import llm_call
+from llm_utils import llm_call, default_models
 import logging
 import tooltips
 import time
 from ui_utils import centered_column_with_number, create_circle_number
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -284,9 +285,8 @@ def main():
         st.subheader(":orange[LLM Settings]")
         
         # Model selection
-        default_models = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
         azure_models = get_azure_models()
-        model_options = default_models + azure_models
+        model_options = default_models + azure_models # default models imported from llm_utils
         selected_model = st.selectbox("Select Model", model_options, help = tooltips.model_tooltip)
         
         # OpenAI & Anthropic Models have different max temperature settings (2 & 1, respectively)

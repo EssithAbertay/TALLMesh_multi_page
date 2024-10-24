@@ -16,7 +16,7 @@ import os
 from api_key_management import manage_api_keys, load_api_keys, load_azure_settings, get_azure_models, AZURE_SETTINGS_FILE
 from project_utils import get_projects, get_project_files, get_processed_files
 from prompts import finding_themes_prompts, json_template
-from llm_utils import llm_call
+from llm_utils import llm_call, default_models
 import logging
 import tooltips
 import time
@@ -106,20 +106,22 @@ def preprocess_codes(df):
     logger.info(f"Preprocessing complete. Number of unique codes: {len(preprocessed_df)}")
     return preprocessed_df
 
-def process_codes(selected_files, model, prompt, model_temperature, model_top_p, include_quotes):
+def process_codes(selected_files, model, prompt, model_temperature, model_top_p, include_quotes, force_theme_assignment=False):
     """
     Process the selected code files to find themes using an AI model.
-    This function has been modified to handle unassigned codes by making a follow-up LLM call.
-
+    This function implements a two-pass approach, with a follow-up LLM call for unassigned codes.
+    
     Args:
-        selected_files (list): List of file paths to process.
-        model (str): The AI model to use for processing.
-        prompt (str): The prompt to guide the AI in finding themes.
-        model_temperature (float): The temperature setting for the AI model.
-        model_top_p (float): The top_p setting for the AI model.
-
+        selected_files (list): List of file paths to process
+        model (str): The AI model to use for processing
+        prompt (str): The prompt to guide the AI in finding themes
+        model_temperature (float): The temperature setting for the AI model
+        model_top_p (float): The top_p setting for the AI model
+        include_quotes (bool): Whether to include quotes in the LLM processing
+        force_theme_assignment (bool): Whether to automatically create themes for unassigned codes
+    
     Returns:
-        tuple: A tuple containing the processed output (dict) and the preprocessed dataframe.
+        tuple: (processed_output, preprocessed_df, unassigned_codes_df)
     """
     logger.info(f"Starting to process codes from {len(selected_files)} files")
     logger.info(f"Model: {model}, Temperature: {model_temperature}, Top P: {model_top_p}")
@@ -149,14 +151,13 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p,
     if not include_quotes:
         codes_list = [f"[{i}]: {row['code']}: {row['description']}" for i, (_, row) in enumerate(preprocessed_df.iterrows())]
     else:
-        codes_list = [f"[{i}]: {row['code']}: {row['description']}: {row['quotes']}"  for i, (_, row) in enumerate(preprocessed_df.iterrows())]
-
+        codes_list = [f"[{i}]: {row['code']}: {row['description']}: {row['quotes']}" for i, (_, row) in enumerate(preprocessed_df.iterrows())]
     
     # Construct the full prompt
     full_prompt = f"{prompt}\n\nCodes:\n{', '.join(codes_list)}"
     logger.info(f"Full prompt constructed. Length: {len(full_prompt)}")
     
-    # Process the codes using the AI model
+    # Initial LLM call to process the codes
     status_text.info(f"Processing codes with {model} model...")
     progress_bar.progress((len(selected_files) + 2) / (len(selected_files) + 3))
     logger.info("Calling AI model to process codes")
@@ -166,12 +167,13 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p,
     status_text.info("Parsing AI response...")
     progress_bar.progress(1.0)
     json_string = extract_json(processed_output)
+    
     if json_string:
         logger.info("Successfully extracted JSON from AI response")
         parsed_output = json.loads(json_string)
         logger.info(f"Number of themes found: {len(parsed_output.get('themes', []))}")
         
-        # Now check for unassigned codes
+        # Check for unassigned codes
         total_codes = len(preprocessed_df)
         all_code_indices = set(range(total_codes))
         assigned_code_indices = set()
@@ -201,10 +203,10 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p,
             {json_template}
             """
 
-            # Call the LLM again with the follow-up prompt
+            # Second LLM call for unassigned codes
             logger.info("Calling AI model to process unassigned codes")
             status_text.info("Processing unassigned codes with LLM...")
-            follow_up_output = llm_call(model, follow_up_prompt, model_temperature, model_top_p) # Use the same model temp and top p as initial calls?
+            follow_up_output = llm_call(model, follow_up_prompt, model_temperature, model_top_p)
             
             # Parse and integrate the follow-up output
             json_string_follow_up = extract_json(follow_up_output)
@@ -215,61 +217,106 @@ def process_codes(selected_files, model, prompt, model_temperature, model_top_p,
                 
                 # Integrate new themes or update existing ones
                 for new_theme in new_parsed_output.get('themes', []):
-                    # Check if the theme already exists
                     existing_theme = next((t for t in parsed_output['themes'] if t['name'] == new_theme['name']), None)
                     if existing_theme:
-                        # Update existing theme's codes
                         existing_theme['codes'].extend(new_theme['codes'])
                         existing_theme['codes'] = list(set(existing_theme['codes']))  # Remove duplicates
                     else:
-                        # Add new theme
                         parsed_output['themes'].append(new_theme)
                 
-                # Recalculate assigned codes
+                # Recalculate assigned codes after integration
                 assigned_code_indices = set()
                 for theme in parsed_output.get('themes', []):
                     codes_in_theme = theme.get('codes', [])
                     assigned_code_indices.update(codes_in_theme)
                 
+                # Handle any remaining unassigned codes
                 missing_code_indices = all_code_indices - assigned_code_indices
                 if missing_code_indices:
                     logger.info(f"Still missing codes after follow-up LLM call: {missing_code_indices}")
-                    st.info(f"{len(missing_code_indices)} codes were still not assigned after the follow-up LLM call. They will be assigned as individual themes.")
+                    st.info(f"{len(missing_code_indices)} codes remain unassigned after the follow-up LLM call.")
                     
-                    # Handle remaining unassigned codes programmatically as distinct themes
+                    # Create DataFrame for unassigned codes
+                    unassigned_codes = []
                     for i in missing_code_indices:
                         code_row = preprocessed_df.iloc[i]
-                        new_theme = {
-                            'name': f"Unique Theme for Code {i}",
-                            'description': f"A unique theme created for code [{i}] because it did not fit into existing themes.",
-                            'codes': [i]
-                        }
-                        parsed_output['themes'].append(new_theme)
+                        unassigned_codes.append({
+                            'code_index': i,
+                            'code': code_row['code'],
+                            'description': code_row['description'],
+                            'quotes': code_row.get('quotes', ''),
+                            'sources': code_row.get('sources', '')
+                        })
+                    unassigned_codes_df = pd.DataFrame(unassigned_codes)
+                    
+                    if force_theme_assignment:
+                        # Create individual themes for unassigned codes
+                        for i in missing_code_indices:
+                            code_row = preprocessed_df.iloc[i]
+                            code_name = code_row['code'][:30]  # Use part of code name for theme
+                            new_theme = {
+                                'name': f"Isolated Theme: {code_name}...",
+                                'description': f"This theme contains a single code that could not be integrated into existing themes after multiple attempts: {code_row['code']}. Consider reviewing this code manually.",
+                                'codes': [i]
+                            }
+                            parsed_output['themes'].append(new_theme)
+                        return parsed_output, preprocessed_df, None
+                    else:
+                        # Save unassigned codes to a separate file
+                        unassigned_folder = os.path.join(PROJECTS_DIR, st.session_state.selected_project, 'unassigned_codes')
+                        os.makedirs(unassigned_folder, exist_ok=True)
+                        timestamp = pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')
+                        unassigned_file = os.path.join(unassigned_folder, f'unassigned_codes_{timestamp}.csv')
+                        unassigned_codes_df.to_csv(unassigned_file, index=False)
+                        st.info(f"Unassigned codes have been saved to: {unassigned_file}")
+                        return parsed_output, preprocessed_df, unassigned_codes_df
                 else:
                     logger.info("All codes have been assigned after the follow-up LLM call.")
                     st.success("All codes have been assigned to themes after the follow-up LLM call.")
+                    return parsed_output, preprocessed_df, None
             else:
                 logger.warning("Failed to extract valid JSON from the follow-up LLM response.")
-                st.warning("Could not process unassigned codes through LLM. Remaining unassigned codes will be assigned as individual themes.")
-                # Handle remaining unassigned codes programmatically as distinct themes
+                st.warning("Could not process unassigned codes through LLM. Saving unassigned codes separately.")
+                # Handle unassigned codes based on force_theme_assignment setting
+                unassigned_codes = []
                 for i in missing_code_indices:
                     code_row = preprocessed_df.iloc[i]
-                    new_theme = {
-                        'name': f"Unique Theme for Code {i}",
-                        'description': f"A unique theme created for code [{i}] because it did not fit into existing themes.",
-                        'codes': [i]
-                    }
-                    parsed_output['themes'].append(new_theme)
+                    unassigned_codes.append({
+                        'code_index': i,
+                        'code': code_row['code'],
+                        'description': code_row['description'],
+                        'quotes': code_row.get('quotes', ''),
+                        'sources': code_row.get('sources', '')
+                    })
+                unassigned_codes_df = pd.DataFrame(unassigned_codes)
+                
+                if force_theme_assignment:
+                    for i in missing_code_indices:
+                        code_row = preprocessed_df.iloc[i]
+                        code_name = code_row['code'][:30]
+                        new_theme = {
+                            'name': f"Isolated Theme: {code_name}...",
+                            'description': f"This theme contains a single code that could not be integrated into existing themes after multiple attempts: {code_row['code']}. Consider reviewing this code manually.",
+                            'codes': [i]
+                        }
+                        parsed_output['themes'].append(new_theme)
+                    return parsed_output, preprocessed_df, None
+                else:
+                    unassigned_folder = os.path.join(PROJECTS_DIR, st.session_state.selected_project, 'unassigned_codes')
+                    os.makedirs(unassigned_folder, exist_ok=True)
+                    timestamp = pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')
+                    unassigned_file = os.path.join(unassigned_folder, f'unassigned_codes_{timestamp}.csv')
+                    unassigned_codes_df.to_csv(unassigned_file, index=False)
+                    st.info(f"Unassigned codes have been saved to: {unassigned_file}")
+                    return parsed_output, preprocessed_df, unassigned_codes_df
         else:
             logger.info("All codes were assigned in the initial LLM call.")
             st.success("All codes have been assigned to themes.")
-
-        status_text.info("Theme finding process completed successfully.")
-        return parsed_output, preprocessed_df
+            return parsed_output, preprocessed_df, None
     else:
         logger.warning("No valid JSON found in the response")
         status_text.info("Failed to extract themes from AI response.")
-        return None, preprocessed_df
+        return None, preprocessed_df, None
 
 def save_themes(project_name, df):
     """
@@ -518,7 +565,6 @@ def main():
         st.subheader(":orange[LLM Settings]")
 
         # Model selection
-        default_models = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
         azure_models = get_azure_models()
         model_options = default_models + azure_models
         selected_model = st.selectbox("Select Model", model_options, help=tooltips.model_tooltip)
@@ -548,19 +594,29 @@ def main():
         with settings_col2:
             model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=model_top_p, help=tooltips.top_p_tooltip)
 
-        include_quotes = st.checkbox(label = "Include Quotes", value=False, help='Choose whether to send quotes to the LLM during the theme-generating process. This setting is :orange[off] by default; if you do choose to include quotes, check you are adhering to data privacy policies')
+        #include_quotes = st.checkbox(label = "Include Quotes", value=False, help='Choose whether to send quotes to the LLM during the theme-generating process. This setting is :orange[off] by default; if you do choose to include quotes, check you are adhering to data privacy policies')
 
+        #settings_col3, settings_col4 = st.columns([0.5, 0.5])
+        #with settings_col3:
+        include_quotes = st.checkbox(label="Include Quotes", value=False, help='Choose whether to send quotes to the LLM during the theme-generating process. This setting is :orange[off] by default; if you do choose to include quotes, check you are adhering to data privacy policies')
+        #with settings_col4:
+        force_theme_assignment = st.checkbox(label="Force Unassigned Codes to Themes", value=False, help='If checked, any codes that remain unassigned after LLM processing will be converted to individual themes. If unchecked (default and recommended), unassigned codes will be saved separately for manual review.')
 
         if st.button("Process"):
             st.divider()
             st.subheader(":orange[Output]")
             with st.spinner("Finding themes... please wait..."):
                 # Process the selected files and display results
-                themes_output, processed_df = process_codes(selected_files, selected_model, prompt_input, model_temperature, model_top_p, include_quotes)
+                themes_output, processed_df, unassigned_codes = process_codes(
+                    selected_files, selected_model, prompt_input, 
+                    model_temperature, model_top_p, include_quotes, 
+                    force_theme_assignment
+                )
                 
                 if themes_output is not None:
                     themes_df = pd.json_normalize(themes_output['themes'])
                     
+                    # Display themes and codes as before
                     st.write(":orange[Generated Themes:]")
                     for _, theme in themes_df.iterrows():
                         with st.expander(f"{theme['name']}"):
@@ -569,10 +625,20 @@ def main():
                             for code_index in theme['codes']:
                                 code_row = processed_df.iloc[code_index]
                                 st.write(f"- [{code_index}] {code_row['code']}: {code_row['description']}")
-                    st.write(":orange[Codes & Descriptions (for reference):]")
-                    with st.expander("Codes & Descriptions:"):
-                        st.write(processed_df)
-                
+                    
+                    # Display unassigned codes if any exist
+                    if unassigned_codes is not None:
+                        st.write(":orange[Unassigned Codes:]")
+                        with st.expander("View Unassigned Codes"):
+                            st.write(unassigned_codes)
+                            csv = unassigned_codes.to_csv(index=False).encode('utf-8')
+                            st.download_button(
+                                label="Download Unassigned Codes",
+                                data=csv,
+                                file_name="unassigned_codes.csv",
+                                mime="text/csv"
+                            )
+                    
                     # Save and offer download of themes
                     saved_file_path = save_themes(selected_project, themes_df)
                     st.success(f"Themes saved to {saved_file_path}")
@@ -597,11 +663,14 @@ def main():
                 final_df = process_data(themes_df, codes_df)
                 
                 # Display various views of the data
-                st.write("Condensed Themes",help="This view shows one theme per row and uses numerical indexing to identify contributing themes")
+                st.write("Condensed Themes")
+                st.markdown("_This view shows one theme per row and uses numerical indexing to identify contributing themes_")
                 st.write(themes_df)
-                
-                st.write("Expanded Themes w/ Codes, Quotes & Sources", help="This view explodes each theme, each row represents a reduced code. Can be used to identify which initial and reduced codes contribute to each theme")
+
+                st.write("Expanded Themes w/ Codes, Quotes & Sources")
+                st.markdown("_This view explodes each theme, each row represents a reduced code. Can be used to identify which initial and reduced codes contribute to each theme_")
                 final_display_df = final_df.copy()
+                st.write(final_display_df)
                 final_display_df['Quotes'] = final_display_df['Quotes'].apply(format_quotes)
                 st.write(final_df)
                 

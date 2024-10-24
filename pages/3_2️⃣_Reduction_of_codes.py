@@ -17,7 +17,7 @@ import re
 from api_key_management import manage_api_keys, load_api_keys, load_azure_settings, get_azure_models, AZURE_SETTINGS_FILE
 from project_utils import get_projects, get_project_files, get_processed_files, PROJECTS_DIR
 from prompts import reduce_duplicate_codes_prompts
-from llm_utils import llm_call, process_chunks
+from llm_utils import llm_call, process_chunks, default_models
 import logging
 import tooltips
 import time
@@ -603,7 +603,6 @@ def main():
         st.subheader(":orange[LLM Settings]")
 
         # Model selection
-        default_models = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "claude-sonnet-3.5"]
         azure_models = get_azure_models()
         model_options = default_models + azure_models
         selected_model = st.selectbox("Select Model", model_options, help = tooltips.model_tooltip)

@@ -4,9 +4,13 @@ TALLMesh is an experimental tool that leverages AI assistance to conduct qualita
 
 It uses streamlit for the GUI elements, and for the analysis it uses code and ideas from these two papers:
 
-1. [De Paoli, S. (2023). *Performing an Inductive Thematic Analysis of Semi-Structured Interviews With a Large Language Model: An Exploration and Provocation on the Limits of the Approach*. Social Science Computer Review, 08944393231220483.](https://journals.sagepub.com/doi/full/10.1177/08944393231220483)
+1. [📃 De Paoli, S. (2023). *Performing an Inductive Thematic Analysis of Semi-Structured Interviews With a Large Language Model: An Exploration and Provocation on the Limits of the Approach*. Social Science Computer Review.](https://journals.sagepub.com/doi/full/10.1177/08944393231220483)
 
-2. [De Paoli, S., & Mathis, W. S. (2024). *Reflections on Inductive Thematic Saturation as a potential metric for measuring the validity of an inductive Thematic Analysis with LLMs*. arXiv preprint arXiv:2401.03239.](https://arxiv.org/ftp/arxiv/papers/2401/2401.03239.pdf)
+2. [📃 De Paoli, S., & Mathis, W. S. (2024). *Reflections on Inductive Thematic Saturation as a potential metric for measuring the validity of an inductive Thematic Analysis with LLMs*. Springer Link.](https://link.springer.com/article/10.1007/s11135-024-01950-6)
+
+3. [📃 De Paoli, S. (2024). *Further Explorations on the Use of Large Language Models for Thematic Analysis. Open-Ended Prompts, Better Terminologies and Thematic Maps*. Forum: Qualitative Social Research.](https://link.springer.com/article/10.1007/s11135-024-01950-6)
+
+4. [📃 Mathis, W. S., Zhao, S., Pratt, N., Weleff, J., & De Paoli, S. (2024). *Inductive thematic analysis of healthcare qualitative interviews using open-source large language models: How does it compare to traditional methods?* PubMed.](https://pubmed.ncbi.nlm.nih.gov/39067136/)
 
 
 ## Table of Contents
@@ -134,7 +138,7 @@ We welcome contributions to TALLMesh! Please follow these steps to contribute:
 
 ## License
 
-TBC
+MIT
 
 ## Acknowledgements
 

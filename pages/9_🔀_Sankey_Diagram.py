@@ -68,29 +68,73 @@ def hex_to_rgba(hex_color, opacity):
     rgb = tuple(int(hex_color[i:i+h_len//3], 16) for i in range(0, h_len, h_len//3))
     return f'rgba{rgb + (opacity,)}'
 
-def create_sankey_diagram(data, level_selection):
+
+
+def create_sankey_diagram(data, level_selection, style_settings=None):
+    """
+    Create a Sankey diagram with customizable styling options and improved layout.
+    
+    Args:
+        data: DataFrame containing the hierarchical data
+        level_selection: List of levels to display
+        style_settings: Dictionary containing user-defined style parameters
+    """
+    # Set default style settings
+    default_settings = {
+        'node_pad': 15,
+        'node_thickness': 20,
+        'node_line_color': 'white',
+        'node_line_width': 1.0,
+        'initial_code_color': '#FFC300',
+        'reduced_code_color': '#FF5733',
+        'theme_color': '#C70039',
+        'link_opacity': 0.4,
+        'font_size': 16,
+        'margin_top': 5,
+        'margin_bottom': 10,
+        'margin_left': 5,
+        'margin_right': 10,
+        'nodes_per_height_unit': 20
+    }
+    
+    # Update with user settings if provided
+    if style_settings:
+        default_settings.update(style_settings)
+    
     # Define the labels based on the selected levels
     label_list = []
     color_list = []
     node_indices = {}
 
-    # Build the nodes and links based on selected levels
-    levels = level_selection  # For example: ['Initial Code', 'Reduced Code', 'Theme']
+    # Build the nodes and links
     source_indices = []
     target_indices = []
     values = []
     link_colors = []
 
-    # Prepare the data for Sankey diagram
-    if levels == ['Initial Code', 'Reduced Code', 'Theme']:
+    if level_selection == ['Initial Code', 'Reduced Code', 'Theme']:
         grouped_data = data.groupby(['original_code', 'code', 'Theme']).size().reset_index(name='count')
+
+        # Calculate the number of nodes at each level
+        n_initial = len(grouped_data['original_code'].unique())
+        n_reduced = len(grouped_data['code'].unique())
+        n_themes = len(grouped_data['Theme'].unique())
+        
+        # Calculate optimal height based on the maximum number of nodes at any level
+        max_nodes = max(n_initial, n_reduced, n_themes)
+        base_height = max_nodes * default_settings['nodes_per_height_unit']
+        
+        # Set minimum and maximum heights
+        min_height = 400
+        max_height = 2000
+        dynamic_height = min(max_height, max(min_height, base_height))
 
         # Nodes for Initial Codes
         initial_codes = grouped_data['original_code'].unique()
         for code in initial_codes:
             node_indices[code] = len(label_list)
             label_list.append(code)
-            color_list.append('#FFC300')  # Color for initial codes (yellow)
+            color_list.append(default_settings['initial_code_color'])
 
         # Nodes for Reduced Codes
         reduced_codes = grouped_data['code'].unique()
@@ -98,7 +142,7 @@ def create_sankey_diagram(data, level_selection):
             if code not in node_indices:
                 node_indices[code] = len(label_list)
                 label_list.append(code)
-                color_list.append('#FF5733')  # Color for reduced codes (orange-red)
+                color_list.append(default_settings['reduced_code_color'])
 
         # Nodes for Themes
         themes = grouped_data['Theme'].unique()
@@ -106,54 +150,82 @@ def create_sankey_diagram(data, level_selection):
             if theme not in node_indices:
                 node_indices[theme] = len(label_list)
                 label_list.append(theme)
-                color_list.append('#C70039')  # Color for themes (dark red)
+                color_list.append(default_settings['theme_color'])
 
         # Links from Initial Codes to Reduced Codes
         for _, row in grouped_data.iterrows():
             source_indices.append(node_indices[row['original_code']])
             target_indices.append(node_indices[row['code']])
             values.append(row['count'])
-            # Use the color of the source node with opacity
             source_color = color_list[node_indices[row['original_code']]]
-            link_colors.append(hex_to_rgba(source_color, 0.4))
+            link_colors.append(hex_to_rgba(source_color, default_settings['link_opacity']))
 
         # Links from Reduced Codes to Themes
         for _, row in grouped_data.drop_duplicates(subset=['code', 'Theme']).iterrows():
             source_indices.append(node_indices[row['code']])
             target_indices.append(node_indices[row['Theme']])
-            value = grouped_data[(grouped_data['code'] == row['code']) & (grouped_data['Theme'] == row['Theme'])]['count'].sum()
+            value = grouped_data[(grouped_data['code'] == row['code']) & 
+                               (grouped_data['Theme'] == row['Theme'])]['count'].sum()
             values.append(value)
-            # Use the color of the source node with opacity
             source_color = color_list[node_indices[row['code']]]
-            link_colors.append(hex_to_rgba(source_color, 0.4))
+            link_colors.append(hex_to_rgba(source_color, default_settings['link_opacity']))
+
+        # Create the Sankey diagram with improved positioning
+        link = dict(
+            source=source_indices,
+            target=target_indices,
+            value=values,
+            color=link_colors
+        )
+        
+        node = dict(
+            label=label_list,
+            pad=default_settings['node_pad'],
+            thickness=default_settings['node_thickness'],
+            color=color_list,
+            line=dict(
+                color=default_settings['node_line_color'],
+                width=default_settings['node_line_width']
+            )
+        )
+
+        # Create the Sankey diagram with improved layout
+        fig = go.Figure(data=[go.Sankey(
+            link=link,
+            node=node,
+            arrangement="snap"
+        )])
+
+        # Update layout with improved positioning and spacing
+        fig.update_layout(
+            font_color='black',
+            font_size=default_settings['font_size'],
+            height=dynamic_height,
+            margin=dict(
+                t=default_settings['margin_top'],
+                l=default_settings['margin_left'],
+                r=default_settings['margin_right'],
+                b=default_settings['margin_bottom'],
+                pad=0  # Remove padding
+            ),
+            paper_bgcolor='#0A0A0A',
+            plot_bgcolor='#0A0A0A',
+            autosize=True,
+            # Remove any default padding
+            xaxis=dict(
+                automargin=True,
+                constrain='domain'
+            ),
+            yaxis=dict(
+                automargin=True,
+                constrain='domain'
+            )
+        )
+
+        return fig
     else:
         st.error("Currently, only the 'Initial Code -> Reduced Code -> Theme' flow is implemented.")
         return None
-
-    # Create the Sankey diagram
-    link = dict(
-        source=source_indices,
-        target=target_indices,
-        value=values,
-        color=link_colors
-    )
-    node = dict(
-        label=label_list,
-        pad=15,
-        thickness=20,
-        color=color_list,
-        line=dict(color='black', width=0.5)
-    )
-
-    fig = go.Figure(data=[go.Sankey(link=link, node=node)])
-
-    fig.update_layout(
-        title_text="Sankey Diagram of Codes Flow",
-        font_size=12,
-        height=800
-    )
-
-    return fig
 
 def main():
     """
@@ -185,35 +257,125 @@ def main():
         st.rerun()
 
     if selected_project != "Select a project...":
-        # Load data for the selected project
         data = load_data(selected_project)
-
+        
         if data is None or data.empty:
             st.error("No data available for the selected project.")
             return
 
-        selected_levels = ['Initial Code', 'Reduced Code', 'Theme'] # Here for now until I can work out how to skip a hierarchical level
+        selected_levels = ['Initial Code', 'Reduced Code', 'Theme']
 
         # Advanced settings in an expander
         with st.expander("Advanced Settings"):
-            # Level selection
-            #available_levels = ['Initial Code', 'Reduced Code', 'Theme']
-            #default_levels = ['Initial Code', 'Reduced Code', 'Theme']
-            #selected_levels = st.multiselect(
-            #    "Select levels to display in the Sankey diagram",
-            #    available_levels,
-            #    default=default_levels,
-            #    key="level_selector"
-            #)
-
-            #if selected_levels != ['Initial Code', 'Reduced Code', 'Theme']:
-            #    st.warning("Currently, only the 'Initial Code -> Reduced Code -> Theme' flow is implemented.")
-            #    return
-
-            # Filtering options
-            filter_theme = st.multiselect("Filter by Theme", options=data['Theme'].unique())
-            filter_reduced_code = st.multiselect("Filter by Reduced Code", options=data['code'].unique())
-            filter_initial_code = st.multiselect("Filter by Initial Code", options=data['original_code'].unique())
+            # Create a single tab for settings
+            tab, = st.tabs(["Settings"])
+            with tab:
+                # Filters Section
+                st.markdown("#### Filters")
+                filter_theme = st.multiselect(
+                    "Filter by Theme", 
+                    options=data['Theme'].unique(), 
+                    help="Select themes to display in the Sankey diagram"
+                )
+                filter_reduced_code = st.multiselect(
+                    "Filter by Reduced Code", 
+                    options=data['code'].unique(),
+                    help="Select reduced codes to display in the Sankey diagram"
+                )
+                filter_initial_code = st.multiselect(
+                    "Filter by Initial Code", 
+                    options=data['original_code'].unique(),
+                    help="Select initial codes to display in the Sankey diagram"
+                )
+                
+                # Colours Section
+                st.markdown("#### Colours")
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    initial_code_color = st.color_picker(
+                        "Initial Codes Color", 
+                        '#F7F069', 
+                        help="Choose the color for initial code nodes"
+                    )
+                with col2:
+                    reduced_code_color = st.color_picker(
+                        "Reduced Codes Color", 
+                        '#DE7863', 
+                        help="Choose the color for reduced code nodes"
+                    )
+                with col3:
+                    theme_color = st.color_picker(
+                        "Themes Color", 
+                        '#6BE6D3',
+                        help="Choose the color for theme nodes"
+                    )
+                link_opacity = st.slider(
+                    "Link Opacity", 
+                    0.0, 1.0, 1.0, 0.1, 
+                    help="Adjust the opacity of the links between nodes (0 is fully transparent, 1 is fully opaque)"
+                )
+                
+                # Layout Section
+                st.markdown("#### Layout")
+                col1, col2 = st.columns(2)
+                with col1:
+                    font_size = st.number_input(
+                        "Font Size", 
+                        8, 24, 16, 
+                        help="Set the font size of the labels in the diagram"
+                    )
+                    nodes_per_height = st.number_input(
+                        "Height per Node", 
+                        5, 50, 20,
+                        help="Adjust the vertical spacing between nodes; higher values increase spacing"
+                    )
+                with col2:
+                    margin_top = st.number_input(
+                        "Top Margin", 
+                        0, 100, 5, 
+                        help="Set the top margin of the diagram in pixels"
+                    )
+                    margin_bottom = st.number_input(
+                        "Bottom Margin", 
+                        0, 100, 10, 
+                        help="Set the bottom margin of the diagram in pixels"
+                    )
+                    margin_left = st.number_input(
+                        "Left Margin", 
+                        0, 100, 5, 
+                        help="Set the left margin of the diagram in pixels"
+                    )
+                    margin_right = st.number_input(
+                        "Right Margin", 
+                        0, 100, 10, 
+                        help="Set the right margin of the diagram in pixels"
+                    )
+                
+                # Node Style Section
+                st.markdown("#### Node Style")
+                col1, col2 = st.columns(2)
+                with col1:
+                    node_pad = st.number_input(
+                        "Node Padding", 
+                        5, 50, 15, 
+                        help="Set the amount of padding between nodes"
+                    )
+                    node_thickness = st.number_input(
+                        "Node Thickness", 
+                        5, 50, 20, 
+                        help="Set the thickness of the nodes in pixels"
+                    )
+                with col2:
+                    node_line_color = st.color_picker(
+                        "Node Line Color", 
+                        '#ffffff', 
+                        help="Choose the color of the node borders"
+                    )
+                    node_line_width = st.number_input(
+                        "Node Line Width", 
+                        0.0, 5.0, 1.0, 0.1, 
+                        help="Set the width of the node borders"
+                    )
 
         # Apply filters
         df_filtered = data.copy()
@@ -224,16 +386,30 @@ def main():
         if filter_initial_code:
             df_filtered = df_filtered[df_filtered['original_code'].isin(filter_initial_code)]
 
+        # Collect style settings
+        style_settings = {
+            'initial_code_color': initial_code_color,
+            'reduced_code_color': reduced_code_color,
+            'theme_color': theme_color,
+            'link_opacity': link_opacity,
+            'font_size': font_size,
+            'margin_top': margin_top,
+            'margin_bottom': margin_bottom,
+            'margin_left': margin_left,
+            'margin_right': margin_right,
+            'node_pad': node_pad,
+            'node_thickness': node_thickness,
+            'node_line_color': node_line_color,
+            'node_line_width': node_line_width,
+            'nodes_per_height_unit': nodes_per_height
+        }
+
         # Create and display the Sankey diagram
-        fig = create_sankey_diagram(df_filtered, selected_levels)
+        fig = create_sankey_diagram(df_filtered, selected_levels, style_settings)
 
         if fig:
-            #st.plotly_chart(fig, use_container_width=True)
-            #st.write("Hover over nodes and flows to see details.")
 
-            # Optionally, save the figure as an HTML file and render it
-            html_content = fig.to_html(full_html=False)
-            components.html(html_content, height=900)
+            st.plotly_chart(fig, use_container_width=True)
 
             # Option to display data as a table
             with st.expander("Show Data Table"):
