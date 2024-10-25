@@ -72,156 +72,138 @@ def hex_to_rgba(hex_color, opacity):
 
 def create_sankey_diagram(data, level_selection, style_settings=None):
     """
-    Create a Sankey diagram with customizable styling options and improved layout.
-    
-    Args:
-        data: DataFrame containing the hierarchical data
-        level_selection: List of levels to display
-        style_settings: Dictionary containing user-defined style parameters
+    Create an improved Sankey diagram with better visual hierarchy and readability.
     """
-    # Set default style settings
+    # Set default style settings with improved colors and layout
     default_settings = {
-        'node_pad': 15,
-        'node_thickness': 20,
-        'node_line_color': 'white',
-        'node_line_width': 1.0,
-        'initial_code_color': '#FFC300',
-        'reduced_code_color': '#FF5733',
-        'theme_color': '#C70039',
-        'link_opacity': 0.4,
-        'font_size': 16,
-        'margin_top': 5,
-        'margin_bottom': 10,
-        'margin_left': 5,
-        'margin_right': 10,
-        'nodes_per_height_unit': 20
+        'node_pad': 20,
+        'node_thickness': 25,
+        'node_line_color': '#ffffff',
+        'node_line_width': 0.5,
+        'initial_code_color': '#fde047',  # Warm yellow
+        'reduced_code_color': '#84cc16',  # Fresh green
+        'theme_color': '#22c55e',         # Deep green
+        'link_opacity': 0.6,
+        'font_size': 14,
+        'margin_top': 20,
+        'margin_bottom': 20,
+        'margin_left': 20,
+        'margin_right': 20,
+        'nodes_per_height_unit': 15,
+        'bgcolor': '#ffffff',
+        'paper_bgcolor': '#ffffff'
     }
     
     # Update with user settings if provided
     if style_settings:
         default_settings.update(style_settings)
     
-    # Define the labels based on the selected levels
-    label_list = []
-    color_list = []
-    node_indices = {}
-
-    # Build the nodes and links
-    source_indices = []
-    target_indices = []
-    values = []
-    link_colors = []
-
     if level_selection == ['Initial Code', 'Reduced Code', 'Theme']:
         grouped_data = data.groupby(['original_code', 'code', 'Theme']).size().reset_index(name='count')
-
-        # Calculate the number of nodes at each level
-        n_initial = len(grouped_data['original_code'].unique())
-        n_reduced = len(grouped_data['code'].unique())
-        n_themes = len(grouped_data['Theme'].unique())
         
-        # Calculate optimal height based on the maximum number of nodes at any level
-        max_nodes = max(n_initial, n_reduced, n_themes)
-        base_height = max_nodes * default_settings['nodes_per_height_unit']
+        # Calculate optimal height
+        max_nodes = max(
+            len(grouped_data['original_code'].unique()),
+            len(grouped_data['code'].unique()),
+            len(grouped_data['Theme'].unique())
+        )
+        dynamic_height = min(2000, max(600, max_nodes * default_settings['nodes_per_height_unit']))
         
-        # Set minimum and maximum heights
-        min_height = 400
-        max_height = 2000
-        dynamic_height = min(max_height, max(min_height, base_height))
-
-        # Nodes for Initial Codes
-        initial_codes = grouped_data['original_code'].unique()
-        for code in initial_codes:
-            node_indices[code] = len(label_list)
-            label_list.append(code)
-            color_list.append(default_settings['initial_code_color'])
-
-        # Nodes for Reduced Codes
-        reduced_codes = grouped_data['code'].unique()
-        for code in reduced_codes:
+        # Create node lists and link data
+        nodes = []
+        links = []
+        node_indices = {}
+        
+        # Process nodes with improved colors
+        for idx, code in enumerate(grouped_data['original_code'].unique()):
+            node_indices[code] = len(nodes)
+            nodes.append(dict(
+                label=code,
+                color=default_settings['initial_code_color'],
+                customdata=[code],
+                hovertemplate='%{customdata[0]}<extra></extra>'
+            ))
+            
+        for code in grouped_data['code'].unique():
             if code not in node_indices:
-                node_indices[code] = len(label_list)
-                label_list.append(code)
-                color_list.append(default_settings['reduced_code_color'])
-
-        # Nodes for Themes
-        themes = grouped_data['Theme'].unique()
-        for theme in themes:
+                node_indices[code] = len(nodes)
+                nodes.append(dict(
+                    label=code,
+                    color=default_settings['reduced_code_color'],
+                    customdata=[code],
+                    hovertemplate='%{customdata[0]}<extra></extra>'
+                ))
+                
+        for theme in grouped_data['Theme'].unique():
             if theme not in node_indices:
-                node_indices[theme] = len(label_list)
-                label_list.append(theme)
-                color_list.append(default_settings['theme_color'])
-
-        # Links from Initial Codes to Reduced Codes
-        for _, row in grouped_data.iterrows():
-            source_indices.append(node_indices[row['original_code']])
-            target_indices.append(node_indices[row['code']])
-            values.append(row['count'])
-            source_color = color_list[node_indices[row['original_code']]]
-            link_colors.append(hex_to_rgba(source_color, default_settings['link_opacity']))
-
-        # Links from Reduced Codes to Themes
-        for _, row in grouped_data.drop_duplicates(subset=['code', 'Theme']).iterrows():
-            source_indices.append(node_indices[row['code']])
-            target_indices.append(node_indices[row['Theme']])
-            value = grouped_data[(grouped_data['code'] == row['code']) & 
-                               (grouped_data['Theme'] == row['Theme'])]['count'].sum()
-            values.append(value)
-            source_color = color_list[node_indices[row['code']]]
-            link_colors.append(hex_to_rgba(source_color, default_settings['link_opacity']))
-
-        # Create the Sankey diagram with improved positioning
-        link = dict(
-            source=source_indices,
-            target=target_indices,
-            value=values,
-            color=link_colors
-        )
+                node_indices[theme] = len(nodes)
+                nodes.append(dict(
+                    label=theme,
+                    color=default_settings['theme_color'],
+                    customdata=[theme],
+                    hovertemplate='%{customdata[0]}<extra></extra>'
+                ))
         
-        node = dict(
-            label=label_list,
-            pad=default_settings['node_pad'],
-            thickness=default_settings['node_thickness'],
-            color=color_list,
-            line=dict(
-                color=default_settings['node_line_color'],
-                width=default_settings['node_line_width']
-            )
-        )
-
-        # Create the Sankey diagram with improved layout
+        # Create links with improved styling
+        for _, row in grouped_data.iterrows():
+            # Link from initial to reduced code
+            links.append(dict(
+                source=node_indices[row['original_code']],
+                target=node_indices[row['code']],
+                value=row['count'],
+                color=f'rgba{tuple(int(default_settings["initial_code_color"].lstrip("#")[i:i+2], 16) for i in (0, 2, 4)) + (default_settings["link_opacity"],)}'
+            ))
+            
+            # Link from reduced code to theme
+            links.append(dict(
+                source=node_indices[row['code']],
+                target=node_indices[row['Theme']],
+                value=row['count'],
+                color=f'rgba{tuple(int(default_settings["reduced_code_color"].lstrip("#")[i:i+2], 16) for i in (0, 2, 4)) + (default_settings["link_opacity"],)}'
+            ))
+        
+        # Create figure with improved layout
         fig = go.Figure(data=[go.Sankey(
-            link=link,
-            node=node,
+            node=dict(
+                pad=default_settings['node_pad'],
+                thickness=default_settings['node_thickness'],
+                line=dict(
+                    color=default_settings['node_line_color'],
+                    width=default_settings['node_line_width']
+                ),
+                label=[node['label'] for node in nodes],
+                color=[node['color'] for node in nodes],
+                customdata=[node['customdata'] for node in nodes],
+                hovertemplate=[node['hovertemplate'] for node in nodes]
+            ),
+            link=dict(
+                source=[link['source'] for link in links],
+                target=[link['target'] for link in links],
+                value=[link['value'] for link in links],
+                color=[link['color'] for link in links]
+            ),
             arrangement="snap"
         )])
-
-        # Update layout with improved positioning and spacing
+        
+        # Update layout with improved styling
         fig.update_layout(
-            font_color='black',
-            font_size=default_settings['font_size'],
+            font=dict(
+                family="Arial, sans-serif",
+                size=default_settings['font_size'],
+                color="#1f2937"
+            ),
+            paper_bgcolor=default_settings['paper_bgcolor'],
+            plot_bgcolor=default_settings['bgcolor'],
             height=dynamic_height,
             margin=dict(
                 t=default_settings['margin_top'],
                 l=default_settings['margin_left'],
                 r=default_settings['margin_right'],
-                b=default_settings['margin_bottom'],
-                pad=0  # Remove padding
+                b=default_settings['margin_bottom']
             ),
-            paper_bgcolor='#0A0A0A',
-            plot_bgcolor='#0A0A0A',
-            autosize=True,
-            # Remove any default padding
-            xaxis=dict(
-                automargin=True,
-                constrain='domain'
-            ),
-            yaxis=dict(
-                automargin=True,
-                constrain='domain'
-            )
+            autosize=True
         )
-
+        
         return fig
     else:
         st.error("Currently, only the 'Initial Code -> Reduced Code -> Theme' flow is implemented.")
