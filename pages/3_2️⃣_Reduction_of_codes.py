@@ -111,7 +111,12 @@ def process_files_with_autosave(selected_project, selected_files, model, prompt,
         logger.info(f"Cumulative total codes: {cumulative_total}")
         
         if reduced_df is None:
-            reduced_df = df
+            reduced_df = df.copy()
+            # Add merge_explanation column if it doesn't exist
+            if 'merge_explanation' not in reduced_df.columns:
+                reduced_df['merge_explanation'] = ''
+            if 'original_code' not in reduced_df.columns:
+                reduced_df['original_code'] = reduced_df['code']
             logger.info("First file processed, no reduction needed")
         else:
             logger.info(f"Comparing and reducing codes for file {processed_file_count}")
@@ -120,7 +125,7 @@ def process_files_with_autosave(selected_project, selected_files, model, prompt,
             if reduced_df is None:
                 logger.error(f"Failed to process file {file}. Stopping the process.")
                 st.error(f"Failed to process file {file}. Stopping the process.")
-                return None, None
+                return None, None, []  # Return empty processed_files list on error
         
         total_codes_list.append(cumulative_total)
         unique_codes = len(reduced_df['code'].unique())
@@ -135,16 +140,44 @@ def process_files_with_autosave(selected_project, selected_files, model, prompt,
         processed_files.append(file)
         auto_save.save_progress(processed_files, reduced_df, total_codes_list, unique_codes_list, cumulative_total, mode)
 
+        # Save results after each file
+        results_df = pd.DataFrame({
+            'total_codes': total_codes_list,
+            'unique_codes': unique_codes_list
+        })
+        results_path = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')
+        results_df.to_csv(results_path, index=False)
+        logger.info(f"Saved code reduction results to: {results_path}")
+
         if mode == 'Incremental':
+            # Ensure all required columns exist before returning
+            required_columns = ['code', 'description', 'merge_explanation', 'original_code', 'quote', 'source']
+            for col in required_columns:
+                if col not in reduced_df.columns:
+                    if col == 'merge_explanation':
+                        reduced_df[col] = ''
+                    elif col == 'original_code':
+                        reduced_df[col] = reduced_df['code']
+                    else:
+                        logger.error(f"Required column {col} missing in incremental mode")
+                        return None, None, []  # Return empty processed_files list on error
+            
             # For incremental mode, stop after each file to allow user review
-            return reduced_df, pd.DataFrame({'total_codes': total_codes_list, 'unique_codes': unique_codes_list})
-    
+            return reduced_df, results_df, processed_files
+
     auto_save.clear_progress()  # Clear progress file after successful completion
+    
+    # Final save of results (ensures it's saved even if loop is empty)
     results_df = pd.DataFrame({
         'total_codes': total_codes_list,
         'unique_codes': unique_codes_list
     })
-    return reduced_df, results_df  
+    results_path = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')
+    results_df.to_csv(results_path, index=False)
+    logger.info(f"Saved final code reduction results to: {results_path}")
+    
+    return reduced_df, results_df, processed_files
+    
 
 def load_custom_prompts():
     """
@@ -199,20 +232,36 @@ def amalgamate_duplicate_codes(df):
     Returns:
         pd.DataFrame: A new DataFrame with amalgamated code information.
     """
+    # Ensure all required columns exist
+    required_columns = ['code', 'description', 'merge_explanation', 'original_code', 'quote', 'source']
+    for col in required_columns:
+        if col not in df.columns:
+            if col == 'merge_explanation':
+                df[col] = ''
+            elif col == 'original_code':
+                df[col] = df['code']
+            else:
+                logger.error(f"Required column {col} missing in DataFrame")
+                return None
+
     # Group by 'code' and aggregate other columns
-    amalgamated_df = df.groupby('code').agg({
-        'description': 'first',
-        'merge_explanation': 'first',
-        'original_code': lambda x: list(x),  # Changed from set() to list(), test
-        'quote': lambda x: [{'text': q, 'source': s} for q, s in zip(x, df.loc[x.index, 'source'])],
-        'source': lambda x: list(x)
-    }).reset_index()
+    try:
+        amalgamated_df = df.groupby('code').agg({
+            'description': 'first',
+            'merge_explanation': 'first',
+            'original_code': lambda x: list(x),
+            'quote': lambda x: [{'text': q, 'source': s} for q, s in zip(x, df.loc[x.index, 'source'])],
+            'source': lambda x: list(x)
+        }).reset_index()
 
-    amalgamated_df['original_code'] = amalgamated_df['original_code'].apply(lambda x: json.dumps(list(x)))
-    amalgamated_df['quote'] = amalgamated_df['quote'].apply(json.dumps)
-    amalgamated_df['source'] = amalgamated_df['source'].apply(lambda x: ', '.join(set(x)))
+        amalgamated_df['original_code'] = amalgamated_df['original_code'].apply(lambda x: json.dumps(list(x)))
+        amalgamated_df['quote'] = amalgamated_df['quote'].apply(json.dumps)
+        amalgamated_df['source'] = amalgamated_df['source'].apply(lambda x: ', '.join(set(x)))
 
-    return amalgamated_df
+        return amalgamated_df
+    except Exception as e:
+        logger.error(f"Error in amalgamate_duplicate_codes: {str(e)}")
+        return None
 
 def match_reduced_to_original_codes(reduced_df, initial_codes_directory):
     """
@@ -689,7 +738,7 @@ def main():
             st.divider()
             st.subheader(":orange[Output]")
             with st.spinner("Reducing codes... this may take some time depending on the number of files and initial codes."):
-                reduced_df, results_df = process_files_with_autosave(
+                reduced_df, results_df, processed_files = process_files_with_autosave(
                     selected_project, selected_files, selected_model, prompt_input,
                     model_temperature, model_top_p, include_quotes, resume_data, mode=processing_mode
                 )
@@ -737,11 +786,13 @@ def main():
                     )
                     
                     status_message.success("Code reduction process completed successfully!")
+
+                    # Check if in incremental mode and more files to process
+                    if processing_mode == 'Incremental' and len(selected_files) > len(processed_files):
+                        remaining_files = len(selected_files) - len(processed_files)
+                        st.warning(f"Processing paused after current file in incremental mode. {remaining_files} file(s) remaining. Click 'Process' to continue with the next file.")
                 else:
                     status_message.error("Failed to reduce codes. Please check the logs for more information and try again.")
-
-            if processing_mode == 'Incremental' and reduced_df is not None and len(selected_files) > len(processed_files):
-                st.warning("Processing paused after current file in incremental mode. Click 'Process' to continue with the next file.")
 
         # View previously processed files
         processed_files_list = get_processed_files(selected_project, 'reduced_codes')

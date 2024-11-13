@@ -2,7 +2,7 @@
 
 TALLMesh is an experimental tool that leverages AI assistance to conduct qualitative analysis on text-based data, specifically emulating stages from the Braun & Clarke approach to inductive thematic analysis.
 
-It uses streamlit for the GUI elements, and for the analysis it uses code and ideas from these two papers:
+It uses streamlit for the GUI elements, and for the analysis it uses code and ideas from these papers:
 
 1. [📃 De Paoli, S. (2023). *Performing an Inductive Thematic Analysis of Semi-Structured Interviews With a Large Language Model: An Exploration and Provocation on the Limits of the Approach*. Social Science Computer Review.](https://journals.sagepub.com/doi/full/10.1177/08944393231220483)
 
