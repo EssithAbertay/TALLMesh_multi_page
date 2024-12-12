@@ -225,11 +225,30 @@ def reduce_based_on_similarities(similarity_results, master_codes_df, model, mod
         return merge_prompt.format(codes='\n\n'.join(codes_text))
 
     def find_code_groups():
-        G = nx.Graph()
-        for code_id, data in similarity_results.items():
-            for similar_code_id in data['similar_codes']:
-                G.add_edge(code_id, similar_code_id)
-        groups = list(nx.connected_components(G))
+        processed_codes = set()
+        groups = []
+        
+        for code_id in similarity_results:
+            if code_id in processed_codes:
+                continue
+                
+            # Start a new group with this code
+            current_group = {code_id}
+            similar_codes = set(similarity_results[code_id]['similar_codes'])
+            
+            # Add any codes that were marked as similar
+            current_group.update(similar_codes)
+            
+            # Only add this group if it's not already a subset of an existing group
+            if not any(current_group.issubset(existing_group) for existing_group in groups):
+                groups.append(current_group)
+                processed_codes.update(current_group)
+            
+            # If this code has no similar codes, treat it as its own group
+            if not similar_codes:
+                groups.append({code_id})
+                processed_codes.add(code_id)
+        
         logger.info(f"\nFound {len(groups)} code groups")
         return groups
 
@@ -282,15 +301,39 @@ def reduce_based_on_similarities(similarity_results, master_codes_df, model, mod
                 logger.info(json.dumps(reduced_code, indent=2))
             except Exception as e:
                 logger.error(f"\nError merging codes in group {idx}: {str(e)}")
+                # Gather all original codes from the group
+                all_original_codes = []
+                quotes_list = []
+                unique_sources = set()
+                for _, code_row in group_codes.iterrows():
+                    # Attempt to load original_code as JSON; if not JSON, treat as a single code
+                    orig_val = code_row.get('original_code', code_row['code'])
+                    if isinstance(orig_val, str):
+                        try:
+                            parsed = json.loads(orig_val)
+                            if isinstance(parsed, list):
+                                all_original_codes.extend(parsed)
+                            else:
+                                all_original_codes.append(parsed)
+                        except json.JSONDecodeError:
+                            all_original_codes.append(orig_val)
+                    else:
+                        all_original_codes.append(orig_val)
+                    
+                    quotes_list.append({'text': code_row['quote'], 'source': code_row['source']})
+                    unique_sources.add(code_row['source'])
+
+                # Use the first code in the group as the representative code name and description
                 fallback_code = group_codes.iloc[0]
                 reduced_code = {
                     'code': fallback_code['code'],
                     'description': fallback_code['description'],
                     'merge_explanation': 'Merge failed - using original code',
-                    'original_code': json.dumps([fallback_code['code']]),
-                    'quote': json.dumps([{'text': fallback_code['quote'], 'source': fallback_code['source']}]),
-                    'source': fallback_code['source']
+                    'original_code': json.dumps(all_original_codes),
+                    'quote': json.dumps(quotes_list),
+                    'source': ', '.join(unique_sources)
                 }
+
                 logger.info("\nUsing fallback code:")
                 logger.info(json.dumps(reduced_code, indent=2))
         else:
@@ -381,12 +424,12 @@ def amalgamate_duplicate_codes(df):
         amalgamated_df = df.groupby('code').agg({
             'description': 'first',
             'merge_explanation': 'first',
-            'original_code': lambda x: list(x),
+            'original_code': lambda x: sum((json.loads(item) if isinstance(item, str) and item.strip().startswith('[') else [item] for item in x), []),
             'quote': lambda x: [{'text': q, 'source': s} for q, s in zip(x, df.loc[x.index, 'source'])],
             'source': lambda x: list(x)
         }).reset_index()
 
-        amalgamated_df['original_code'] = amalgamated_df['original_code'].apply(lambda x: json.dumps(list(x)))
+        amalgamated_df['original_code'] = amalgamated_df['original_code'].apply(json.dumps)
         amalgamated_df['quote'] = amalgamated_df['quote'].apply(json.dumps)
         amalgamated_df['source'] = amalgamated_df['source'].apply(lambda x: ', '.join(set(x)))
 
@@ -394,6 +437,7 @@ def amalgamate_duplicate_codes(df):
     except Exception as e:
         logger.error(f"Error in amalgamate_duplicate_codes: {str(e)}")
         return None
+
 
 def save_reduced_codes(project_name, df, folder):
     reduced_codes_folder = os.path.join(PROJECTS_DIR, project_name, folder)
