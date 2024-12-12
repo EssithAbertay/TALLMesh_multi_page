@@ -319,3 +319,33 @@ Important! Your response should be a JSON-like object with no additional text be
         "top_p": 0.1
     },
 }
+
+reduce_duplicate_codes_1_v_all = {
+    "Preset 1 - Recursive Reduce Duplicates": {"prompt":"""Compare the following target code against each comparison code and determine if they convey similar or the same meaning. 
+    Respond with a JSON object containing True/False values for each comparison.
+
+    Target Code:
+    {
+        "code": "%s",
+        "description": "%s"%s
+    }
+
+    Comparison Codes:
+    %s
+
+    Respond with a JSON object in this exact format:
+    {
+        "comparisons": {
+            "code_id_1": true_or_false,
+            "code_id_2": true_or_false,
+            ...
+        }
+    }
+
+    Important! A 'true' value should only be returned when codes are genuinely similar or identical in meaning.
+    A 'false' value should be returned when codes are distinctly different or only superficially similar.
+    Your response must be a valid JSON object with no additional text.""",
+        "temperature": 0.00,
+        "top_p": 0.1
+    },
+}
