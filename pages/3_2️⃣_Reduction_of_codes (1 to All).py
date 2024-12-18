@@ -92,26 +92,26 @@ def generate_comparison_prompt(target_code, comparison_codes, prompt, include_qu
     )
     return final_prompt
 
-def process_similarity_comparisons(master_codes_df, model, prompt, model_temperature, 
-                                 model_top_p, include_quotes=False, resume_data=None):
+def process_similarity_comparisons(master_codes_df, new_codes_start_idx, model, prompt, 
+                                 model_temperature, model_top_p, include_quotes=False):
     """
-    Process comparisons with simplified progress tracking.
+    Process comparisons ensuring new codes are compared against the entire universe.
     """
-    # Get progress info from session state
     progress_info = st.session_state.get('progress_info', {
-        'total_codes_all_files': len(master_codes_df),
-        'processed_codes_count': 0
+        'total_codes': len(master_codes_df),
+        'processed_codes_count': 0,
+        'new_codes_count': len(master_codes_df)
     })
-    
-    total_codes = progress_info['total_codes_all_files']
-    base_processed = progress_info['processed_codes_count']
     
     progress_bar = st.progress(0)
     status_text = st.empty()
-    similarity_results = resume_data.get('similarity_results', []) if resume_data else []
+    similarity_results = []
 
-    for idx, target_code in master_codes_df.iterrows():
-        # Process comparison logic...
+    # Only process new codes, but compare against all
+    for idx in range(new_codes_start_idx, len(master_codes_df)):
+        target_code = master_codes_df.iloc[idx]
+        
+        # Compare against ALL other codes (excluding self)
         comparison_codes = master_codes_df.drop(idx).reset_index(drop=True)
         
         if len(comparison_codes) == 0:
@@ -146,11 +146,10 @@ def process_similarity_comparisons(master_codes_df, model, prompt, model_tempera
                 else:
                     raise
 
-        # Update progress
-        current_count = base_processed + idx + 1
-        progress = min(1.0, current_count / total_codes)
-        progress_bar.progress(progress)
-        status_text.text(f"Processing code {current_count} of {total_codes}")
+        # Update progress relative to new codes only
+        relative_progress = (idx - new_codes_start_idx + 1) / (len(master_codes_df) - new_codes_start_idx)
+        progress_bar.progress(min(1.0, relative_progress))
+        status_text.text(f"Processing new code {idx - new_codes_start_idx + 1} of {len(master_codes_df) - new_codes_start_idx}")
 
     progress_bar.empty()
     status_text.empty()
@@ -463,45 +462,33 @@ def process_files_with_autosave(selected_project, selected_files, model, prompt,
                                model_temperature, model_top_p, include_quotes, 
                                resume_data=None, mode='Automatic'):
     """
-    Unified processing function with simplified progress tracking.
+    Unified processing function with streamlined status messaging.
     """
     auto_save = AutoSaveResume(selected_project)
-    
-    # Calculate total codes across ALL selected files upfront
-    total_codes_all_files = sum(len(pd.read_csv(f)) for f in selected_files)
+    processing_message = st.empty()
     
     # Initialize or resume state
     if resume_data:
         master_codes_df = resume_data.get('master_codes_df')
-        similarity_results = resume_data.get('similarity_results', {})
+        similarity_results = resume_data.get('similarity_results', [])
         processed_files = resume_data['processed_files']
         processed_codes_count = sum(len(pd.read_csv(f)) for f in processed_files)
     else:
         master_codes_df = None
-        similarity_results = {}
+        similarity_results = []
         processed_files = []
         processed_codes_count = 0
 
-    status_message = st.empty()
-    
     # Handle file selection based on mode
     if mode == 'Incremental':
         next_file_index = len(processed_files)
         if next_file_index >= len(selected_files):
-            st.success("All files have been processed!")
             return master_codes_df, pd.DataFrame(), processed_files
         current_files = [selected_files[next_file_index]]
     else:
         current_files = selected_files
-        
-    # Store progress info in session state for use by comparison function
-    st.session_state['progress_info'] = {
-        'total_codes_all_files': total_codes_all_files,
-        'processed_codes_count': processed_codes_count
-    }
 
     # Process current batch
-    status_message.info("Collecting codes from files...")
     current_master_df = collect_all_initial_codes(current_files)
     
     if master_codes_df is None:
@@ -509,21 +496,33 @@ def process_files_with_autosave(selected_project, selected_files, model, prompt,
     else:
         master_codes_df = pd.concat([master_codes_df, current_master_df], ignore_index=True)
 
-    status_message.info("Processing code comparisons...")
-    similarity_results = process_similarity_comparisons(
-        master_codes_df=current_master_df,  # Only process new codes
+    # Store progress info for current batch
+    st.session_state['progress_info'] = {
+        'total_codes': len(master_codes_df),
+        'processed_codes_count': processed_codes_count,
+        'new_codes_count': len(current_master_df)
+    }
+
+    if mode == 'Incremental':
+        current_file = os.path.basename(current_files[0])
+        processing_message.info(f"Processing {current_file}...")
+    
+    # Process and reduce codes
+    # Note: Let the individual functions handle their own progress bars
+    new_similarity_results = process_similarity_comparisons(
+        master_codes_df=master_codes_df,
+        new_codes_start_idx=len(master_codes_df) - len(current_master_df),
         model=model,
         prompt=prompt,
         model_temperature=model_temperature,
         model_top_p=model_top_p,
-        include_quotes=include_quotes,
-        resume_data={'similarity_results': similarity_results} if similarity_results else None
+        include_quotes=include_quotes
     )
+    similarity_results.extend(new_similarity_results)
 
-    status_message.info("Reducing codes based on similarities...")
     reduced_df = reduce_based_on_similarities(
         similarity_results=similarity_results,
-        master_codes_df=master_codes_df,  # Use all codes for reduction
+        master_codes_df=master_codes_df,
         model=model,
         model_temperature=model_temperature,
         model_top_p=model_top_p,
@@ -537,9 +536,11 @@ def process_files_with_autosave(selected_project, selected_files, model, prompt,
         processed_files = selected_files
 
     # Create results summary
+    total_codes = len(master_codes_df)
+    current_processed = processed_codes_count + len(current_master_df)
     results_df = pd.DataFrame({
-        'total_codes': [total_codes_all_files],
-        'processed_codes': [processed_codes_count + len(current_master_df)],
+        'total_codes': [total_codes],
+        'processed_codes': [current_processed],
         'unique_codes': [len(reduced_df['code'].unique())]
     })
 
@@ -548,20 +549,21 @@ def process_files_with_autosave(selected_project, selected_files, model, prompt,
         auto_save.save_progress(
             processed_files=processed_files,
             reduced_df=reduced_df,
-            total_codes_list=[total_codes_all_files],
+            total_codes_list=[total_codes],
             unique_codes_list=[len(reduced_df['code'].unique())],
-            cumulative_total=processed_codes_count + len(current_master_df),
+            cumulative_total=current_processed,
             mode=mode,
             master_codes_df=master_codes_df,
             similarity_results=similarity_results,
             selected_files=selected_files
         )
+        next_file = os.path.basename(selected_files[len(processed_files)])
+        processing_message.info(f"Ready to process: {next_file}")
     else:
         auto_save.clear_progress()
+        processing_message.empty()
 
     return reduced_df, results_df, processed_files
-
-
 
 def load_custom_prompts():
     try:
@@ -737,72 +739,82 @@ def main():
         auto_save = AutoSaveResume(selected_project)
         progress = auto_save.load_progress()
         resume_data = None
-        if progress:
+
+        # Track whether we're actively processing
+        is_processing = 'processing_active' in st.session_state and st.session_state.processing_active
+        
+        # Only show resume options if we have progress AND we're not actively processing
+        if progress and not is_processing:
             processed_files = progress['processed_files']
             saved_mode = progress.get('mode', 'Automatic')
+            
             if saved_mode == processing_mode:
-                st.warning("Previous unfinished progress found.")
-                st.info(f"Processed files: {[os.path.basename(f) for f in processed_files]}")
-                st.info(f"Remaining files: {[os.path.basename(f) for f in selected_files if f not in processed_files]}")
-                resume = st.checkbox("Resume from last checkpoint", value=True, key="resume_checkbox")
+                col1, col2 = st.columns(2)
+                with col1:
+                    resume = st.checkbox("Resume from last checkpoint", value=True, key="resume_checkbox")
                 if resume:
                     resume_data = progress
                 else:
                     auto_save.clear_progress()
             else:
-                st.warning(f"Previous unfinished progress found in a different mode: '{saved_mode}'.")
-                st.info(f"Processed files: {[os.path.basename(f) for f in processed_files]}")
-                st.info(f"Remaining files: {[os.path.basename(f) for f in selected_files if f not in processed_files]}")
                 choice = st.radio(
-                    "What would you like to do?",
+                    "Found progress in different mode. Choose:",
                     (
-                        f"Resume previous progress in '{saved_mode}' mode",
-                        f"Discard previous progress and start fresh in '{processing_mode}' mode"
+                        f"Resume in '{saved_mode}' mode",
+                        f"Start fresh in '{processing_mode}' mode"
                     ),
                     key="mode_switch_choice"
                 )
-                if choice == f"Resume previous progress in '{saved_mode}' mode":
+                if choice == f"Resume in '{saved_mode}' mode":
                     processing_mode = saved_mode
                     resume_data = progress
-                    st.info(f"Switching back to '{saved_mode}' mode to resume.")
                 else:
                     auto_save.clear_progress()
-                    st.info(f"Starting fresh in '{processing_mode}' mode.")
 
         if st.button("Process"):
+            # Set processing active flag
+            st.session_state.processing_active = True
+            
             st.divider()
             st.subheader(":orange[Output]")
-            with st.spinner("Reducing codes... this may take time."):
-                reduced_df, results_df, processed_files = process_files_with_autosave(
-                    selected_project=selected_project,
-                    selected_files=selected_files,
-                    model=selected_model,
-                    prompt=prompt_input,
-                    model_temperature=model_temperature,
-                    model_top_p=model_top_p,
-                    include_quotes=include_quotes,
-                    resume_data=resume_data,
-                    mode=processing_mode
-                ) 
+            
+            reduced_df, results_df, processed_files = process_files_with_autosave(
+                selected_project=selected_project,
+                selected_files=selected_files,
+                model=selected_model,
+                prompt=prompt_input,
+                model_temperature=model_temperature,
+                model_top_p=model_top_p,
+                include_quotes=include_quotes,
+                resume_data=resume_data,
+                mode=processing_mode
+            ) 
 
-                if reduced_df is not None:
-                    status_message = st.empty()
-                    status_message.info("Finalizing reduced codes...")
-                    amalgamated_df = amalgamate_duplicate_codes(reduced_df)
+            if reduced_df is not None:
+                st.session_state.processing_active = False
+                
+                if processing_mode == 'Incremental' and len(processed_files) < len(selected_files):
+                    next_file = os.path.basename(selected_files[len(processed_files)])
+                    st.info(f"Click 'Process' again to process the next file: {next_file}")
+                else:
+                    st.success("Processing complete!")
+                    auto_save.clear_progress()
+                    
+                st.write("Reduced Codes:")
+                amalgamated_df = amalgamate_duplicate_codes(reduced_df)
+                if amalgamated_df is not None:
                     amalgamated_df_for_display = amalgamated_df.copy()
                     amalgamated_df_for_display['quote'] = amalgamated_df_for_display['quote'].apply(format_quotes)
                     amalgamated_df_for_display['original_code'] = amalgamated_df_for_display['original_code'].apply(format_original_codes)
-
-                    st.write("Reduced Codes:")
                     st.write(amalgamated_df_for_display)
 
                     st.write("Code Reduction Results:")
                     st.write(results_df)
 
-                    status_message.info("Saving reduced codes...")
                     saved_file_path = save_reduced_codes(selected_project, amalgamated_df, 'reduced_codes')
-                    st.success(f"Reduced codes saved to {saved_file_path}")
+                    st.success(f"Results saved to {os.path.basename(saved_file_path)}")
 
+                    # Download buttons
                     csv = amalgamated_df.to_csv(index=False).encode('utf-8')
                     st.download_button(
                         label="Download reduced codes",
@@ -818,12 +830,6 @@ def main():
                         file_name="code_reduction_results.csv",
                         mime="text/csv"
                     )
-
-                    status_message.success("Code reduction process completed successfully!")
-
-                    if processing_mode == 'Incremental' and len(selected_files) > len(processed_files):
-                        remaining_files = len(selected_files) - len(processed_files)
-                        st.warning(f"Processing paused after current file in incremental mode. {remaining_files} file(s) remaining. Click 'Process' again to continue.")
                 else:
                     st.error("Failed to reduce codes. Check logs for more info.")
 
