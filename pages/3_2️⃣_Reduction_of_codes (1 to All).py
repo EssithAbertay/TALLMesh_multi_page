@@ -45,26 +45,29 @@ merge_text = "...which are merged into a set of unique codes."
 
 def collect_all_initial_codes(selected_files):
     """
-    Collect and normalize all initial codes from all files into a single DataFrame.
+    Collect and normalize all initial codes from files into a single DataFrame.
+    Adds file-specific tracking information.
     """
-    logger = logging.getLogger(__name__)
     all_codes = []
-    required_columns = {'code', 'description', 'quote'}
+    codes_per_file = {}
+    
     for file_path in selected_files:
         df = pd.read_csv(file_path)
-        missing_cols = required_columns - set(df.columns)
-        if missing_cols:
-            raise ValueError(f"File {file_path} missing required columns: {missing_cols}")
+        file_name = os.path.basename(file_path)
+        
         if 'source' not in df.columns:
-            df['source'] = os.path.basename(file_path)
+            df['source'] = file_name
+        
         df['code_id'] = [str(uuid.uuid4()) for _ in range(len(df))]
         df['original_code'] = df['code']
+        df['file_index'] = len(codes_per_file)  # Track which file the codes came from
+        
+        codes_per_file[file_name] = len(df)
         all_codes.append(df)
-        logger.info(f"Processed {file_path} with {len(df)} codes")
-    if not all_codes:
-        raise ValueError("No valid code files were processed")
+        
     master_codes_df = pd.concat(all_codes, ignore_index=True)
-    logger.info(f"Master codes DataFrame with {len(master_codes_df)} total codes")
+    master_codes_df.attrs['codes_per_file'] = codes_per_file  # Store file information
+    
     return master_codes_df
 
 def generate_comparison_prompt(target_code, comparison_codes, prompt, include_quotes=False):
@@ -89,44 +92,33 @@ def generate_comparison_prompt(target_code, comparison_codes, prompt, include_qu
     )
     return final_prompt
 
-def process_similarity_comparisons(master_codes_df, model, prompt, model_temperature, model_top_p, include_quotes=False, resume_data=None):
+def process_similarity_comparisons(master_codes_df, model, prompt, model_temperature, 
+                                 model_top_p, include_quotes=False, resume_data=None):
     """
-    Perform 1-vs-all similarity checks on all codes.
+    Process comparisons with simplified progress tracking.
     """
-    logger = logging.getLogger(__name__)
-
-    def initialize_similarity_results(resume_data):
-        if resume_data and 'similarity_results' in resume_data:
-            return resume_data['similarity_results']
-        return {code_id: {'similar_codes': [], 'comparison_status': False} 
-                for code_id in master_codes_df['code_id']}
-
-    def process_comparison_response(response_text, target_code_id):
-        try:
-            response_json = json.loads(response_text)
-            comparisons = response_json.get('comparisons', {})
-            if not isinstance(comparisons, dict):
-                logger.error(f"Invalid response format for {target_code_id}: {response_text}")
-                return None
-            return comparisons
-        except json.JSONDecodeError as e:
-            logger.error(f"JSON decode error for {target_code_id}: {str(e)}")
-            return None
+    # Get progress info from session state
+    progress_info = st.session_state.get('progress_info', {
+        'total_codes_all_files': len(master_codes_df),
+        'processed_codes_count': 0
+    })
     
-    similarity_results = initialize_similarity_results(resume_data)
-    total_codes = len(master_codes_df)
+    total_codes = progress_info['total_codes_all_files']
+    base_processed = progress_info['processed_codes_count']
+    
     progress_bar = st.progress(0)
     status_text = st.empty()
+    similarity_results = resume_data.get('similarity_results', []) if resume_data else []
 
     for idx, target_code in master_codes_df.iterrows():
-        target_code_id = target_code['code_id']
-        if similarity_results[target_code_id]['comparison_status']:
+        # Process comparison logic...
+        comparison_codes = master_codes_df.drop(idx).reset_index(drop=True)
+        
+        if len(comparison_codes) == 0:
             continue
-        target_code_dict = target_code.to_dict()
-        comparison_codes = master_codes_df[master_codes_df['code_id'] != target_code_id]
 
         comparison_prompt = generate_comparison_prompt(
-            target_code_dict,
+            target_code.to_dict(),
             [code.to_dict() for _, code in comparison_codes.iterrows()],
             prompt,
             include_quotes
@@ -136,44 +128,29 @@ def process_similarity_comparisons(master_codes_df, model, prompt, model_tempera
         for attempt in range(max_retries):
             try:
                 response = llm_call(model, comparison_prompt, model_temperature, model_top_p)
-                comparison_results = process_comparison_response(response, target_code_id)
-                if comparison_results is not None:
-                    for i, is_similar in enumerate(comparison_results.values(), start=1):
-                        if is_similar:
-                            # Positionally map code_id_x to actual codes:
-                            # The order in comparison_results corresponds to the comparison list's order.
-                            # We must find the corresponding code from the comparison.
-                            # We'll rely on the order from the prompt generation:
-                            # Extract keys in order, match them to the comparison_codes iterrows.
-                            # Actually we do not need the actual code_id from the prompt. Just track similarity internally.
-                            # We'll just re-run grouping later. For now, trust that code_id_x mapping is positional.
-                            # The final approach: after we get True/False, we must identify which code was true.
-                            # We rely on the position in comparison_results. Let's get a list of comparison code_ids:
-                            comp_df = comparison_codes.reset_index(drop=True)
-                            # code_id_x keys are ordered as code_id_1, code_id_2,... Let's get keys sorted:
-                            comp_keys = sorted(comparison_results.keys(), key=lambda k: int(k.split('_')[-1]))
-                            # Map each code_id_x to corresponding row in comp_df
-                            matched_code_id = comp_df.iloc[i-1]['code_id']
-                            similarity_results[target_code_id]['similar_codes'].append(matched_code_id)
-                            similarity_results[matched_code_id]['similar_codes'].append(target_code_id)
-                    break
+                comparison_results = json.loads(response).get('comparisons', {})
+                
+                for comp_idx, is_similar in enumerate(comparison_results.values()):
+                    if is_similar:
+                        similarity_pair = {
+                            'code1': target_code['code'],
+                            'code1_idx': idx,
+                            'code2': comparison_codes.iloc[comp_idx]['code'],
+                            'code2_idx': comparison_codes.index[comp_idx]
+                        }
+                        similarity_results.append(similarity_pair)
+                break
             except Exception as e:
-                logger.error(f"Error in API call: {str(e)}")
                 if attempt < max_retries - 1:
                     sleep(2 ** attempt)
                 else:
                     raise
 
-        similarity_results[target_code_id]['comparison_status'] = True
-        progress = (idx + 1) / total_codes
+        # Update progress
+        current_count = base_processed + idx + 1
+        progress = min(1.0, current_count / total_codes)
         progress_bar.progress(progress)
-        status_text.text(f"Processing code {idx + 1}/{total_codes}")
-
-        if idx % 5 == 0:
-            st.session_state['intermediate_results'] = {
-                'similarity_results': similarity_results,
-                'last_processed_idx': idx
-            }
+        status_text.text(f"Processing code {current_count} of {total_codes}")
 
     progress_bar.empty()
     status_text.empty()
@@ -225,30 +202,40 @@ def reduce_based_on_similarities(similarity_results, master_codes_df, model, mod
         return merge_prompt.format(codes='\n\n'.join(codes_text))
 
     def find_code_groups():
-        processed_codes = set()
+        processed_indices = set()
         groups = []
         
-        for code_id in similarity_results:
-            if code_id in processed_codes:
+        # Create a dictionary to map indices to their similar pairs
+        similarity_map = {}
+        for pair in similarity_results:
+            idx1 = pair['code1_idx']
+            idx2 = pair['code2_idx']
+            if idx1 not in similarity_map:
+                similarity_map[idx1] = set()
+            if idx2 not in similarity_map:
+                similarity_map[idx2] = set()
+            similarity_map[idx1].add(idx2)
+            similarity_map[idx2].add(idx1)
+        
+        # Find connected groups
+        for idx in range(len(master_codes_df)):
+            if idx in processed_indices:
                 continue
                 
-            # Start a new group with this code
-            current_group = {code_id}
-            similar_codes = set(similarity_results[code_id]['similar_codes'])
-            
-            # Add any codes that were marked as similar
-            current_group.update(similar_codes)
+            # Start a new group with this index
+            current_group = {master_codes_df.iloc[idx]['code_id']}
+            if idx in similarity_map:
+                # Add all similar codes
+                for similar_idx in similarity_map[idx]:
+                    current_group.add(master_codes_df.iloc[similar_idx]['code_id'])
             
             # Only add this group if it's not already a subset of an existing group
             if not any(current_group.issubset(existing_group) for existing_group in groups):
                 groups.append(current_group)
-                processed_codes.update(current_group)
+                processed_indices.add(idx)
+                if idx in similarity_map:
+                    processed_indices.update(similarity_map[idx])
             
-            # If this code has no similar codes, treat it as its own group
-            if not similar_codes:
-                groups.append({code_id})
-                processed_codes.add(code_id)
-        
         logger.info(f"\nFound {len(groups)} code groups")
         return groups
 
@@ -273,18 +260,28 @@ def reduce_based_on_similarities(similarity_results, master_codes_df, model, mod
                 logger.info(response)
                 merged_details = json.loads(response)['merged_code']
                 all_original_codes = []
+                seen_codes = set()  # Track unique codes
                 for _, code in group_codes.iterrows():
                     if isinstance(code.get('original_code'), str):
                         try:
                             original_codes = json.loads(code['original_code'])
                             if isinstance(original_codes, list):
-                                all_original_codes.extend(original_codes)
+                                for orig_code in original_codes:
+                                    if orig_code not in seen_codes:
+                                        all_original_codes.append(orig_code)
+                                        seen_codes.add(orig_code)
                             else:
-                                all_original_codes.append(original_codes)
+                                if original_codes not in seen_codes:
+                                    all_original_codes.append(original_codes)
+                                    seen_codes.add(original_codes)
                         except json.JSONDecodeError:
-                            all_original_codes.append(code['original_code'])
+                            if code['original_code'] not in seen_codes:
+                                all_original_codes.append(code['original_code'])
+                                seen_codes.add(code['original_code'])
                     else:
-                        all_original_codes.append(code['code'])
+                        if code['code'] not in seen_codes:
+                            all_original_codes.append(code['code'])
+                            seen_codes.add(code['code'])
 
                 reduced_code = {
                     'code': merged_details['code'],
@@ -305,20 +302,29 @@ def reduce_based_on_similarities(similarity_results, master_codes_df, model, mod
                 all_original_codes = []
                 quotes_list = []
                 unique_sources = set()
+                seen_codes = set()  # Track unique codes
                 for _, code_row in group_codes.iterrows():
-                    # Attempt to load original_code as JSON; if not JSON, treat as a single code
                     orig_val = code_row.get('original_code', code_row['code'])
                     if isinstance(orig_val, str):
                         try:
                             parsed = json.loads(orig_val)
                             if isinstance(parsed, list):
-                                all_original_codes.extend(parsed)
+                                for code in parsed:
+                                    if code not in seen_codes:
+                                        all_original_codes.append(code)
+                                        seen_codes.add(code)
                             else:
-                                all_original_codes.append(parsed)
+                                if parsed not in seen_codes:
+                                    all_original_codes.append(parsed)
+                                    seen_codes.add(parsed)
                         except json.JSONDecodeError:
-                            all_original_codes.append(orig_val)
+                            if orig_val not in seen_codes:
+                                all_original_codes.append(orig_val)
+                                seen_codes.add(orig_val)
                     else:
-                        all_original_codes.append(orig_val)
+                        if orig_val not in seen_codes:
+                            all_original_codes.append(orig_val)
+                            seen_codes.add(orig_val)
                     
                     quotes_list.append({'text': code_row['quote'], 'source': code_row['source']})
                     unique_sources.add(code_row['source'])
@@ -375,16 +381,19 @@ class AutoSaveResume:
 
     def save_progress(self, processed_files, reduced_df, total_codes_list, unique_codes_list, cumulative_total, mode,
                   master_codes_df=None, similarity_results=None, selected_files=None):
+        """
+        Save progress state to a JSON file.
+        """
         progress = {
             'processed_files': processed_files,
-            'reduced_df': reduced_df.to_json(),
+            'reduced_df': reduced_df.to_dict(orient='records'),  # Change from to_json() to to_dict()
             'total_codes_list': total_codes_list,
             'unique_codes_list': unique_codes_list,
             'cumulative_total': cumulative_total,
             'mode': mode
         }
         if master_codes_df is not None:
-            progress['master_codes_df'] = master_codes_df.to_json()
+            progress['master_codes_df'] = master_codes_df.to_dict(orient='records')  # Change from to_json()
         if similarity_results is not None:
             progress['similarity_results'] = similarity_results
         if selected_files is not None:
@@ -395,12 +404,16 @@ class AutoSaveResume:
 
 
     def load_progress(self):
+        """
+        Load progress state from a JSON file.
+        """
         if os.path.exists(self.save_path):
             with open(self.save_path, 'r') as f:
                 progress = json.load(f)
-            progress['reduced_df'] = pd.read_json(progress['reduced_df'])
+            # Convert dict back to DataFrame
+            progress['reduced_df'] = pd.DataFrame.from_records(progress['reduced_df'])
             if 'master_codes_df' in progress:
-                progress['master_codes_df'] = pd.read_json(progress['master_codes_df'])
+                progress['master_codes_df'] = pd.DataFrame.from_records(progress['master_codes_df'])
             return progress
         return None
 
@@ -447,152 +460,106 @@ def save_reduced_codes(project_name, df, folder):
     return output_file_path
 
 def process_files_with_autosave(selected_project, selected_files, model, prompt, 
-                                model_temperature, model_top_p, include_quotes, 
-                                resume_data=None, mode='Automatic'):
+                               model_temperature, model_top_p, include_quotes, 
+                               resume_data=None, mode='Automatic'):
     """
-    Process the codes in either automatic or incremental mode, with the ability to resume.
-    In automatic mode, all files are processed at once.
-    In incremental mode, process one file at a time, then stop and allow resumption.
+    Unified processing function with simplified progress tracking.
     """
     auto_save = AutoSaveResume(selected_project)
-
+    
+    # Calculate total codes across ALL selected files upfront
+    total_codes_all_files = sum(len(pd.read_csv(f)) for f in selected_files)
+    
+    # Initialize or resume state
     if resume_data:
+        master_codes_df = resume_data.get('master_codes_df')
+        similarity_results = resume_data.get('similarity_results', {})
         processed_files = resume_data['processed_files']
-        reduced_df = resume_data['reduced_df']
-        total_codes_list = resume_data['total_codes_list']
-        unique_codes_list = resume_data['unique_codes_list']
-        cumulative_total = resume_data['cumulative_total']
-        similarity_results = resume_data.get('similarity_results', None)
-        master_codes_df = resume_data.get('master_codes_df', None)                                                                              
-
-        # If selected_files were saved in progress, override current selected_files to maintain consistency
-        if 'selected_files' in resume_data and resume_data['selected_files']:
-            selected_files = resume_data['selected_files']
-
+        processed_codes_count = sum(len(pd.read_csv(f)) for f in processed_files)
     else:
-        processed_files = []
-        reduced_df = None
-        total_codes_list = []
-        unique_codes_list = []
-        cumulative_total = 0
-        similarity_results = None
         master_codes_df = None
+        similarity_results = {}
+        processed_files = []
+        processed_codes_count = 0
 
     status_message = st.empty()
+    
+    # Handle file selection based on mode
+    if mode == 'Incremental':
+        next_file_index = len(processed_files)
+        if next_file_index >= len(selected_files):
+            st.success("All files have been processed!")
+            return master_codes_df, pd.DataFrame(), processed_files
+        current_files = [selected_files[next_file_index]]
+    else:
+        current_files = selected_files
+        
+    # Store progress info in session state for use by comparison function
+    st.session_state['progress_info'] = {
+        'total_codes_all_files': total_codes_all_files,
+        'processed_codes_count': processed_codes_count
+    }
 
-    if mode == 'Automatic':
-        # Automatic mode: Process all selected files at once
-        # Collect all codes
-        status_message.info("Collecting codes from all files...")
-        master_codes_df = collect_all_initial_codes(selected_files)
-        cumulative_total = len(master_codes_df)
-        total_codes_list.append(cumulative_total)
+    # Process current batch
+    status_message.info("Collecting codes from files...")
+    current_master_df = collect_all_initial_codes(current_files)
+    
+    if master_codes_df is None:
+        master_codes_df = current_master_df
+    else:
+        master_codes_df = pd.concat([master_codes_df, current_master_df], ignore_index=True)
 
-        # Run similarity on all at once
-        status_message.info("Processing code comparisons...")
-        similarity_results = process_similarity_comparisons(
-            master_codes_df=master_codes_df,
-            model=model,
-            prompt=prompt,
-            model_temperature=model_temperature,
-            model_top_p=model_top_p,
-            include_quotes=include_quotes,
-            resume_data=resume_data
-        )
+    status_message.info("Processing code comparisons...")
+    similarity_results = process_similarity_comparisons(
+        master_codes_df=current_master_df,  # Only process new codes
+        model=model,
+        prompt=prompt,
+        model_temperature=model_temperature,
+        model_top_p=model_top_p,
+        include_quotes=include_quotes,
+        resume_data={'similarity_results': similarity_results} if similarity_results else None
+    )
 
-        status_message.info("Reducing codes based on similarities...")
-        reduced_df = reduce_based_on_similarities(
-            similarity_results=similarity_results,
-            master_codes_df=master_codes_df,
-            model=model,
-            model_temperature=model_temperature,
-            model_top_p=model_top_p,
-            include_quotes=include_quotes
-        )
+    status_message.info("Reducing codes based on similarities...")
+    reduced_df = reduce_based_on_similarities(
+        similarity_results=similarity_results,
+        master_codes_df=master_codes_df,  # Use all codes for reduction
+        model=model,
+        model_temperature=model_temperature,
+        model_top_p=model_top_p,
+        include_quotes=include_quotes
+    )
 
-        unique_codes = len(reduced_df['code'].unique())
-        unique_codes_list.append(unique_codes)
+    # Update tracking
+    if mode == 'Incremental':
+        processed_files.append(current_files[0])
+    else:
         processed_files = selected_files
 
-        results_df = pd.DataFrame({
-            'total_codes': total_codes_list,
-            'unique_codes': unique_codes_list
-        })
-        results_path = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')
-        results_df.to_csv(results_path, index=False)
-        auto_save.clear_progress()
-        return reduced_df, results_df, processed_files
+    # Create results summary
+    results_df = pd.DataFrame({
+        'total_codes': [total_codes_all_files],
+        'processed_codes': [processed_codes_count + len(current_master_df)],
+        'unique_codes': [len(reduced_df['code'].unique())]
+    })
 
-    else:
-        # Incremental mode:
-        # If we have no resume_data and haven't processed any files yet:
-        if not resume_data and not processed_files:
-            if not selected_files:
-                st.error("No files selected.")
-                return None, None, []
-
-        status_message.info(f"Processing first file incrementally: {os.path.basename(selected_files[0])}")
-        first_file_df = pd.read_csv(selected_files[0])
-        if 'source' not in first_file_df.columns:
-            first_file_df['source'] = os.path.basename(selected_files[0])
-        if 'original_code' not in first_file_df.columns:
-            first_file_df['original_code'] = first_file_df['code']
-        if 'code_id' not in first_file_df.columns:
-            first_file_df['code_id'] = [str(uuid.uuid4()) for _ in range(len(first_file_df))]
-        if 'quote' not in first_file_df.columns:
-            first_file_df['quote'] = ''
-
-        # Treat this first set of codes as we do in subsequent steps:
-        # Perform similarity comparisons and reduction even if there's only one file.
-        master_codes_df = first_file_df.copy()
-        cumulative_total = len(master_codes_df)
-        total_codes_list.append(cumulative_total)
-
-        status_message.info("Processing code comparisons for the first file...")
-        similarity_results = process_similarity_comparisons(
-            master_codes_df=master_codes_df,
-            model=model,
-            prompt=prompt,
-            model_temperature=model_temperature,
-            model_top_p=model_top_p,
-            include_quotes=include_quotes
-        )
-
-        status_message.info("Reducing codes based on similarities for the first file...")
-        reduced_df = reduce_based_on_similarities(
-            similarity_results=similarity_results,
-            master_codes_df=master_codes_df,
-            model=model,
-            model_temperature=model_temperature,
-            model_top_p=model_top_p,
-            include_quotes=include_quotes
-        )
-
-        unique_codes = len(reduced_df['code'].unique())
-        unique_codes_list.append(unique_codes)
-        processed_files = [selected_files[0]]
-
-        # Save progress and return
-        results_df = pd.DataFrame({
-            'total_codes': total_codes_list,
-            'unique_codes': unique_codes_list
-        })
+    # Handle autosave
+    if mode == 'Incremental' and len(processed_files) < len(selected_files):
         auto_save.save_progress(
             processed_files=processed_files,
             reduced_df=reduced_df,
-            total_codes_list=total_codes_list,
-            unique_codes_list=unique_codes_list,
-            cumulative_total=cumulative_total,
+            total_codes_list=[total_codes_all_files],
+            unique_codes_list=[len(reduced_df['code'].unique())],
+            cumulative_total=processed_codes_count + len(current_master_df),
             mode=mode,
+            master_codes_df=master_codes_df,
+            similarity_results=similarity_results,
             selected_files=selected_files
         )
+    else:
+        auto_save.clear_progress()
 
-
-        results_path = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')
-        results_df.to_csv(results_path, index=False)
-
-        # Stop after first file in incremental mode
-        return reduced_df, results_df, processed_files
+    return reduced_df, results_df, processed_files
 
 
 
