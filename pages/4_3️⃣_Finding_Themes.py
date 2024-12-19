@@ -672,7 +672,7 @@ def main():
                 final_display_df = final_df.copy()
                 st.write(final_display_df)
                 final_display_df['Quotes'] = final_display_df['Quotes'].apply(format_quotes)
-                st.write(final_df)
+                #st.write(final_df)
                 
                 with st.expander("Merged Codes (for reference)"):
                     st.write("Merged Codes")

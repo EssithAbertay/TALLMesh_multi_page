@@ -377,19 +377,22 @@ class AutoSaveResume:
     def __init__(self, project_name):
         self.project_name = project_name
         self.save_path = os.path.join(PROJECTS_DIR, project_name, 'code_reduction_progress.json')
-
-    def save_progress(self, processed_files, reduced_df, total_codes_list, unique_codes_list, cumulative_total, mode,
-                  master_codes_df=None, similarity_results=None, selected_files=None):
-        """
-        Save progress state to a JSON file.
-        """
+        self.results_path = os.path.join(PROJECTS_DIR, project_name, 'code_reduction_results.csv')
+        
+    def generate_run_id(self):
+        return str(uuid.uuid4())
+    
+    def save_progress(self, processed_files, reduced_df, total_codes_list, unique_codes_list, 
+                     cumulative_total, mode, master_codes_df=None, similarity_results=None, 
+                     selected_files=None, run_id=None):
         progress = {
             'processed_files': processed_files,
-            'reduced_df': reduced_df.to_dict(orient='records'),  # Change from to_json() to to_dict()
+            'reduced_df': reduced_df.to_dict(orient='records'),
             'total_codes_list': total_codes_list,
             'unique_codes_list': unique_codes_list,
             'cumulative_total': cumulative_total,
-            'mode': mode
+            'mode': mode,
+            'run_id': run_id or self.generate_run_id()
         }
         if master_codes_df is not None:
             progress['master_codes_df'] = master_codes_df.to_dict(orient='records')  # Change from to_json()
@@ -417,9 +420,11 @@ class AutoSaveResume:
         return None
 
 
-    def clear_progress(self):
+    def clear_progress(self, clear_results=True):
         if os.path.exists(self.save_path):
             os.remove(self.save_path)
+        if clear_results and os.path.exists(self.results_path):
+            os.remove(self.results_path)
 
 def amalgamate_duplicate_codes(df):
     required_columns = ['code', 'description', 'merge_explanation', 'original_code', 'quote', 'source']
@@ -466,6 +471,13 @@ def process_files_with_autosave(selected_project, selected_files, model, prompt,
     """
     auto_save = AutoSaveResume(selected_project)
     processing_message = st.empty()
+
+    # Get or generate run_id
+    run_id = None
+    if resume_data:
+        run_id = resume_data.get('run_id')
+    if not run_id:
+        run_id = auto_save.generate_run_id()
     
     # Initialize or resume state
     if resume_data:
@@ -538,13 +550,40 @@ def process_files_with_autosave(selected_project, selected_files, model, prompt,
     # Create results summary
     total_codes = len(master_codes_df)
     current_processed = processed_codes_count + len(current_master_df)
-    results_df = pd.DataFrame({
-        'total_codes': [total_codes],
-        'processed_codes': [current_processed],
-        'unique_codes': [len(reduced_df['code'].unique())]
-    })
 
-    # Handle autosave
+    # Track progress for saturation metrics
+    if mode == 'Incremental':
+        results_df = pd.DataFrame({
+            'total_codes': [total_codes],
+            'processed_codes': [current_processed],
+            'unique_codes': [len(reduced_df['code'].unique())]
+        })
+    else:
+        # For automatic mode, create points for each file
+        file_counts = [len(pd.read_csv(f)) for f in selected_files]
+        cum_total = list(pd.Series(file_counts).cumsum())
+        results_df = pd.DataFrame({
+            'total_codes': cum_total,
+            'processed_codes': [current_processed] * len(selected_files),
+            'unique_codes': [len(reduced_df['code'].unique())] * len(selected_files)
+        })
+
+    # Save intermediate results for saturation metrics
+    results_path = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')
+    if mode == 'Incremental':
+        if os.path.exists(results_path):
+            existing_results = pd.read_csv(results_path)
+            # Only concatenate if it's the same run
+            if 'run_id' in existing_results.columns and run_id in existing_results['run_id'].values:
+                results_df = pd.concat([existing_results, results_df], ignore_index=True)
+            else:
+                # New run, start fresh
+                results_df['run_id'] = run_id
+        else:
+            results_df['run_id'] = run_id
+    results_df.to_csv(results_path, index=False)
+    
+    # Handle autosave with run_id
     if mode == 'Incremental' and len(processed_files) < len(selected_files):
         auto_save.save_progress(
             processed_files=processed_files,
@@ -555,7 +594,8 @@ def process_files_with_autosave(selected_project, selected_files, model, prompt,
             mode=mode,
             master_codes_df=master_codes_df,
             similarity_results=similarity_results,
-            selected_files=selected_files
+            selected_files=selected_files,
+            run_id=run_id
         )
         next_file = os.path.basename(selected_files[len(processed_files)])
         processing_message.info(f"Ready to process: {next_file}")
@@ -808,8 +848,16 @@ def main():
                     amalgamated_df_for_display['original_code'] = amalgamated_df_for_display['original_code'].apply(format_original_codes)
                     st.write(amalgamated_df_for_display)
 
-                    st.write("Code Reduction Results:")
+                    # Display and save total vs processed vs unique codes
+                    st.write("Code Reduction Tracking:")
                     st.write(results_df)
+                    results_csv = results_df.to_csv(index=False).encode('utf-8')
+                    st.download_button(
+                        label="Download code reduction results",
+                        data=results_csv,
+                        file_name="code_reduction_results.csv",
+                        mime="text/csv"
+                    )
 
                     saved_file_path = save_reduced_codes(selected_project, amalgamated_df, 'reduced_codes')
                     st.success(f"Results saved to {os.path.basename(saved_file_path)}")
@@ -823,13 +871,15 @@ def main():
                         mime="text/csv"
                     )
 
-                    results_csv = results_df.to_csv(index=False).encode('utf-8')
-                    st.download_button(
-                        label="Download code reduction results",
-                        data=results_csv,
-                        file_name="code_reduction_results.csv",
-                        mime="text/csv"
-                    )
+                    # Save results for saturation metrics
+                    results_path = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')
+                    #if os.path.exists(results_path):
+                    #    existing_results = pd.read_csv(results_path)
+                    #    results_df = pd.concat([existing_results, results_df], ignore_index=True)
+                    results_df.to_csv(results_path, index=False)
+
+                    
+                    
                 else:
                     st.error("Failed to reduce codes. Check logs for more info.")
 

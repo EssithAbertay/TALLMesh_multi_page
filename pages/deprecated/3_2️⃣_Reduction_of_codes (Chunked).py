@@ -758,9 +758,18 @@ def main():
                     st.write("Reduced Codes:")
                     st.write(amalgamated_df_for_display)
                     
-                    # Display intermediate results
+                    # Display total vs processed vs unique codes
                     st.write("Code Reduction Results:")
                     st.write(results_df)
+
+                    # Save reduction figures for ITS 
+                    results_csv = results_df.to_csv(index=False).encode('utf-8')
+                    st.download_button(
+                        label="Download code reduction results",
+                        data=results_csv,
+                        file_name="code_reduction_results.csv",
+                        mime="text/csv"
+                    )
                     
                     # Save reduced codes
                     status_message.info("Saving reduced codes...")
@@ -774,14 +783,6 @@ def main():
                         label="Download reduced codes",
                         data=csv,
                         file_name="reduced_codes.csv",
-                        mime="text/csv"
-                    )
-                    
-                    results_csv = results_df.to_csv(index=False).encode('utf-8')
-                    st.download_button(
-                        label="Download code reduction results",
-                        data=results_csv,
-                        file_name="code_reduction_results.csv",
                         mime="text/csv"
                     )
                     
