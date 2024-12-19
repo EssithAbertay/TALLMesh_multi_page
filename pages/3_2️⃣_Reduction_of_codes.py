@@ -7,6 +7,8 @@ Created on Fri Mar  1 14:30:28 2024
 This script is part of the TALLMesh multi-page application for qualitative data analysis.
 It focuses on the reduction of initial codes generated in the previous step of the analysis process.
 The main purpose is to refine and consolidate codes, identifying patterns and reducing redundancy.
+
+
 """
 
 import os
@@ -16,223 +18,415 @@ import json
 import re
 from api_key_management import manage_api_keys, load_api_keys, load_azure_settings, get_azure_models, AZURE_SETTINGS_FILE
 from project_utils import get_projects, get_project_files, get_processed_files, PROJECTS_DIR
-from prompts import reduce_duplicate_codes_prompts
-from llm_utils import llm_call, process_chunks, default_models
+from prompts import reduce_duplicate_codes_1_v_all
+from llm_utils import llm_call, default_models
 import logging
 import tooltips
 import time
-from ui_utils import centered_column_with_number, create_circle_number
+from ui_utils import centered_column_with_number
+import uuid
+from time import sleep
+import networkx as nx
 
-# Set logo
 logo = "pages/static/tmeshlogo.png"
 st.logo(logo)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Import gifs and set text for top of isntruction expander 
-
 process_gif = "pages/animations/process_rounded.gif"
 compare_gif = "pages/animations/compare_rounded.gif"
 merge_gif = "pages/animations/merge_rounded.gif"
-#compare_gif = "pages/animations/copy_rounded.gif" # alternative animated icon...
-
 
 process_text = 'The LLM compares each set of initial codes...'
 compare_text = '...to identify duplicates based on the prompt...'
 merge_text = "...which are merged into a set of unique codes."
 
-# Implement auto save to avoid need to restart due to unexpected interruptions
+
+def collect_all_initial_codes(selected_files):
+    """
+    Collect and normalize all initial codes from files into a single DataFrame.
+    Adds file-specific tracking information.
+    """
+    all_codes = []
+    codes_per_file = {}
+    
+    for file_path in selected_files:
+        df = pd.read_csv(file_path)
+        file_name = os.path.basename(file_path)
+        
+        if 'source' not in df.columns:
+            df['source'] = file_name
+        
+        df['code_id'] = [str(uuid.uuid4()) for _ in range(len(df))]
+        df['original_code'] = df['code']
+        df['file_index'] = len(codes_per_file)  # Track which file the codes came from
+        
+        codes_per_file[file_name] = len(df)
+        all_codes.append(df)
+        
+    master_codes_df = pd.concat(all_codes, ignore_index=True)
+    master_codes_df.attrs['codes_per_file'] = codes_per_file  # Store file information
+    
+    return master_codes_df
+
+def generate_comparison_prompt(target_code, comparison_codes, prompt, include_quotes=False):
+    base_prompt = prompt
+    target_quote = f',\n        "quote": "{target_code["quote"]}"' if include_quotes else ''
+    comparison_text = []
+    for code in comparison_codes:
+        if include_quotes:
+            comparison_text.append(
+                f'{{"code": "{code["code"]}", "description": "{code["description"]}", "quote": "{code["quote"]}"}}'
+            )
+        else:
+            comparison_text.append(
+                f'{{"code": "{code["code"]}", "description": "{code["description"]}"}}'
+            )
+    comparison_list = ',\n    '.join(comparison_text)
+    final_prompt = base_prompt % (
+        target_code["code"],
+        target_code["description"],
+        target_quote,
+        f'[\n    {comparison_list}\n]'
+    )
+    return final_prompt
+
+def process_similarity_comparisons(master_codes_df, new_codes_start_idx, model, prompt, 
+                                 model_temperature, model_top_p, include_quotes=False):
+    """
+    Process comparisons ensuring new codes are compared against the entire universe.
+    """
+    progress_info = st.session_state.get('progress_info', {
+        'total_codes': len(master_codes_df),
+        'processed_codes_count': 0,
+        'new_codes_count': len(master_codes_df)
+    })
+    
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    similarity_results = []
+
+    # Only process new codes, but compare against all
+    for idx in range(new_codes_start_idx, len(master_codes_df)):
+        target_code = master_codes_df.iloc[idx]
+        
+        # Compare against ALL other codes (excluding self)
+        comparison_codes = master_codes_df.drop(idx).reset_index(drop=True)
+        
+        if len(comparison_codes) == 0:
+            continue
+
+        comparison_prompt = generate_comparison_prompt(
+            target_code.to_dict(),
+            [code.to_dict() for _, code in comparison_codes.iterrows()],
+            prompt,
+            include_quotes
+        )
+
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = llm_call(model, comparison_prompt, model_temperature, model_top_p)
+                comparison_results = json.loads(response).get('comparisons', {})
+                
+                for comp_idx, is_similar in enumerate(comparison_results.values()):
+                    if is_similar:
+                        similarity_pair = {
+                            'code1': target_code['code'],
+                            'code1_idx': idx,
+                            'code2': comparison_codes.iloc[comp_idx]['code'],
+                            'code2_idx': comparison_codes.index[comp_idx]
+                        }
+                        similarity_results.append(similarity_pair)
+                break
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    sleep(2 ** attempt)
+                else:
+                    raise
+
+        # Update progress relative to new codes only
+        relative_progress = (idx - new_codes_start_idx + 1) / (len(master_codes_df) - new_codes_start_idx)
+        progress_bar.progress(min(1.0, relative_progress))
+        status_text.text(f"Processing new code {idx - new_codes_start_idx + 1} of {len(master_codes_df) - new_codes_start_idx}")
+
+    progress_bar.empty()
+    status_text.empty()
+    return similarity_results
+
+def reduce_based_on_similarities(similarity_results, master_codes_df, model, model_temperature, model_top_p, include_quotes=False):
+    logger = logging.getLogger(__name__)
+
+    def log_group_details(group_idx, group, group_codes):
+        logger.info(f"\nProcessing group {group_idx}")
+        logger.info(f"Group size: {len(group)}")
+        logger.info("Group code IDs: " + ", ".join(group))
+        logger.info("Original codes in group:")
+        for _, code in group_codes.iterrows():
+            logger.info(f"  Code ID: {code['code_id']}")
+            logger.info(f"    Code: {code['code']}")
+            logger.info(f"    Original code: {code.get('original_code', 'Not found')}")
+
+    def generate_merge_prompt(codes_to_merge):
+        merge_prompt = """Create a merged code from the following similar codes. Provide:
+            1. A concise name for the merged code (maximum 6 words)
+            2. A detailed description (up to 25 words) explaining the merged code's meaning
+            3. A brief explanation (max 50 words) of why these codes were merged
+
+            The codes to merge are:
+            {codes}
+
+            Format the response as a JSON object with this structure:
+            {{
+                "merged_code": {{
+                    "code": "name of merged code",
+                    "description": "merged description",
+                    "merge_explanation": "explanation of merge"
+                }}
+            }}
+
+            Important! Your response must be a valid JSON object with no additional text."""
+        
+        codes_text = []
+        for _, code in codes_to_merge.iterrows():
+            code_text = (f'Code ID: {code["code_id"]}\n'
+                         f'Code: "{code["code"]}"\n'
+                         f'Description: "{code["description"]}"\n'
+                         f'Original Code: "{code.get("original_code", "Not found")}"')
+            if include_quotes and 'quote' in code:
+                code_text += f'\nQuote: "{code["quote"]}"'
+            codes_text.append(code_text)
+        
+        return merge_prompt.format(codes='\n\n'.join(codes_text))
+
+    def find_code_groups():
+        processed_indices = set()
+        groups = []
+        
+        # Create a dictionary to map indices to their similar pairs
+        similarity_map = {}
+        for pair in similarity_results:
+            idx1 = pair['code1_idx']
+            idx2 = pair['code2_idx']
+            if idx1 not in similarity_map:
+                similarity_map[idx1] = set()
+            if idx2 not in similarity_map:
+                similarity_map[idx2] = set()
+            similarity_map[idx1].add(idx2)
+            similarity_map[idx2].add(idx1)
+        
+        # Find connected groups
+        for idx in range(len(master_codes_df)):
+            if idx in processed_indices:
+                continue
+                
+            # Start a new group with this index
+            current_group = {master_codes_df.iloc[idx]['code_id']}
+            if idx in similarity_map:
+                # Add all similar codes
+                for similar_idx in similarity_map[idx]:
+                    current_group.add(master_codes_df.iloc[similar_idx]['code_id'])
+            
+            # Only add this group if it's not already a subset of an existing group
+            if not any(current_group.issubset(existing_group) for existing_group in groups):
+                groups.append(current_group)
+                processed_indices.add(idx)
+                if idx in similarity_map:
+                    processed_indices.update(similarity_map[idx])
+            
+        logger.info(f"\nFound {len(groups)} code groups")
+        return groups
+
+    reduced_codes = []
+    code_groups = find_code_groups()
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+
+    for idx, group in enumerate(code_groups):
+        status_text.text(f"Processing group {idx + 1}/{len(code_groups)}")
+        progress_bar.progress((idx + 1) / len(code_groups))
+        group_codes = master_codes_df[master_codes_df['code_id'].isin(group)]
+        log_group_details(idx, group, group_codes)
+
+        if len(group_codes) > 1:
+            merge_prompt = generate_merge_prompt(group_codes)
+            logger.info("\nGenerated merge prompt:")
+            logger.info(merge_prompt)
+            try:
+                response = llm_call(model, merge_prompt, model_temperature, model_top_p)
+                logger.info("\nLLM Response:")
+                logger.info(response)
+                merged_details = json.loads(response)['merged_code']
+                all_original_codes = []
+                seen_codes = set()  # Track unique codes
+                for _, code in group_codes.iterrows():
+                    if isinstance(code.get('original_code'), str):
+                        try:
+                            original_codes = json.loads(code['original_code'])
+                            if isinstance(original_codes, list):
+                                for orig_code in original_codes:
+                                    if orig_code not in seen_codes:
+                                        all_original_codes.append(orig_code)
+                                        seen_codes.add(orig_code)
+                            else:
+                                if original_codes not in seen_codes:
+                                    all_original_codes.append(original_codes)
+                                    seen_codes.add(original_codes)
+                        except json.JSONDecodeError:
+                            if code['original_code'] not in seen_codes:
+                                all_original_codes.append(code['original_code'])
+                                seen_codes.add(code['original_code'])
+                    else:
+                        if code['code'] not in seen_codes:
+                            all_original_codes.append(code['code'])
+                            seen_codes.add(code['code'])
+
+                reduced_code = {
+                    'code': merged_details['code'],
+                    'description': merged_details['description'],
+                    'merge_explanation': merged_details['merge_explanation'],
+                    'original_code': json.dumps(all_original_codes),
+                    'quote': json.dumps([
+                        {'text': row['quote'], 'source': row['source']}
+                        for _, row in group_codes.iterrows()
+                    ]),
+                    'source': ', '.join(group_codes['source'].unique())
+                }
+                logger.info("\nCreated reduced code:")
+                logger.info(json.dumps(reduced_code, indent=2))
+            except Exception as e:
+                logger.error(f"\nError merging codes in group {idx}: {str(e)}")
+                # Gather all original codes from the group
+                all_original_codes = []
+                quotes_list = []
+                unique_sources = set()
+                seen_codes = set()  # Track unique codes
+                for _, code_row in group_codes.iterrows():
+                    orig_val = code_row.get('original_code', code_row['code'])
+                    if isinstance(orig_val, str):
+                        try:
+                            parsed = json.loads(orig_val)
+                            if isinstance(parsed, list):
+                                for code in parsed:
+                                    if code not in seen_codes:
+                                        all_original_codes.append(code)
+                                        seen_codes.add(code)
+                            else:
+                                if parsed not in seen_codes:
+                                    all_original_codes.append(parsed)
+                                    seen_codes.add(parsed)
+                        except json.JSONDecodeError:
+                            if orig_val not in seen_codes:
+                                all_original_codes.append(orig_val)
+                                seen_codes.add(orig_val)
+                    else:
+                        if orig_val not in seen_codes:
+                            all_original_codes.append(orig_val)
+                            seen_codes.add(orig_val)
+                    
+                    quotes_list.append({'text': code_row['quote'], 'source': code_row['source']})
+                    unique_sources.add(code_row['source'])
+
+                # Use the first code in the group as the representative code name and description
+                fallback_code = group_codes.iloc[0]
+                reduced_code = {
+                    'code': fallback_code['code'],
+                    'description': fallback_code['description'],
+                    'merge_explanation': 'Merge failed - using original code',
+                    'original_code': json.dumps(all_original_codes),
+                    'quote': json.dumps(quotes_list),
+                    'source': ', '.join(unique_sources)
+                }
+
+                logger.info("\nUsing fallback code:")
+                logger.info(json.dumps(reduced_code, indent=2))
+        else:
+            single_code = group_codes.iloc[0]
+            reduced_code = {
+                'code': single_code['code'],
+                'description': single_code['description'],
+                'merge_explanation': '',
+                'original_code': json.dumps([single_code['code']]),
+                'quote': json.dumps([{'text': single_code['quote'], 'source': single_code['source']}]),
+                'source': single_code['source']
+            }
+            logger.info("\nSingle code (no merge needed):")
+            logger.info(json.dumps(reduced_code, indent=2))
+
+        reduced_codes.append(reduced_code)
+
+    progress_bar.empty()
+    status_text.empty()
+
+    reduced_df = pd.DataFrame(reduced_codes)
+    required_columns = ['code', 'description', 'merge_explanation', 'original_code', 'quote', 'source']
+    for col in required_columns:
+        if col not in reduced_df.columns:
+            reduced_df[col] = ''
+    reduced_df = reduced_df[required_columns]
+
+    logger.info("\nFinal reduced DataFrame:")
+    logger.info(f"Shape: {reduced_df.shape}")
+    logger.info("Sample of reduced codes:")
+    logger.info(reduced_df.head().to_string())
+    return reduced_df
+
 
 class AutoSaveResume:
     def __init__(self, project_name):
         self.project_name = project_name
         self.save_path = os.path.join(PROJECTS_DIR, project_name, 'code_reduction_progress.json')
-
-    def save_progress(self, processed_files, reduced_df, total_codes_list, unique_codes_list, cumulative_total, mode):
+        self.results_path = os.path.join(PROJECTS_DIR, project_name, 'code_reduction_results.csv')
+        
+    def generate_run_id(self):
+        return str(uuid.uuid4())
+    
+    def save_progress(self, processed_files, reduced_df, total_codes_list, unique_codes_list, 
+                     cumulative_total, mode, master_codes_df=None, similarity_results=None, 
+                     selected_files=None, run_id=None):
         progress = {
             'processed_files': processed_files,
-            'reduced_df': reduced_df.to_json(),
+            'reduced_df': reduced_df.to_dict(orient='records'),
             'total_codes_list': total_codes_list,
             'unique_codes_list': unique_codes_list,
             'cumulative_total': cumulative_total,
-            'mode': mode  # Store the processing mode
+            'mode': mode,
+            'run_id': run_id or self.generate_run_id()
         }
+        if master_codes_df is not None:
+            progress['master_codes_df'] = master_codes_df.to_dict(orient='records')  # Change from to_json()
+        if similarity_results is not None:
+            progress['similarity_results'] = similarity_results
+        if selected_files is not None:
+            progress['selected_files'] = selected_files
+
         with open(self.save_path, 'w') as f:
             json.dump(progress, f)
 
+
     def load_progress(self):
+        """
+        Load progress state from a JSON file.
+        """
         if os.path.exists(self.save_path):
             with open(self.save_path, 'r') as f:
                 progress = json.load(f)
-            progress['reduced_df'] = pd.read_json(progress['reduced_df'])
+            # Convert dict back to DataFrame
+            progress['reduced_df'] = pd.DataFrame.from_records(progress['reduced_df'])
+            if 'master_codes_df' in progress:
+                progress['master_codes_df'] = pd.DataFrame.from_records(progress['master_codes_df'])
             return progress
         return None
 
-    def clear_progress(self):
+
+    def clear_progress(self, clear_results=True):
         if os.path.exists(self.save_path):
             os.remove(self.save_path)
-
-def process_files_with_autosave(selected_project, selected_files, model, prompt, model_temperature, model_top_p, include_quotes, resume_data=None, mode='Automatic'):
-    auto_save = AutoSaveResume(selected_project)
-    
-    if resume_data:
-        processed_files = resume_data['processed_files']
-        reduced_df = resume_data['reduced_df']
-        total_codes_list = resume_data['total_codes_list']
-        unique_codes_list = resume_data['unique_codes_list']
-        cumulative_total = resume_data['cumulative_total']
-    else:
-        processed_files = []
-        reduced_df = None
-        total_codes_list = []
-        unique_codes_list = []
-        cumulative_total = 0
-
-    progress_bar = st.progress(0)
-    status_message = st.empty()
-    total_files = len(selected_files)
-    processed_file_count = len(processed_files)
-
-    for file in selected_files:
-        if file in processed_files:
-            continue  # Skip already processed files
-        processed_file_count += 1
-        status_message.info(f"Processing file {processed_file_count}/{total_files}: {os.path.basename(file)}... please wait")
-        logger.info(f"Processing file {processed_file_count}/{total_files}: {file}")
-        df = pd.read_csv(file)
-
-        if 'source' not in df.columns:
-            df['source'] = os.path.basename(file)
-            logger.info(f"Added 'source' column to DataFrame for file: {file}")
-        
-        file_total_codes = len(df)
-        cumulative_total += file_total_codes
-        logger.info(f"Cumulative total codes: {cumulative_total}")
-        
-        if reduced_df is None:
-            reduced_df = df.copy()
-            # Add merge_explanation column if it doesn't exist
-            if 'merge_explanation' not in reduced_df.columns:
-                reduced_df['merge_explanation'] = ''
-            if 'original_code' not in reduced_df.columns:
-                reduced_df['original_code'] = reduced_df['code']
-            logger.info("First file processed, no reduction needed")
-        else:
-            logger.info(f"Comparing and reducing codes for file {processed_file_count}")
-            status_message.info(f"Comparing and reducing codes for file {processed_file_count}/{total_files}...")
-            reduced_df, _, _ = compare_and_reduce_codes(reduced_df, df, model, prompt, model_temperature, model_top_p, include_quotes)
-            if reduced_df is None:
-                logger.error(f"Failed to process file {file}. Stopping the process.")
-                st.error(f"Failed to process file {file}. Stopping the process.")
-                return None, None, []  # Return empty processed_files list on error
-        
-        total_codes_list.append(cumulative_total)
-        unique_codes = len(reduced_df['code'].unique())
-        unique_codes_list.append(unique_codes)
-        logger.info(f"After processing file {processed_file_count}: Total codes = {cumulative_total}, Unique codes = {unique_codes}")
-        
-        progress = processed_file_count / total_files
-        progress_bar.progress(progress)
-        status_message.success(f"Processed file {processed_file_count}/{total_files}: Total codes = {cumulative_total}, Unique codes = {unique_codes}")
-
-        # Auto-save progress after each file
-        processed_files.append(file)
-        auto_save.save_progress(processed_files, reduced_df, total_codes_list, unique_codes_list, cumulative_total, mode)
-
-        # Save results after each file
-        results_df = pd.DataFrame({
-            'total_codes': total_codes_list,
-            'unique_codes': unique_codes_list
-        })
-        results_path = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')
-        results_df.to_csv(results_path, index=False)
-        logger.info(f"Saved code reduction results to: {results_path}")
-
-        if mode == 'Incremental':
-            # Ensure all required columns exist before returning
-            required_columns = ['code', 'description', 'merge_explanation', 'original_code', 'quote', 'source']
-            for col in required_columns:
-                if col not in reduced_df.columns:
-                    if col == 'merge_explanation':
-                        reduced_df[col] = ''
-                    elif col == 'original_code':
-                        reduced_df[col] = reduced_df['code']
-                    else:
-                        logger.error(f"Required column {col} missing in incremental mode")
-                        return None, None, []  # Return empty processed_files list on error
-            
-            # For incremental mode, stop after each file to allow user review
-            return reduced_df, results_df, processed_files
-
-    auto_save.clear_progress()  # Clear progress file after successful completion
-    
-    # Final save of results (ensures it's saved even if loop is empty)
-    results_df = pd.DataFrame({
-        'total_codes': total_codes_list,
-        'unique_codes': unique_codes_list
-    })
-    results_path = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')
-    results_df.to_csv(results_path, index=False)
-    logger.info(f"Saved final code reduction results to: {results_path}")
-    
-    return reduced_df, results_df, processed_files
-    
-
-def load_custom_prompts():
-    """
-    Load custom prompts from a JSON file.
-    
-    Returns:
-        dict: A dictionary of custom prompts, or an empty dictionary if the file is not found.
-    """
-    try:
-        with open('custom_prompts.json', 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return {}
-
-def extract_json(text):
-    """
-    Extract a JSON object from a string.
-    
-    Args:
-        text (str): The input string containing a JSON object.
-    
-    Returns:
-        str: The extracted JSON string, or None if no JSON object is found.
-    """
-    match = re.search(r'\{[\s\S]*\}', text)
-    return match.group(0) if match else None
-
-def format_quotes(quotes_json):
-    """
-    Parse and format a JSON string of quotes for better readability.
-    
-    Args:
-        quotes_json (str): A JSON string containing quote information.
-    
-    Returns:
-        str: A formatted string with each quote on a new line, or the original string if parsing fails.
-    """
-    try:
-        quotes = json.loads(quotes_json)
-        formatted_quotes = "\n".join(f"{quote['text']} (Source: {quote['source']})" for quote in quotes)
-        return formatted_quotes
-    except (json.JSONDecodeError, KeyError, TypeError):
-        return quotes_json  # Return the original if there's an error
+        if clear_results and os.path.exists(self.results_path):
+            os.remove(self.results_path)
 
 def amalgamate_duplicate_codes(df):
-    """
-    Combine duplicate codes in a DataFrame, merging their associated information.
-    
-    Args:
-        df (pd.DataFrame): The input DataFrame containing code information.
-    
-    Returns:
-        pd.DataFrame: A new DataFrame with amalgamated code information.
-    """
-    # Ensure all required columns exist
     required_columns = ['code', 'description', 'merge_explanation', 'original_code', 'quote', 'source']
     for col in required_columns:
         if col not in df.columns:
@@ -243,18 +437,16 @@ def amalgamate_duplicate_codes(df):
             else:
                 logger.error(f"Required column {col} missing in DataFrame")
                 return None
-
-    # Group by 'code' and aggregate other columns
     try:
         amalgamated_df = df.groupby('code').agg({
             'description': 'first',
             'merge_explanation': 'first',
-            'original_code': lambda x: list(x),
+            'original_code': lambda x: sum((json.loads(item) if isinstance(item, str) and item.strip().startswith('[') else [item] for item in x), []),
             'quote': lambda x: [{'text': q, 'source': s} for q, s in zip(x, df.loc[x.index, 'source'])],
             'source': lambda x: list(x)
         }).reset_index()
 
-        amalgamated_df['original_code'] = amalgamated_df['original_code'].apply(lambda x: json.dumps(list(x)))
+        amalgamated_df['original_code'] = amalgamated_df['original_code'].apply(json.dumps)
         amalgamated_df['quote'] = amalgamated_df['quote'].apply(json.dumps)
         amalgamated_df['source'] = amalgamated_df['source'].apply(lambda x: ', '.join(set(x)))
 
@@ -263,279 +455,194 @@ def amalgamate_duplicate_codes(df):
         logger.error(f"Error in amalgamate_duplicate_codes: {str(e)}")
         return None
 
-def match_reduced_to_original_codes(reduced_df, initial_codes_directory):
-    """
-    Match reduced codes to their original codes by comparing quotes.
-    
-    Args:
-        reduced_df (pd.DataFrame or str): The reduced codes DataFrame or path to the CSV file.
-        initial_codes_directory (str): Path to the directory containing initial codes CSV files.
-    
-    Returns:
-        pd.DataFrame: The reduced codes DataFrame with matched original codes.
-    """
-    # Check if reduced_df is a string (file path) or DataFrame
-    if isinstance(reduced_df, str):
-        reduced_df = pd.read_csv(reduced_df)
-    elif not isinstance(reduced_df, pd.DataFrame):
-        raise ValueError("reduced_df must be either a file path or a pandas DataFrame")
-    
-    # Dictionary to store initial codes dataframes
-    initial_codes_dfs = {}
-    
-    # Read all initial codes files
-    for filename in os.listdir(initial_codes_directory):
-        if filename.endswith('.csv'):
-            file_path = os.path.join(initial_codes_directory, filename)
-            initial_codes_dfs[filename] = pd.read_csv(file_path)
-    
-    # Function to find the original code
-    def find_original_code(row):
-        source_file = row['source']
-        quote = row['quote']
-        
-        if source_file in initial_codes_dfs:
-            source_df = initial_codes_dfs[source_file]
-            matching_row = source_df[source_df['quote'] == quote]
-            
-            if not matching_row.empty:
-                return matching_row['code'].values[0]
-        
-        return 'Original code not found'
-    
-    # Apply the function to each row in the reduced codes dataframe
-    reduced_df['original_code'] = reduced_df.apply(find_original_code, axis=1)
-    
-    return reduced_df
 
 def save_reduced_codes(project_name, df, folder):
-    """
-    Save the reduced codes DataFrame to a CSV file in the specified project folder.
-    
-    Args:
-        project_name (str): The name of the project.
-        df (pd.DataFrame): The DataFrame containing reduced codes.
-        folder (str): The subfolder name to save the file in.
-    
-    Returns:
-        str: The path of the saved CSV file.
-    """
     reduced_codes_folder = os.path.join(PROJECTS_DIR, project_name, folder)
     os.makedirs(reduced_codes_folder, exist_ok=True)
-    
     output_file_path = os.path.join(reduced_codes_folder, f"reduced_codes_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv")
     df.to_csv(output_file_path, index=False, encoding='utf-8')
     return output_file_path
 
-def compare_and_reduce_codes(df1, df2, model, prompt, model_temperature, model_top_p, include_quotes):
+def process_files_with_autosave(selected_project, selected_files, model, prompt, 
+                               model_temperature, model_top_p, include_quotes, 
+                               resume_data=None, mode='Automatic'):
     """
-    Compare and reduce codes from two DataFrames using an AI model.
-    
-    Args:
-        df1 (pd.DataFrame): The first DataFrame containing codes.
-        df2 (pd.DataFrame): The second DataFrame containing codes.
-        model (str): The name of the AI model to use.
-        prompt (str): The prompt to guide the AI in code reduction.
-        model_temperature (float): The temperature setting for the AI model.
-        model_top_p (float): The top_p setting for the AI model.
-        include_quotes (bool): Whether to include quotes in the process.
-    
-    Returns:
-        tuple: A tuple containing the reduced DataFrame, total codes count, and unique codes count.
+    Unified processing function with streamlined status messaging.
     """
-    combined_codes = pd.concat([df1, df2], ignore_index=True)
+    auto_save = AutoSaveResume(selected_project)
+    processing_message = st.empty()
+
+    # Get or generate run_id
+    run_id = None
+    if resume_data:
+        run_id = resume_data.get('run_id')
+    if not run_id:
+        run_id = auto_save.generate_run_id()
     
-    if not include_quotes:
-        codes_list = [
-            {
-                "code": row['code'],
-                "description": row['description']
-            }
-            for _, row in combined_codes.iterrows()
-        ]
+    # Initialize or resume state
+    if resume_data:
+        master_codes_df = resume_data.get('master_codes_df')
+        similarity_results = resume_data.get('similarity_results', [])
+        processed_files = resume_data['processed_files']
+        processed_codes_count = sum(len(pd.read_csv(f)) for f in processed_files)
     else:
-        codes_list = [
-            {
-                "code": row['code'],
-                "description": row['description'],
-                "quote": row['quote']
-            }
-            for _, row in combined_codes.iterrows()
-        ]
+        master_codes_df = None
+        similarity_results = []
+        processed_files = []
+        processed_codes_count = 0
+
+    # Handle file selection based on mode
+    if mode == 'Incremental':
+        next_file_index = len(processed_files)
+        if next_file_index >= len(selected_files):
+            return master_codes_df, pd.DataFrame(), processed_files
+        current_files = [selected_files[next_file_index]]
+    else:
+        current_files = selected_files
+
+    # Process current batch
+    current_master_df = collect_all_initial_codes(current_files)
     
-    reduced_codes = process_chunks(model, prompt, codes_list, model_temperature, model_top_p, include_quotes=include_quotes)
+    if master_codes_df is None:
+        master_codes_df = current_master_df
+    else:
+        master_codes_df = pd.concat([master_codes_df, current_master_df], ignore_index=True)
 
-    if not reduced_codes:
-        logger.error("Failed to process any chunks successfully")
-        return None, None, None
+    # Store progress info for current batch
+    st.session_state['progress_info'] = {
+        'total_codes': len(master_codes_df),
+        'processed_codes_count': processed_codes_count,
+        'new_codes_count': len(current_master_df)
+    }
 
-    # Create a mapping of original codes to reduced codes
-    code_mapping = {}
-    for reduced_code in reduced_codes:
-        for original_code in reduced_code.get('original_codes', [reduced_code['code']]):
-            code_mapping[original_code] = reduced_code
-
-    # Apply the mapping to the original combined_codes DataFrame
-    reduced_rows = []
-    for _, row in combined_codes.iterrows():
-        if row['code'] in code_mapping:
-            reduced_code = code_mapping[row['code']]
-            new_row = {
-                'code': reduced_code['code'],
-                'description': reduced_code['description'],
-                'merge_explanation': reduced_code.get('merge_explanation', ''),
-                'original_code': row['code'],
-                'quote': row['quote'],
-                'source': row['source']
-            }
-            reduced_rows.append(new_row)
-        else:
-            logger.warning(f"Code not found in mapping: {row['code']}")
-            # Add the original code as-is if it's not in the mapping
-            new_row = {
-                'code': row['code'],
-                'description': row['description'],
-                'merge_explanation': '',
-                'original_code': row['code'],
-                'quote': row['quote'],
-                'source': row['source']
-            }
-            reduced_rows.append(new_row)
-
-    reduced_df = pd.DataFrame(reduced_rows)
-
-    total_codes = len(combined_codes)
-    unique_codes = len(reduced_df['code'].unique())
-
-    return reduced_df, total_codes, unique_codes
-
-def process_files(selected_project, selected_files, model, prompt, model_temperature, model_top_p, include_quotes):
-    """
-    Process multiple files to reduce codes and track the reduction process.
+    if mode == 'Incremental':
+        current_file = os.path.basename(current_files[0])
+        processing_message.info(f"Processing {current_file}...")
     
-    Args:
-        selected_project (str): The name of the selected project.
-        selected_files (list): A list of file paths to process.
-        model (str): The name of the llm to use.
-        prompt (str): The prompt to guide the llm in code reduction. 
-        model_temperature (float): The temperature setting for the llm
-        model_top_p (float): The top_p setting for the llm.
-        include_quotes (bool): Whether to include quotes in the process.
-    
-    Returns:
-        tuple: A tuple containing the final reduced (pandas) DataFrame and a DataFrame of reduction results.
-    """
-    logger.info(f"Starting to process files for project: {selected_project}")
-    logger.info(f"Number of files to process: {len(selected_files)}")
-    logger.info(f"Model: {model}, Temperature: {model_temperature}, Top P: {model_top_p}")
-    logger.info(f"Include Quotes: {include_quotes}")
+    # Process and reduce codes
+    # Note: Let the individual functions handle their own progress bars
+    new_similarity_results = process_similarity_comparisons(
+        master_codes_df=master_codes_df,
+        new_codes_start_idx=len(master_codes_df) - len(current_master_df),
+        model=model,
+        prompt=prompt,
+        model_temperature=model_temperature,
+        model_top_p=model_top_p,
+        include_quotes=include_quotes
+    )
+    similarity_results.extend(new_similarity_results)
 
-    reduced_df = None
-    total_codes_list = []
-    unique_codes_list = []
-    cumulative_total = 0
-    progress_bar = st.progress(0)
-    status_message = st.empty()
+    reduced_df = reduce_based_on_similarities(
+        similarity_results=similarity_results,
+        master_codes_df=master_codes_df,
+        model=model,
+        model_temperature=model_temperature,
+        model_top_p=model_top_p,
+        include_quotes=include_quotes
+    )
 
-    for i, file in enumerate(selected_files):
-        status_message.info(f"Processing file {i+1}/{len(selected_files)}: {os.path.basename(file)}... please wait")
-        logger.info(f"Processing file {i+1}/{len(selected_files)}: {file}")
-        df = pd.read_csv(file)
-        logger.info(f"File {file} read. Shape: {df.shape}")
+    # Update tracking
+    if mode == 'Incremental':
+        processed_files.append(current_files[0])
+    else:
+        processed_files = selected_files
 
-        # Add source column if it doesn't exist
-        if 'source' not in df.columns:
-            df['source'] = os.path.basename(file)
-            logger.info(f"Added 'source' column to DataFrame for file: {file}")
-        
-        file_total_codes = len(df)
-        cumulative_total += file_total_codes
-        logger.info(f"Cumulative total codes: {cumulative_total}")
-        
-        if reduced_df is None:
-            reduced_df = df
-            logger.info("First file processed, no reduction needed")
-        else:
-            logger.info(f"Comparing and reducing codes for file {i+1}")
-            status_message.info(f"Comparing and reducing codes for file {i+1}/{len(selected_files)}...")
-            reduced_df, _, _ = compare_and_reduce_codes(reduced_df, df, model, prompt, model_temperature, model_top_p, include_quotes)
-            if reduced_df is None:
-                logger.error(f"Failed to process file {file}. Skipping to the next file.")
-                st.error(f"Failed to process file {file}. Skipping to the next file.")
-                continue
-        
-        total_codes_list.append(cumulative_total)
-        unique_codes = len(reduced_df['code'].unique())
-        unique_codes_list.append(unique_codes)
-        logger.info(f"After processing file {i+1}: Total codes = {cumulative_total}, Unique codes = {unique_codes}")
-        
-        progress = (i + 1) / len(selected_files)
-        progress_bar.progress(progress)
-        status_message.success(f"Processed file {i+1}/{len(selected_files)}: Total codes = {cumulative_total}, Unique codes = {unique_codes}")
-        time.sleep(1)  # Add a small delay to allow the user to see the message
-    
-    # Save intermediate results
-    results_df = pd.DataFrame({
-        'total_codes': total_codes_list,
-        'unique_codes': unique_codes_list
-    })
+    # Create results summary
+    total_codes = len(master_codes_df)
+    current_processed = processed_codes_count + len(current_master_df)
+
+    # Track progress for saturation metrics
+    if mode == 'Incremental':
+        results_df = pd.DataFrame({
+            'total_codes': [total_codes],
+            'processed_codes': [current_processed],
+            'unique_codes': [len(reduced_df['code'].unique())]
+        })
+    else:
+        # For automatic mode, create points for each file
+        file_counts = [len(pd.read_csv(f)) for f in selected_files]
+        cum_total = list(pd.Series(file_counts).cumsum())
+        results_df = pd.DataFrame({
+            'total_codes': cum_total,
+            'processed_codes': [current_processed] * len(selected_files),
+            'unique_codes': [len(reduced_df['code'].unique())] * len(selected_files)
+        })
+
+    # Save intermediate results for saturation metrics
     results_path = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')
+    if mode == 'Incremental':
+        if os.path.exists(results_path):
+            existing_results = pd.read_csv(results_path)
+            # Only concatenate if it's the same run
+            if 'run_id' in existing_results.columns and run_id in existing_results['run_id'].values:
+                results_df = pd.concat([existing_results, results_df], ignore_index=True)
+            else:
+                # New run, start fresh
+                results_df['run_id'] = run_id
+        else:
+            results_df['run_id'] = run_id
     results_df.to_csv(results_path, index=False)
-    logger.info(f"Saved code reduction results to: {results_path}")
     
-    logger.info("File processing completed")
-    #status_message.success("Code reduction process completed successfully!")
-    return reduced_df, results_df
+    # Handle autosave with run_id
+    if mode == 'Incremental' and len(processed_files) < len(selected_files):
+        auto_save.save_progress(
+            processed_files=processed_files,
+            reduced_df=reduced_df,
+            total_codes_list=[total_codes],
+            unique_codes_list=[len(reduced_df['code'].unique())],
+            cumulative_total=current_processed,
+            mode=mode,
+            master_codes_df=master_codes_df,
+            similarity_results=similarity_results,
+            selected_files=selected_files,
+            run_id=run_id
+        )
+        next_file = os.path.basename(selected_files[len(processed_files)])
+        processing_message.info(f"Ready to process: {next_file}")
+    else:
+        auto_save.clear_progress()
+        processing_message.empty()
 
-@st.cache_data
-def convert_df(df):
-    """
-    Convert a DataFrame to a CSV string.
-    
-    Args:
-        df (pd.DataFrame): The input DataFrame.
-    
-    Returns:
-        bytes: The DataFrame as a CSV string encoded in UTF-8.
-    """
-    return df.to_csv().encode('utf-8')
+    return reduced_df, results_df, processed_files
+
+def load_custom_prompts():
+    try:
+        with open('custom_prompts.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
+def format_quotes(quotes_json):
+    try:
+        quotes = json.loads(quotes_json)
+        formatted_quotes = "\n".join(f"{quote['text']} (Source: {quote['source']})" for quote in quotes)
+        return formatted_quotes
+    except (json.JSONDecodeError, KeyError, TypeError):
+        return quotes_json
 
 def format_original_codes(original_codes):
-    """
-    Format the original codes string for display.
-    
-    Args:
-        original_codes (str): A string representation of original codes.
-    
-    Returns:
-        str: A formatted string of original codes.
-    """
     try:
         codes = json.loads(original_codes)
         return ', '.join(codes) if isinstance(codes, list) else original_codes
     except json.JSONDecodeError:
         return original_codes
 
+@st.cache_data
+def convert_df(df):
+    return df.to_csv().encode('utf-8')
+
 def main():
-    """
-    The main function that sets up the Streamlit interface for code reduction.
-    """
-    # Reset the text input message in session_state
     if 'current_prompt' in st.session_state:
         del st.session_state.current_prompt 
 
     st.header(":orange[Reduction of Codes]")
 
-    # Instructions expander
     with st.expander("Instructions"):
         st.write("""
-        The Reduction of Codes page is where you refine and consolidate the initial codes generated in the previous step. This process helps to identify patterns and reduce redundancy in your coding.
+        The Reduction of Codes page is where you refine and consolidate the initial codes generated in the previous step. 
+        This process helps to identify patterns and reduce redundancy in your coding.
         """)
-
-        # Create columns for layout for gifs and main points
         col1, col2, col3 = st.columns(3)
-
-        # Display content in each column
         centered_column_with_number(col1, 1, process_text, process_gif)
         centered_column_with_number(col2, 2, compare_text, compare_gif)
         centered_column_with_number(col3, 3, merge_text, merge_gif)
@@ -553,230 +660,197 @@ def main():
 
         st.subheader(":orange[1. Project and File Selection]")
         st.write("""
-        - Select your project from the dropdown menu.
-        - Once a project is selected, you'll see a list of files containing initial codes.
-        - Choose the files you want to process. You can select individual files or use the "Select All" checkbox.
+        - Select your project.
+        - Choose the files you want to process.
         """)
 
         st.subheader(":orange[2. LLM Settings]")
         st.write("""
-        - Choose the AI model you want to use for code reduction.
-        - Select a preset prompt or edit the provided prompt to guide the reduction process.
-        - Adjust the model temperature and top_p values using the sliders. These parameters influence the AI's output.
-        - Choose whether to include quotes in the LLM processing. This is off by default for data privacy.
+        - Choose the model.
+        - Select or edit the prompt.
+        - Adjust temperature and top_p.
         """)
 
         st.subheader(":orange[3. Processing and Results]")
         st.write("""
-        - Select 'automatic' or 'incremental' processing (whether to pause between files and display incremental results)
-        - Select 'include quotes' if you want to send the associated quotes to the LLM. This will provide more context for identifying highly similar codes, but also increases the API usage (and thus, cost and time)
-        - Click the "Process" button to start the code reduction.
-        - The system will analyze the selected files sequentially, comparing and merging similar codes.
-        - A progress bar will show the status of the processing.
-        - Once complete, you'll see:
-        - A table of reduced codes with their descriptions, merged explanations, and associated quotes.
-        - A "Code Reduction Results" table showing the number of total and unique codes for each processed file.
-        - You can download both the reduced codes and the code reduction results as CSV files.
+        - Choose 'automatic' or 'incremental' processing.
+        - Click 'Process' to start.
+        - Once complete, view and download results.
         """)
 
         st.subheader(":orange[4. Saved Reduced Codes]")
         st.write("""
-        - At the bottom of the page, you'll find an expandable section showing previously processed reduced code files.
-        - You can view, delete, or download these saved reduced codes.
+        - View previously processed reduced code files.
+        - Download or delete them as needed.
         """)
 
-        st.subheader(":orange[Key Features]")
-        st.write(f"""
-        - :orange[Automatic merging:] The AI identifies similar codes and combines them, providing explanations for the merges.
-        - :orange[Quote preservation:] All quotes associated with the original codes are retained and linked to the reduced codes.
-        - :orange[Tracking changes:] The system keeps track of how initial codes map to reduced codes, maintaining traceability.
-        - :orange[Saturation analysis:] The code reduction results can be used to assess thematic saturation in your analysis. (see <a href="pages/5_💹_Saturation_Metric.py" target="_self">Saturation Metric 💹</a>).
-        """, unsafe_allow_html=True)
-
-        st.subheader(":orange[Tips]")
-        st.write("""
-        - Review the merged codes carefully to ensure the AI's decisions align with your understanding of the data.
-        - If you're not satisfied with the reduction, you can adjust the prompt or model settings and reprocess the files.
-        - :orange[Pay attention to the "Code Reduction Results" table.] A plateauing number of unique codes may indicate approaching saturation in your analysis.
-        - Consider running the reduction process multiple times with different settings to compare results and ensure thorough analysis.
-        """)
-
-        st.info("Code reduction is a critical step in refining your analysis. It helps to consolidate your findings and prepare for the identification of overarching themes in the next stage.")
+        st.info("Code reduction helps refine your analysis and prepare for thematic identification.")
 
     st.subheader(":orange[Project & Data Selection]")
-    
     projects = get_projects()
-    
-    # Initialize session state for selected project if it doesn't exist
     if 'selected_project' not in st.session_state:
         st.session_state.selected_project = "Select a project..."
-
-    # Calculate the index for the selectbox
     project_options = ["Select a project..."] + projects
     if st.session_state.selected_project in project_options:
         index = project_options.index(st.session_state.selected_project)
     else:
         index = 0
 
-    # Use selectbox with the session state as the default value
     selected_project = st.selectbox(
         "Select a project:", 
         project_options,
         index=index,
         key="project_selector",
-        help = tooltips.project_tooltip
+        help=tooltips.project_tooltip
     )
 
-    # Update session state when a new project is selected
     if selected_project != st.session_state.selected_project:
         st.session_state.selected_project = selected_project
         st.rerun()
 
     if selected_project != "Select a project...":
         project_files = get_project_files(selected_project, 'initial_codes')
-        
-        # File selection expander
         with st.expander("Select files to process", expanded=True):
             col1, col2 = st.columns([0.9, 0.2])
             select_all = col2.checkbox("Select All", value=True)
-            
             file_checkboxes = {}
             for i, file in enumerate(project_files):
                 col1, col2 = st.columns([0.9, 0.2])
                 col1.write(file)
                 file_checkboxes[file] = col2.checkbox(".", key=f"checkbox_{file}", value=select_all, label_visibility="hidden")
-        
-        selected_files = [os.path.join(PROJECTS_DIR, selected_project, 'initial_codes', file) for file, checked in file_checkboxes.items() if checked]
+
+        selected_files = [os.path.join(PROJECTS_DIR, selected_project, 'initial_codes', file) 
+                         for file, checked in file_checkboxes.items() if checked]
 
         st.divider()
         st.subheader(":orange[LLM Settings]")
-
-        # Model selection
         azure_models = get_azure_models()
         model_options = default_models + azure_models
-        selected_model = st.selectbox("Select Model", model_options, help = tooltips.model_tooltip)
-
+        selected_model = st.selectbox("Select Model", model_options, help=tooltips.model_tooltip)
         max_temperature_value = 2.0 if selected_model.startswith('gpt') else 1.0
-        
-        # Load custom prompts
         custom_prompts = load_custom_prompts().get('Reduction of Codes', {})
-
-        # Combine preset and custom prompts
-        all_prompts = {**reduce_duplicate_codes_prompts, **custom_prompts}
-
-        # Prompt selection
-        selected_prompt = st.selectbox("Select a prompt:", list(all_prompts.keys()), help = tooltips.presets_tooltip)
-
-        # Load selected prompt values
+        all_prompts = {**reduce_duplicate_codes_1_v_all, **custom_prompts}
+        selected_prompt = st.selectbox("Select a prompt:", list(all_prompts.keys()), help=tooltips.presets_tooltip)
         selected_prompt_data = all_prompts[selected_prompt]
         prompt_input = selected_prompt_data["prompt"]
         model_temperature = selected_prompt_data["temperature"]
         model_top_p = selected_prompt_data["top_p"]
-        include_quotes = False
 
-        prompt_input = st.text_area("Edit prompt if needed:", value=prompt_input, height=200, help=tooltips.prompt_tooltip)
-        
-        # Model settings
+        prompt_input = st.text_area(
+            "Edit prompt if needed:",
+            value=prompt_input,
+            height=200,
+            help="In the 1-vs-all approach, this prompt guides merging."
+        )
+
         settings_col1, settings_col2 = st.columns([0.5, 0.5])
         with settings_col1:
-            model_temperature = st.slider(label="Model Temperature", min_value=float(0), max_value=float(max_temperature_value), step=0.01, value=model_temperature, help=tooltips.model_temp_tooltip)
+            model_temperature = st.slider(
+                label="Model Temperature",
+                min_value=float(0),
+                max_value=float(max_temperature_value),
+                step=0.01,
+                value=model_temperature,
+                help=tooltips.model_temp_tooltip
+            )
         with settings_col2:
-            model_top_p = st.slider(label="Model Top P", min_value=float(0), max_value=float(1), step=0.01, value=model_top_p, help=tooltips.top_p_tooltip)
+            model_top_p = st.slider(
+                label="Model Top P",
+                min_value=float(0),
+                max_value=float(1),
+                step=0.01,
+                value=model_top_p,
+                help=tooltips.top_p_tooltip
+            )
 
-        include_quotes = st.checkbox(label = "Include Quotes", value=False, help='Choose whether to send quotes to the LLM during the code-reduction process. This setting is :orange[off] by default; if you do choose to include quotes, check you are adhering to data privacy policies')
-        
+        include_quotes = st.checkbox(
+            label="Include Quotes",
+            value=False,
+            help='Include quotes in comparisons for more context.'
+        )
+
         st.subheader(":orange[Processing Mode]")
         processing_mode = st.radio(
             "Choose processing mode:",
             ("Automatic", "Incremental"),
-            help="Automatic processes all files at once. Incremental allows review after each file."
+            help="Automatic: all files at once. Incremental: one file at a time."
         )
-
 
         auto_save = AutoSaveResume(selected_project)
         progress = auto_save.load_progress()
         resume_data = None
-        if progress:
+
+        # Track whether we're actively processing
+        is_processing = 'processing_active' in st.session_state and st.session_state.processing_active
+        
+        # Only show resume options if we have progress AND we're not actively processing
+        if progress and not is_processing:
             processed_files = progress['processed_files']
             saved_mode = progress.get('mode', 'Automatic')
+            
             if saved_mode == processing_mode:
-                st.warning("Previous unfinished progress found.")
-                st.info(f"Processed files: {[os.path.basename(f) for f in processed_files]}")
-                st.info(f"Remaining files: {[os.path.basename(f) for f in selected_files if f not in processed_files]}")
-                resume = st.checkbox("Resume from last checkpoint", value=True, key="resume_checkbox")
+                col1, col2 = st.columns(2)
+                with col1:
+                    resume = st.checkbox("Resume from last checkpoint", value=True, key="resume_checkbox")
                 if resume:
                     resume_data = progress
                 else:
-                    # Only clear progress if the user chooses not to resume
                     auto_save.clear_progress()
             else:
-                st.warning(f"Previous unfinished progress found in a different mode: '{saved_mode}'.")
-                st.info(f"Processed files: {[os.path.basename(f) for f in processed_files]}")
-                st.info(f"Remaining files: {[os.path.basename(f) for f in selected_files if f not in processed_files]}")
-
-                # Provide options to the user
                 choice = st.radio(
-                    "What would you like to do?",
+                    "Found progress in different mode. Choose:",
                     (
-                        f"Resume previous progress in '{saved_mode}' mode",
-                        f"Discard previous progress and start fresh in '{processing_mode}' mode"
+                        f"Resume in '{saved_mode}' mode",
+                        f"Start fresh in '{processing_mode}' mode"
                     ),
                     key="mode_switch_choice"
                 )
-
-                if choice == f"Resume previous progress in '{saved_mode}' mode":
-                    # Switch processing mode back to saved mode and resume
+                if choice == f"Resume in '{saved_mode}' mode":
                     processing_mode = saved_mode
                     resume_data = progress
-                    st.info(f"Switching back to '{saved_mode}' mode to resume progress.")
                 else:
-                    # User chose to discard progress
                     auto_save.clear_progress()
-                    st.info(f"Starting fresh in '{processing_mode}' mode.")
 
         if st.button("Process"):
+            # Set processing active flag
+            st.session_state.processing_active = True
+            
             st.divider()
             st.subheader(":orange[Output]")
-            with st.spinner("Reducing codes... this may take some time depending on the number of files and initial codes."):
-                reduced_df, results_df, processed_files = process_files_with_autosave(
-                    selected_project, selected_files, selected_model, prompt_input,
-                    model_temperature, model_top_p, include_quotes, resume_data, mode=processing_mode
-                )
+            
+            reduced_df, results_df, processed_files = process_files_with_autosave(
+                selected_project=selected_project,
+                selected_files=selected_files,
+                model=selected_model,
+                prompt=prompt_input,
+                model_temperature=model_temperature,
+                model_top_p=model_top_p,
+                include_quotes=include_quotes,
+                resume_data=resume_data,
+                mode=processing_mode
+            ) 
 
-                if reduced_df is not None:
-                    # Match reduced codes to initial codes
-                    status_message = st.empty()
-                    status_message.info("Matching reduced codes to initial codes...")
-                    initial_codes_directory = os.path.join(PROJECTS_DIR, selected_project, 'initial_codes')
-                    updated_df = match_reduced_to_original_codes(reduced_df, initial_codes_directory)
-                    amalgamated_df = amalgamate_duplicate_codes(updated_df)
+            if reduced_df is not None:
+                st.session_state.processing_active = False
+                
+                if processing_mode == 'Incremental' and len(processed_files) < len(selected_files):
+                    next_file = os.path.basename(selected_files[len(processed_files)])
+                    st.info(f"Click 'Process' again to process the next file: {next_file}")
+                else:
+                    st.success("Processing complete!")
+                    auto_save.clear_progress()
+                    
+                st.write("Reduced Codes:")
+                amalgamated_df = amalgamate_duplicate_codes(reduced_df)
+                if amalgamated_df is not None:
                     amalgamated_df_for_display = amalgamated_df.copy()
                     amalgamated_df_for_display['quote'] = amalgamated_df_for_display['quote'].apply(format_quotes)
                     amalgamated_df_for_display['original_code'] = amalgamated_df_for_display['original_code'].apply(format_original_codes)
-
-                    # Display results
-                    st.write("Reduced Codes:")
                     st.write(amalgamated_df_for_display)
-                    
-                    # Display intermediate results
-                    st.write("Code Reduction Results:")
+
+                    # Display and save total vs processed vs unique codes
+                    st.write("Code Reduction Tracking:")
                     st.write(results_df)
-                    
-                    # Save reduced codes
-                    status_message.info("Saving reduced codes...")
-                    save_reduced_codes(selected_project, updated_df, 'expanded_reduced_codes')
-                    saved_file_path = save_reduced_codes(selected_project, amalgamated_df, 'reduced_codes')
-                    st.success(f"Reduced codes saved to {saved_file_path}")
-                    
-                    # Download buttons for reduced codes and results
-                    csv = amalgamated_df.to_csv(index=False).encode('utf-8')
-                    st.download_button(
-                        label="Download reduced codes",
-                        data=csv,
-                        file_name="reduced_codes.csv",
-                        mime="text/csv"
-                    )
-                    
                     results_csv = results_df.to_csv(index=False).encode('utf-8')
                     st.download_button(
                         label="Download code reduction results",
@@ -784,17 +858,31 @@ def main():
                         file_name="code_reduction_results.csv",
                         mime="text/csv"
                     )
+
+                    saved_file_path = save_reduced_codes(selected_project, amalgamated_df, 'reduced_codes')
+                    st.success(f"Results saved to {os.path.basename(saved_file_path)}")
+
+                    # Download buttons
+                    csv = amalgamated_df.to_csv(index=False).encode('utf-8')
+                    st.download_button(
+                        label="Download reduced codes",
+                        data=csv,
+                        file_name="reduced_codes.csv",
+                        mime="text/csv"
+                    )
+
+                    # Save results for saturation metrics
+                    results_path = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')
+                    #if os.path.exists(results_path):
+                    #    existing_results = pd.read_csv(results_path)
+                    #    results_df = pd.concat([existing_results, results_df], ignore_index=True)
+                    results_df.to_csv(results_path, index=False)
+
                     
-                    status_message.success("Code reduction process completed successfully!")
-
-                    # Check if in incremental mode and more files to process
-                    if processing_mode == 'Incremental' and len(selected_files) > len(processed_files):
-                        remaining_files = len(selected_files) - len(processed_files)
-                        st.warning(f"Processing paused after current file in incremental mode. {remaining_files} file(s) remaining. Click 'Process' to continue with the next file.")
+                    
                 else:
-                    status_message.error("Failed to reduce codes. Please check the logs for more information and try again.")
+                    st.error("Failed to reduce codes. Check logs for more info.")
 
-        # View previously processed files
         processed_files_list = get_processed_files(selected_project, 'reduced_codes')
         with st.expander("Saved Reduced Codes", expanded=False):
             for processed_file in processed_files_list:
@@ -804,12 +892,10 @@ def main():
                     os.remove(os.path.join(PROJECTS_DIR, selected_project, 'reduced_codes', processed_file))
                     st.success(f"Deleted {processed_file}")
                     st.rerun()
-                
                 df = pd.read_csv(os.path.join(PROJECTS_DIR, selected_project, 'reduced_codes', processed_file))
                 df['quote'] = df['quote'].apply(format_quotes)
                 df['original_code'] = df['original_code'].apply(format_original_codes)
                 st.write(df)
-                
                 csv = df.to_csv(index=False).encode('utf-8')
                 st.download_button(
                     label=f"Download {processed_file}",
@@ -819,7 +905,7 @@ def main():
                 )
 
     else:
-        st.write("Please select a project to continue. If you haven't set up a project yet, head over to the '🏠 Folder Set Up' page to get started.")
+        st.write("Please select a project. If none, go to '🏠 Folder Set Up' to create one.")
 
     manage_api_keys()
 

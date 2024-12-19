@@ -109,6 +109,7 @@ ENV/
 env.bak/
 env/
 tallmesh/
+top10/
 
 # Spyder project settings
 .spyderproject
