@@ -905,7 +905,7 @@ def main():
                 )
 
     else:
-        st.write("Please select a project. If none, go to '🏠 Folder Set Up' to create one.")
+        st.write("Please select a project. If none, go to '🏠 Project Set Up' to create one.")
 
     manage_api_keys()
 
