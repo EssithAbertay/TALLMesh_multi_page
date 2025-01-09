@@ -38,7 +38,7 @@ process_gif = "pages/animations/process_rounded.gif"
 compare_gif = "pages/animations/compare_rounded.gif"
 merge_gif = "pages/animations/merge_rounded.gif"
 
-process_text = 'The LLM compares each set of initial codes...'
+process_text = 'The LLM compares all initial codes...'
 compare_text = '...to identify duplicates based on the prompt...'
 merge_text = "...which are merged into a set of unique codes."
 
