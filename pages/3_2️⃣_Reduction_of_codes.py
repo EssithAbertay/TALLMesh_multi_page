@@ -38,10 +38,25 @@ process_gif = "pages/animations/process_rounded.gif"
 compare_gif = "pages/animations/compare_rounded.gif"
 merge_gif = "pages/animations/merge_rounded.gif"
 
-process_text = 'The LLM compares each set of initial codes...'
+process_text = 'The LLM compares all initial codes...'
 compare_text = '...to identify duplicates based on the prompt...'
 merge_text = "...which are merged into a set of unique codes."
 
+def convert_numpy_types(obj):
+    """Convert numpy types to Python native types for JSON serialization"""
+    import numpy as np
+    
+    if isinstance(obj, np.integer):
+        return int(obj)
+    elif isinstance(obj, np.floating):
+        return float(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, dict):
+        return {key: convert_numpy_types(value) for key, value in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_numpy_types(item) for item in obj]
+    return obj
 
 def collect_all_initial_codes(selected_files):
     """
@@ -71,22 +86,47 @@ def collect_all_initial_codes(selected_files):
     return master_codes_df
 
 def generate_comparison_prompt(target_code, comparison_codes, prompt, include_quotes=False):
+    """
+    Generate a prompt for code comparison that properly handles code IDs.
+    
+    Args:
+        target_code (dict): The code to compare against
+        comparison_codes (list): List of codes to compare with
+        prompt (str): Base prompt template
+        include_quotes (bool): Whether to include quotes in comparison
+    """
     base_prompt = prompt
     target_quote = f',\n        "quote": "{target_code["quote"]}"' if include_quotes else ''
     comparison_text = []
+
+    # Debugging 
+    if not isinstance(target_code.get('code_id'), str):
+        raise ValueError("Target code missing valid code_id")
+    
     for code in comparison_codes:
+        if not isinstance(code.get('code_id'), str):
+            raise ValueError("Comparison code missing valid code_id")
+    
+    for code in comparison_codes:
+        comparison_dict = {
+            "code": code["code"],
+            "description": code["description"],
+            "code_id": code["code_id"]
+        }
         if include_quotes:
-            comparison_text.append(
-                f'{{"code": "{code["code"]}", "description": "{code["description"]}", "quote": "{code["quote"]}"}}'
-            )
-        else:
-            comparison_text.append(
-                f'{{"code": "{code["code"]}", "description": "{code["description"]}"}}'
-            )
+            comparison_dict["quote"] = code["quote"]
+        
+        # Escape any special characters in the values
+        for key, value in comparison_dict.items():
+            if isinstance(value, str):
+                comparison_dict[key] = value.replace('"', '\\"').replace('\n', '\\n')
+        
+        comparison_text.append(json.dumps(comparison_dict))
+    
     comparison_list = ',\n    '.join(comparison_text)
     final_prompt = base_prompt % (
-        target_code["code"],
-        target_code["description"],
+        target_code["code"].replace('"', '\\"').replace('\n', '\\n'),
+        target_code["description"].replace('"', '\\"').replace('\n', '\\n'),
         target_quote,
         f'[\n    {comparison_list}\n]'
     )
@@ -110,8 +150,6 @@ def process_similarity_comparisons(master_codes_df, new_codes_start_idx, model, 
     # Only process new codes, but compare against all
     for idx in range(new_codes_start_idx, len(master_codes_df)):
         target_code = master_codes_df.iloc[idx]
-        
-        # Compare against ALL other codes (excluding self)
         comparison_codes = master_codes_df.drop(idx).reset_index(drop=True)
         
         if len(comparison_codes) == 0:
@@ -130,17 +168,22 @@ def process_similarity_comparisons(master_codes_df, new_codes_start_idx, model, 
                 response = llm_call(model, comparison_prompt, model_temperature, model_top_p)
                 comparison_results = json.loads(response).get('comparisons', {})
                 
-                for comp_idx, is_similar in enumerate(comparison_results.values()):
+                # Modified response handling
+                for code_id, is_similar in comparison_results.items():
                     if is_similar:
-                        similarity_pair = {
-                            'code1': target_code['code'],
-                            'code1_idx': idx,
-                            'code2': comparison_codes.iloc[comp_idx]['code'],
-                            'code2_idx': comparison_codes.index[comp_idx]
-                        }
-                        similarity_results.append(similarity_pair)
+                        # Find the comparison code with matching code_id
+                        matching_idx = comparison_codes.index[comparison_codes['code_id'] == code_id]
+                        if len(matching_idx) > 0:
+                            similarity_pair = {
+                                'code1': target_code['code'],
+                                'code1_idx': idx,
+                                'code2': comparison_codes.iloc[matching_idx[0]]['code'],
+                                'code2_idx': matching_idx[0]
+                            }
+                            similarity_results.append(similarity_pair)
                 break
             except Exception as e:
+                logger.error(f"Error processing comparison (attempt {attempt + 1}): {str(e)}")
                 if attempt < max_retries - 1:
                     sleep(2 ** attempt)
                 else:
@@ -388,16 +431,17 @@ class AutoSaveResume:
         progress = {
             'processed_files': processed_files,
             'reduced_df': reduced_df.to_dict(orient='records'),
-            'total_codes_list': total_codes_list,
-            'unique_codes_list': unique_codes_list,
-            'cumulative_total': cumulative_total,
+            'total_codes_list': convert_numpy_types(total_codes_list),
+            'unique_codes_list': convert_numpy_types(unique_codes_list),
+            'cumulative_total': convert_numpy_types(cumulative_total),
             'mode': mode,
             'run_id': run_id or self.generate_run_id()
         }
+        
         if master_codes_df is not None:
-            progress['master_codes_df'] = master_codes_df.to_dict(orient='records')  # Change from to_json()
+            progress['master_codes_df'] = convert_numpy_types(master_codes_df.to_dict(orient='records'))
         if similarity_results is not None:
-            progress['similarity_results'] = similarity_results
+            progress['similarity_results'] = convert_numpy_types(similarity_results)
         if selected_files is not None:
             progress['selected_files'] = selected_files
 
@@ -905,7 +949,7 @@ def main():
                 )
 
     else:
-        st.write("Please select a project. If none, go to '🏠 Folder Set Up' to create one.")
+        st.write("Please select a project. If none, go to '🏠 Project Set Up' to create one.")
 
     manage_api_keys()
 
