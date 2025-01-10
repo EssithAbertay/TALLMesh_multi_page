@@ -181,16 +181,15 @@ def process_similarity_comparisons(master_codes_df, new_codes_start_idx, model, 
                     
                     for code_id, is_similar in comparison_results.items():
                         if is_similar:
-                            # Find the matching code in comparison_codes
-                            matching_rows = comparison_codes[comparison_codes['code_id'] == code_id]
-                            if not matching_rows.empty:
-                                # Use iloc[0] on matching_rows instead of using matching_idx
-                                matching_code = matching_rows.iloc[0]
+                            matching_idx = comparison_codes.index[
+                                comparison_codes['code_id'] == code_id
+                            ]
+                            if len(matching_idx) > 0:
                                 similarity_pair = {
                                     'code1': target_code['code'],
                                     'code1_idx': idx,
-                                    'code2': matching_code['code'],
-                                    'code2_idx': matching_code.name  # Use the original index
+                                    'code2': comparison_codes.iloc[matching_idx[0]]['code'],
+                                    'code2_idx': matching_idx[0]
                                 }
                                 similarity_results.append(similarity_pair)
                     break
