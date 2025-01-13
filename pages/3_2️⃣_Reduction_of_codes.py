@@ -26,21 +26,13 @@ import time
 from ui_utils import centered_column_with_number
 import uuid
 from time import sleep
-import networkx as nx
+from instructions import reduce_codes_instructions
 
 logo = "pages/static/tmeshlogo.png"
 st.logo(logo)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-process_gif = "pages/animations/process_rounded.gif"
-compare_gif = "pages/animations/compare_rounded.gif"
-merge_gif = "pages/animations/merge_rounded.gif"
-
-process_text = 'The LLM compares all initial codes...'
-compare_text = '...to identify duplicates based on the prompt...'
-merge_text = "...which are merged into a set of unique codes."
 
 def convert_numpy_types(obj):
     """Convert numpy types to Python native types for JSON serialization"""
@@ -698,56 +690,7 @@ def main():
     if 'current_prompt' in st.session_state:
         del st.session_state.current_prompt 
 
-    st.header(":orange[Reduction of Codes]")
-
-    with st.expander("Instructions"):
-        st.write("""
-        The Reduction of Codes page is where you refine and consolidate the initial codes generated in the previous step. 
-        This process helps to identify patterns and reduce redundancy in your coding.
-        """)
-        col1, col2, col3 = st.columns(3)
-        centered_column_with_number(col1, 1, process_text, process_gif)
-        centered_column_with_number(col2, 2, compare_text, compare_gif)
-        centered_column_with_number(col3, 3, merge_text, merge_gif)
-
-        st.markdown(
-            """
-            <p style="font-size: 8px; color: gray; text-align: center;">
-            <a href="https://www.flaticon.com/animated-icons" title="document animated icons" style="color: gray; text-decoration: none;">
-            Animated icons created by Freepik - Flaticon
-            </a>
-            </p>
-            """,
-            unsafe_allow_html=True
-        )
-
-        st.subheader(":orange[1. Project and File Selection]")
-        st.write("""
-        - Select your project.
-        - Choose the files you want to process.
-        """)
-
-        st.subheader(":orange[2. LLM Settings]")
-        st.write("""
-        - Choose the model.
-        - Select or edit the prompt.
-        - Adjust temperature and top_p.
-        """)
-
-        st.subheader(":orange[3. Processing and Results]")
-        st.write("""
-        - Choose 'automatic' or 'incremental' processing.
-        - Click 'Process' to start.
-        - Once complete, view and download results.
-        """)
-
-        st.subheader(":orange[4. Saved Reduced Codes]")
-        st.write("""
-        - View previously processed reduced code files.
-        - Download or delete them as needed.
-        """)
-
-        st.info("Code reduction helps refine your analysis and prepare for thematic identification.")
+    reduce_codes_instructions()
 
     st.subheader(":orange[Project & Data Selection]")
     projects = get_projects()

@@ -20,7 +20,7 @@ from llm_utils import llm_call, default_models
 import logging
 import tooltips
 import time
-from ui_utils import centered_column_with_number, create_circle_number
+from instructions import finding_themes_instructions
 
 # Set logo
 logo = "pages/static/tmeshlogo.png"
@@ -30,12 +30,6 @@ st.logo(logo)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-processing_gif = "pages/animations/data_processing_rounded.gif"
-connection_gif = "pages/animations/connection_rounded.gif"
-
-
-processing_text = 'The LLM analyses the reduced unique codes'
-connection_text = '...and groups them into overarching themes...'
 
 # Constants
 PROJECTS_DIR = 'projects'
@@ -439,6 +433,11 @@ def process_data(themes_df, codes_df):
 
     return final_df
 
+
+# ==============================================================================
+#                             MAIN STREAMLIT FUNCTION
+# ==============================================================================
+
 def main():
     """
     The main function that sets up the Streamlit interface and handles user interactions.
@@ -447,80 +446,7 @@ def main():
     if 'current_prompt' in st.session_state:
         del st.session_state.current_prompt
 
-    st.header(":orange[Finding Themes]")
-
-    # Display instructions in an expandable section
-    with st.expander("Instructions"):
-        st.write("""
-        The Finding Themes page is where you identify overarching themes from your reduced codes. This step helps you synthesize your data into meaningful patterns. 
-        """)
-
-        # Create columns for layout for gifs and main points
-        col1, col2= st.columns(2)
-
-        # Display content in each column
-        centered_column_with_number(col1, 1, processing_text, processing_gif)
-        centered_column_with_number(col2, 2, connection_text, connection_gif)
-
-        st.markdown(
-            """
-            <p style="font-size: 8px; color: gray; text-align: center;">
-            <a href="https://www.flaticon.com/animated-icons" title="document animated icons" style="color: gray; text-decoration: none;">
-            Animated icons created by Freepik - Flaticon
-            </a>
-            </p>
-            """,
-            unsafe_allow_html=True
-        )
-
-        st.subheader(":orange[1. Project and File Selection]")
-        st.write("""
-        - Select your project from the dropdown menu.
-        - Once a project is selected, you'll see a list of reduced code files available for processing.
-        - Choose the files you want to analyze. You can select individual files or use the "Select All" checkbox.
-        """)
-
-        st.subheader(":orange[2. LLM Settings]")
-        st.write("""
-        - Choose the AI model you want to use for theme identification.
-        - Select a preset prompt or edit the provided prompt to guide the theme finding process.
-        - Adjust the model temperature and top_p values using the sliders. These parameters influence the AI's creativity and output variability.
-        """)
-
-        st.subheader(":orange[3. Processing and Results]")
-        st.write("""
-        - Click the "Process" button to start finding themes.
-        - The system will analyze the selected reduced code files and generate themes.
-        - Once complete, you'll see:
-        - An expandable section for each generated theme, showing the theme name, description, and associated codes.
-        - A reference section showing all codes and their descriptions used in the analysis.
-        - You can download the generated themes as a CSV file.
-        """)
-
-        st.subheader(":orange[4. Saved Themes]")
-        st.write("""
-        - At the bottom of the page, you'll find an expandable section showing previously generated theme files.
-        - You can view, delete, or download these saved theme files.
-        """)
-
-        st.subheader("Key Features")
-        st.write("""
-        - :orange[Automated theme generation:] The AI identifies patterns across your reduced codes to suggest overarching themes.
-        - :orange[Theme descriptions:] Each theme comes with a detailed description to explain its meaning and relevance.
-        - :orange[Code mapping:] The system shows which codes are associated with each theme, maintaining the connection between your data and the higher-level themes.
-        - :orange[Flexibility:] You can adjust the prompt and model settings to influence how themes are generated and organized.
-        """)
-
-        st.subheader(":orange[Tips]")
-        st.write("""
-        - Review the generated themes carefully. While the AI is helpful, your expertise and understanding of the context are crucial for validating and refining these themes.
-        - :orange[Experiment with different prompts and settings] if you're not satisfied with the initial results. Different approaches can yield different insights.
-        - Consider the number of themes generated. Too few might oversimplify your data, while too many might make it difficult to draw meaningful conclusions.
-        - Use the reference section to understand how individual codes contribute to the larger themes.
-        - Remember that theme generation is an iterative process. You may need to run this step multiple times, adjusting your approach based on the results.
-        """)
-
-        st.info("Finding themes is a crucial step in synthesizing your analysis. It helps you move from detailed codes to broader, more conceptual understanding of your data. Take your time to reflect on the themes and how they relate to your research questions.")
+    finding_themes_instructions()
 
     st.subheader(":orange[Project & Data Selection]")
 
