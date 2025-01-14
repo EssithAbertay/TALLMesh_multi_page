@@ -335,7 +335,7 @@ def saturation_metric_instructions():
         st.subheader(":orange[What is the Saturation Metric?]")
 
         st.info("""
-        In the context of this paper, saturation is quantitatively assessed using a metric called **Initial Thematic Saturation (ITS)**. ITS focuses on the emergence of new codes during the analysis. The metric is particularly important when using Large Language Models (LLMs) for TA, as it helps determine if the model's analysis is thorough.
+        In the context of this tool, saturation is quantitatively assessed using a metric called **Initial Thematic Saturation (ITS)**. ITS focuses on the emergence of new codes during the analysis. The metric is particularly important when using Large Language Models (LLMs) for TA, as it helps determine if the model's analysis is thorough.
         """)
 
         st.subheader(":orange[Understanding ITS: A Simplified Explanation]")

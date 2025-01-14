@@ -7,7 +7,6 @@ import shutil
 from project_utils import get_projects
 from instructions import project_setup_instructions
 
-
 # Set logo
 logo = "pages/static/tmeshlogo.png"
 st.logo(logo)
@@ -232,6 +231,10 @@ if 'delete_project' not in st.session_state:
 
 if 'uploaded_files' not in st.session_state:
     st.session_state.uploaded_files = None
+
+# ==============================================================================
+#                             MAIN STREAMLIT FUNCTION
+# ==============================================================================
 
 # Main function to run the Streamlit app
 def main():

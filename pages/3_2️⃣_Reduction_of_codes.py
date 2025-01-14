@@ -686,6 +686,11 @@ def format_original_codes(original_codes):
 def convert_df(df):
     return df.to_csv().encode('utf-8')
 
+
+# ==============================================================================
+#                             MAIN STREAMLIT FUNCTION
+# ==============================================================================
+
 def main():
     if 'current_prompt' in st.session_state:
         del st.session_state.current_prompt 
