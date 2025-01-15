@@ -888,10 +888,11 @@ def main():
 
                     # Save results for saturation metrics
                     results_path = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')
-                    #if os.path.exists(results_path):
-                    #    existing_results = pd.read_csv(results_path)
-                    #    results_df = pd.concat([existing_results, results_df], ignore_index=True)
-                    results_df.to_csv(results_path, index=False)
+                    if os.path.exists(results_path):
+                        existing_results = pd.read_csv(results_path)
+                        results_df = pd.concat([existing_results, results_df], ignore_index=True)
+                    else:
+                        results_df.to_csv(results_path, index=False)
 
                     
                     
