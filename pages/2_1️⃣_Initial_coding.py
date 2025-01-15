@@ -16,7 +16,7 @@ from llm_utils import llm_call, default_models
 import logging
 import tooltips
 import time
-from ui_utils import centered_column_with_number, create_circle_number
+from instructions import initial_coding_instructions
 
 
 logging.basicConfig(level=logging.INFO)
@@ -25,15 +25,6 @@ logger = logging.getLogger(__name__)
 # Set logo
 logo = "pages/static/tmeshlogo.png"
 st.logo(logo)
-
-search_gif = "pages/animations/search_rounded.gif"
-highlighter_gif = "pages/animations/highlight_rounded.gif"
-order_gif = "pages/animations/order_rounded.gif"
-
-
-search_text = 'During initial coding, the LLM analyzes each document…'
-highlighter_text = '...to extract quotes based on the user prompt…'
-order_text = "...which are named and compiled into lists of 'initial codes'."
 
 # function to load users own custom prompts
 def load_custom_prompts():
@@ -138,87 +129,16 @@ def process_file(file_path, model, prompt, model_temperature, model_top_p, statu
     
     return json.dumps(combined_output)
 
+# ==============================================================================
+#                             MAIN STREAMLIT FUNCTION
+# ==============================================================================
+
 def main():
     # session_state persists through page changes so need to reset the text input message 
     if 'current_prompt' in st.session_state:
         del st.session_state.current_prompt 
 
-    st.header(":orange[Initial Coding]")
-
-    with st.expander("Instructions"):
-        st.write("""
-        The Initial Coding page is where you begin the analysis of your data. This step involves generating initial codes for each of your uploaded files using Large Language Models (LLMs). Read the guide below to find out more.
-        """)
-
-        # Create columns for layout for gifs and main points
-        col1, col2, col3 = st.columns(3)
-
-        # Display content in each column
-        centered_column_with_number(col1, 1, search_text, search_gif)
-        centered_column_with_number(col2, 2, highlighter_text, highlighter_gif)
-        centered_column_with_number(col3, 3, order_text, order_gif)
-
-        st.markdown(
-            """
-            <p style="font-size: 8px; color: gray; text-align: center;">
-            <a href="https://www.flaticon.com/animated-icons" title="document animated icons" style="color: gray; text-decoration: none;">
-            Animated icons created by Freepik - Flaticon
-            </a>
-            </p>
-            """,
-            unsafe_allow_html=True
-        )
-        st.subheader(":orange[1. Project Selection]")
-        st.write("""
-        - Use the dropdown menu to select the project you want to work on.
-        - If you haven't set up a project yet, you'll be prompted to go to the 'Folder Set Up' page first.
-        """)
-
-        st.subheader(":orange[2. File Selection]")
-        st.write("""
-        - Once a project is selected, you'll see a list of files available for processing.
-        - You can select individual files or use the "Select All" checkbox to choose all files at once.
-        - :orange[Files that have already been processed will be marked with a '⚠️ Already processed' label .]
-        """)
-
-        st.subheader(":orange[3. LLM Settings]")
-        st.write("""
-        - Choose the AI model you want to use for the analysis from the dropdown menu. 
-        - Select a preset prompt or edit the provided prompt to customize your analysis.
-        - Adjust the model temperature and top_p values using the sliders. These parameters control the creativity and randomness of the AI's output.
-        """)
-
-        st.info("Make sure you have provided an API key for the provider of the model you have selected (e.g., Anthropic, Azure, OpenAI)")
-
-        st.subheader(":orange[4. Processing Files]")
-        st.write("""
-        - After configuring your settings, click the "Process" button to start the initial coding.
-        - :orange[The system will process each selected file and generate initial codes.]
-        - A progress bar will show you the status of the processing.
-        """)
-
-        st.subheader(":orange[5. Viewing Results]")
-        st.write("""
-        - Once processing is complete, you'll see the results for each file in expandable sections.
-        - Each section will show a table with the generated codes, their descriptions, and relevant quotes.
-        - You can download the results for each file individually using the provided download buttons.
-        """)
-
-        st.subheader(":orange[6. Saved Initial Codes]")
-        st.write("""
-        - At the bottom of the page, you'll find an expandable section showing previously processed files.
-        - You can view, delete, or download these saved initial codes.
-        """)
-
-        st.subheader(":orange[Tips]")
-        st.write("""
-        - :orange[Experiment with different prompts and model settings to get the best results for your data.]
-        - If you're not satisfied with the initial codes, you can delete them and reprocess the file with different settings.
-        - Remember that this is just the first step in the analysis process. The codes generated here will be refined in later stages.
-        """)
-
-        st.info("Initial coding sets the foundation for your thematic analysis. Take your time to review the generated codes and ensure they capture the essence of your data before moving on to the next stage.")
-
+    initial_coding_instructions()
 
     st.subheader(":orange[Project & Data Selection]")
 
