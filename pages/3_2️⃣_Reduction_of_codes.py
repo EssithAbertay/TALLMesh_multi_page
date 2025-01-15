@@ -640,20 +640,24 @@ def process_files_with_autosave(selected_project, selected_files, model, prompt,
     
     # Handle autosave with run_id
     if mode == 'Incremental' and len(processed_files) < len(selected_files):
-        auto_save.save_progress(
-            processed_files=processed_files,
-            reduced_df=reduced_df,
-            total_codes_list=[total_codes],
-            unique_codes_list=[len(reduced_df['code'].unique())],
-            cumulative_total=current_processed,
-            mode=mode,
-            master_codes_df=master_codes_df,
-            similarity_results=similarity_results,
-            selected_files=selected_files,
-            run_id=run_id
-        )
-        next_file = os.path.basename(selected_files[len(processed_files)])
-        processing_message.info(f"Ready to process: {next_file}")
+        try:
+            auto_save.save_progress(
+                processed_files=processed_files,
+                reduced_df=reduced_df,
+                total_codes_list=[total_codes],
+                unique_codes_list=[len(reduced_df['code'].unique())],
+                cumulative_total=current_processed,
+                mode=mode,
+                master_codes_df=master_codes_df,
+                similarity_results=similarity_results,
+                selected_files=selected_files,
+                run_id=run_id
+            )
+            next_file = os.path.basename(selected_files[len(processed_files)])
+            processing_message.info(f"Ready to process: {next_file}")
+        except Exception as e:
+            st.error(f"Error saving progress: {str(e)}. Progress may be incomplete.")
+            raise
     else:
         auto_save.clear_progress()
         processing_message.empty()
