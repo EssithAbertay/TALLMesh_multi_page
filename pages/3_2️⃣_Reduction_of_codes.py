@@ -34,6 +34,35 @@ st.logo(logo)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def save_expanded_reduced_codes(project_name, df):
+    """Create expanded format required by visualizations"""
+    expanded_rows = []
+    
+    for _, row in df.iterrows():
+        # Parse JSON arrays
+        original_codes = json.loads(row['original_code'])
+        quotes = json.loads(row['quote'])
+        
+        # Create a row for each original code and quote combination
+        for orig_code in original_codes:
+            for quote_obj in quotes:
+                expanded_rows.append({
+                    'code': row['code'],
+                    'description': row['description'],
+                    'original_code': orig_code,
+                    'quote': quote_obj['text'],
+                    'source': quote_obj['source']
+                })
+    
+    expanded_df = pd.DataFrame(expanded_rows)
+    
+    # Save to expanded_reduced_codes folder
+    output_folder = os.path.join(PROJECTS_DIR, project_name, 'expanded_reduced_codes')
+    os.makedirs(output_folder, exist_ok=True)
+    output_file = os.path.join(output_folder, f"expanded_reduced_codes_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv")
+    expanded_df.to_csv(output_file, index=False)
+    return output_file
+
 def convert_numpy_types(obj):
     """Convert numpy types to Python native types for JSON serialization"""
     import numpy as np
@@ -637,6 +666,9 @@ def process_files_with_autosave(selected_project, selected_files, model, prompt,
         else:
             results_df['run_id'] = run_id
     results_df.to_csv(results_path, index=False)
+
+    # Generate and save expanded format
+    expanded_file = save_expanded_reduced_codes(selected_project, reduced_df)
     
     # Handle autosave with run_id
     if mode == 'Incremental' and len(processed_files) < len(selected_files):
@@ -885,6 +917,10 @@ def main():
                         file_name="reduced_codes.csv",
                         mime="text/csv"
                     )
+
+                    # Generate and save expanded format
+                    expanded_file = save_expanded_reduced_codes(selected_project, amalgamated_df)
+                    st.success(f"Expanded format saved to {os.path.basename(expanded_file)}")
 
                     # Save results for saturation metrics
                     results_path = os.path.join(PROJECTS_DIR, selected_project, 'code_reduction_results.csv')
