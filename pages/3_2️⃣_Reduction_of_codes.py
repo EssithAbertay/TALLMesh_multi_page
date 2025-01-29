@@ -27,6 +27,8 @@ from ui_utils import centered_column_with_number
 import uuid
 from time import sleep
 from instructions import reduce_codes_instructions
+from text_processing import generate_comparison_prompt, validate_json_response
+
 
 logo = "pages/static/tmeshlogo.png"
 st.logo(logo)
@@ -151,6 +153,7 @@ def generate_comparison_prompt(target_code, comparison_codes, prompt, include_qu
         target_quote,
         f'[\n    {comparison_list}\n]'
     )
+
     return final_prompt
 
 def process_similarity_comparisons(master_codes_df, new_codes_start_idx, model, prompt, 
@@ -192,13 +195,22 @@ def process_similarity_comparisons(master_codes_df, new_codes_start_idx, model, 
                 prompt,
                 include_quotes
             )
+
+            #print('\n\n')
+            #print('Prompt')
+            #print(comparison_prompt)
+            #print('\n\n')
             
             # API call and result processing remains same
             max_retries = 3
             for attempt in range(max_retries):
                 try:
                     response = llm_call(model, comparison_prompt, model_temperature, model_top_p)
-                    comparison_results = json.loads(response).get('comparisons', {})
+                    parsed_response = validate_json_response(response)
+                    if parsed_response is None:
+                        logger.error("Failed to parse LLM response as valid JSON")
+                        continue
+                    comparison_results = parsed_response.get('comparisons', {})
                     
                     for code_id, is_similar in comparison_results.items():
                         if is_similar:
