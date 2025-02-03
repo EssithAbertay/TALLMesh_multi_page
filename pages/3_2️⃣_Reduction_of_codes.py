@@ -27,6 +27,8 @@ from ui_utils import centered_column_with_number
 import uuid
 from time import sleep
 from instructions import reduce_codes_instructions
+from text_processing import generate_comparison_prompt, validate_json_response
+
 
 logo = "pages/static/tmeshlogo.png"
 st.logo(logo)
@@ -151,6 +153,7 @@ def generate_comparison_prompt(target_code, comparison_codes, prompt, include_qu
         target_quote,
         f'[\n    {comparison_list}\n]'
     )
+
     return final_prompt
 
 def process_similarity_comparisons(master_codes_df, new_codes_start_idx, model, prompt, 
@@ -192,13 +195,30 @@ def process_similarity_comparisons(master_codes_df, new_codes_start_idx, model, 
                 prompt,
                 include_quotes
             )
+
+            #print('\n\n')
+            #print('Prompt')
+            #print(comparison_prompt)
+            #print('\n\n')
             
             # API call and result processing remains same
             max_retries = 3
             for attempt in range(max_retries):
                 try:
                     response = llm_call(model, comparison_prompt, model_temperature, model_top_p)
-                    comparison_results = json.loads(response).get('comparisons', {})
+
+                    print('Raw response')
+                    print(response)
+
+                    parsed_response = validate_json_response(response)
+                    if parsed_response is None:
+                        logger.error("Failed to parse LLM response as valid JSON")
+                        continue
+
+                    print('Cleaned response')
+                    print(parsed_response)
+                    
+                    comparison_results = parsed_response.get('comparisons', {})
                     
                     for code_id, is_similar in comparison_results.items():
                         if is_similar:
@@ -214,6 +234,9 @@ def process_similarity_comparisons(master_codes_df, new_codes_start_idx, model, 
                                     'code2_idx': matching_code.name  # Use the original index
                                 }
                                 similarity_results.append(similarity_pair)
+                                
+                                print('Similarity results')
+                                print(similarity_results)
                     break
                 except Exception as e:
                     logger.error(f"Error processing comparison (attempt {attempt + 1}): {str(e)}")
@@ -232,7 +255,7 @@ def process_similarity_comparisons(master_codes_df, new_codes_start_idx, model, 
     status_text.empty()
     return similarity_results
 
-def reduce_based_on_similarities(similarity_results, master_codes_df, model, model_temperature, model_top_p, include_quotes=False):
+def reduce_based_on_similarities(similarity_results, master_codes_df, model, model_temperature, model_top_p, include_quotes=False, include_merge_explanation=True):
     logger = logging.getLogger(__name__)
 
     def log_group_details(group_idx, group, group_codes):
@@ -245,36 +268,57 @@ def reduce_based_on_similarities(similarity_results, master_codes_df, model, mod
             logger.info(f"    Code: {code['code']}")
             logger.info(f"    Original code: {code.get('original_code', 'Not found')}")
 
-    def generate_merge_prompt(codes_to_merge):
-        merge_prompt = """Create a merged code from the following similar codes. Provide:
-            1. A concise name for the merged code (maximum 6 words)
-            2. A detailed description (up to 25 words) explaining the merged code's meaning
-            3. A brief explanation (max 50 words) of why these codes were merged
+    def generate_merge_prompt(codes_to_merge, include_merge_explanation):
+        """
+        Dynamically build the prompt, omitting merge explanation if not requested.
+        """
+        if include_merge_explanation:
+            merge_prompt = """Create a merged code from the following similar codes. Provide:
+                1. A concise name for the merged code (maximum 6 words)
+                2. A detailed description (up to 25 words) explaining the merged code's meaning
+                3. A brief explanation (max 50 words) of why these codes were merged
 
-            The codes to merge are:
-            {codes}
+                The codes to merge are:
+                {codes}
 
-            Format the response as a JSON object with this structure:
-            {{
-                "merged_code": {{
-                    "code": "name of merged code",
-                    "description": "merged description",
-                    "merge_explanation": "explanation of merge"
+                Format the response as a JSON object with this structure:
+                {{
+                    "merged_code": {{
+                        "code": "name of merged code",
+                        "description": "merged description",
+                        "merge_explanation": "explanation of merge"
+                    }}
                 }}
-            }}
 
-            Important! Your response must be a valid JSON object with no additional text."""
-        
+                Important! Your response must be a valid JSON object with no additional text."""
+        else:
+            merge_prompt = """Create a merged code from the following similar codes. Provide:
+                1. A concise name for the merged code (maximum 6 words)
+                2. A detailed description (up to 25 words) explaining the merged code's meaning
+
+                The codes to merge are:
+                {codes}
+
+                Format the response as a JSON object with this structure:
+                {{
+                    "merged_code": {{
+                        "code": "name of merged code",
+                        "description": "merged description"
+                    }}
+                }}
+
+                Important! Your response must be a valid JSON object with no additional text."""
+
         codes_text = []
-        for _, code in codes_to_merge.iterrows():
-            code_text = (f'Code ID: {code["code_id"]}\n'
-                         f'Code: "{code["code"]}"\n'
-                         f'Description: "{code["description"]}"\n'
-                         f'Original Code: "{code.get("original_code", "Not found")}"')
-            if include_quotes and 'quote' in code:
-                code_text += f'\nQuote: "{code["quote"]}"'
+        for _, code_row in codes_to_merge.iterrows():
+            code_text = (f'Code ID: {code_row["code_id"]}\n'
+                         f'Code: "{code_row["code"]}"\n'
+                         f'Description: "{code_row["description"]}"\n'
+                         f'Original Code: "{code_row.get("original_code", "Not found")}"')
+            if include_quotes and 'quote' in code_row:
+                code_text += f'\nQuote: "{code_row["quote"]}"'
             codes_text.append(code_text)
-        
+
         return merge_prompt.format(codes='\n\n'.join(codes_text))
 
     def find_code_groups():
@@ -327,7 +371,7 @@ def reduce_based_on_similarities(similarity_results, master_codes_df, model, mod
         log_group_details(idx, group, group_codes)
 
         if len(group_codes) > 1:
-            merge_prompt = generate_merge_prompt(group_codes)
+            merge_prompt = generate_merge_prompt(group_codes, include_merge_explanation)
             logger.info("\nGenerated merge prompt:")
             logger.info(merge_prompt)
             try:
@@ -335,6 +379,11 @@ def reduce_based_on_similarities(similarity_results, master_codes_df, model, mod
                 logger.info("\nLLM Response:")
                 logger.info(response)
                 merged_details = json.loads(response)['merged_code']
+                time.sleep(1) # Added a v short sleep, anything to avoid 429
+
+                if 'merge_explanation' not in merged_details:
+                    merged_details['merge_explanation'] = ""
+
                 all_original_codes = []
                 seen_codes = set()  # Track unique codes
                 for _, code in group_codes.iterrows():
@@ -423,7 +472,7 @@ def reduce_based_on_similarities(similarity_results, master_codes_df, model, mod
             reduced_code = {
                 'code': single_code['code'],
                 'description': single_code['description'],
-                'merge_explanation': '',
+                'merge_explanation': '',  # Single code fallback
                 'original_code': json.dumps([single_code['code']]),
                 'quote': json.dumps([{'text': single_code['quote'], 'source': single_code['source']}]),
                 'source': single_code['source']
@@ -549,7 +598,7 @@ def save_reduced_codes(project_name, df, folder):
 
 def process_files_with_autosave(selected_project, selected_files, model, prompt, 
                                model_temperature, model_top_p, include_quotes, 
-                               resume_data=None, mode='Automatic'):
+                               resume_data=None, mode='Automatic', include_merge_explanation=True):
     """
     Unified processing function with streamlined status messaging.
     """
@@ -622,7 +671,8 @@ def process_files_with_autosave(selected_project, selected_files, model, prompt,
         model=model,
         model_temperature=model_temperature,
         model_top_p=model_top_p,
-        include_quotes=include_quotes
+        include_quotes=include_quotes,
+        include_merge_explanation=include_merge_explanation
     )
 
     # Update tracking
@@ -816,6 +866,12 @@ def main():
             help='Include quotes in comparisons for more context.'
         )
 
+        include_merge_explanation = st.checkbox(
+            label="Include merge explanation in merges",
+            value=True,
+            help="If unticked, the LLM will not generate a merge explanation (saving tokens)."
+        )
+
         st.subheader(":orange[Processing Mode]")
         processing_mode = st.radio(
             "Choose processing mode:",
@@ -874,7 +930,8 @@ def main():
                 model_top_p=model_top_p,
                 include_quotes=include_quotes,
                 resume_data=resume_data,
-                mode=processing_mode
+                mode=processing_mode,
+                include_merge_explanation=include_merge_explanation
             ) 
 
             if reduced_df is not None:
