@@ -148,9 +148,9 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 ## Acknowledgements
 
-- [Prof. Stefano De Paoli](https://www.linkedin.com/in/stefanodepaoli/) and [Dr. Daniel Rough](https://www.linkedin.com/in/daniel-rough-87ba47291/) for their research and development of this tool
+- [Prof. Stefano De Paoli](https://www.linkedin.com/in/stefanodepaoli/) and [Alex Fawzi](https://www.linkedin.com/in/alex-fawzi-94710199/)for their research and development of this tool
 - The British Academy for their support with funding for developing the GUI
-- [Alex Fawzi](https://www.linkedin.com/in/alex-fawzi-94710199/) for significant improvements to the first version of the software 
+-  for significant improvements to the first version of the software 
 - Virginia Braun and Victoria Clarke for their seminal work on Thematic Analysis
 
 For questions or suggestions, please contact the project PIs: [Prof. Stefano De Paoli](mailto:s.depaoli@abertay.ac.uk) & [Dr. Daniel Rough](mailto:drough001@dundee.ac.uk).
