@@ -153,7 +153,7 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 -  for significant improvements to the first version of the software 
 - Virginia Braun and Victoria Clarke for their seminal work on Thematic Analysis
 
-For questions or suggestions, please contact the project PIs: [Prof. Stefano De Paoli](mailto:s.depaoli@abertay.ac.uk) & [Dr. Daniel Rough](mailto:drough001@dundee.ac.uk).
+For questions or suggestions, please contact the project PIs: [Prof. Stefano De Paoli](mailto:s.depaoli@abertay.ac.uk).
 
 
 ---
