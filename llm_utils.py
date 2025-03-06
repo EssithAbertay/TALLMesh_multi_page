@@ -88,7 +88,7 @@ def llm_call(model, full_prompt, model_temperature, model_top_p):
 
                 client = AzureOpenAI(
                     api_key=azure_settings['api_key'],
-                    api_version="2024-02-01",
+                    api_version="2024-10-21",
                     azure_endpoint=azure_settings['endpoint']
                 )
                 response = client.chat.completions.create(
