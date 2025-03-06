@@ -93,7 +93,7 @@ During this stage the LLM is tasked with identifying patterns and grouping assoc
 1. Start the Streamlit app:
 
    ```
-   streamlit run Thematic_Analysis_LLMs.py
+   streamlit run Tallmesh.py
    ```
 
 2. Follow the on-screen instructions to:

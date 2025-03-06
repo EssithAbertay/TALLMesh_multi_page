@@ -43,7 +43,7 @@ st.markdown("📃 De Paoli, S. (2024). Further Explorations on the Use of Large 
 st.markdown("📃 Mathis, W. S., Zhao, S., Pratt, N., Weleff, J., & De Paoli, S. (2024). Inductive thematic analysis of healthcare qualitative interviews using open-source large language models: How does it compare to traditional methods? PubMed. [Read](https://pubmed.ncbi.nlm.nih.gov/39067136/)")
 st.divider()
 st.write ("This is a research project and the interface and underlying scripts are only experimental and offered as they are")
-st.markdown("For questions or suggestions please contact the PIs: [Prof. Stefano De Paoli](https://www.linkedin.com/in/stefanodepaoli/) & [Dr. Daniel Rough](https://www.linkedin.com/in/daniel-rough-87ba47291/)")
+st.markdown("For questions or suggestions please contact the PI: [Prof. Stefano De Paoli](https://www.linkedin.com/in/stefanodepaoli/)")
 st.divider()
 st.write("We received initial support from the British Academy to design the Graphical User Interface.")
 st.divider()
