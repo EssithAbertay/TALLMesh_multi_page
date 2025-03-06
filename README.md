@@ -66,7 +66,7 @@ This stage involves the reduction of duplicate codes to yield a list of unique c
 During this stage the LLM is tasked with identifying patterns and grouping associated codes together under broader themes.
 
 
-## Installation
+## Local Installation
 
 1. Clone the repository:
 
@@ -102,6 +102,28 @@ During this stage the LLM is tasked with identifying patterns and grouping assoc
    - Configure API keys for LLM providers
    - Perform each phase of the thematic analysis
    - Generate visualizations and reports
+
+## Streamlit Cloud Deployment
+
+### Streamlit Cloud Deployment
+
+For a simpler deployment option without setting up a local environment, you can deploy TALLMesh directly to Streamlit Cloud:
+
+1. Fork the repository on GitHub:
+   * Visit https://github.com/sdptn/TALLMesh_multi_page
+   * Click the "Fork" button in the top-right corner to create your own copy
+
+2. Deploy to Streamlit Cloud:
+   * Go to https://streamlit.io/cloud
+   * Sign in with your GitHub account
+   * Click "New app"
+   * Select your forked repository
+   * Set the main file path to "Tallmesh.py"
+   * Click "Deploy"
+
+3. Your application is now live and accessible via the provided Streamlit Cloud URL.
+
+4. Ensure you set sharing settings appropriately, streamlit does not natively support separate user sessions so any API keys or data uploaded will be accessible to anyone who has access to your deployed application
 
 ## Project Structure
 
@@ -148,12 +170,12 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 ## Acknowledgements
 
-- [Prof. Stefano De Paoli](https://www.linkedin.com/in/stefanodepaoli/) and [Alex Fawzi](https://www.linkedin.com/in/alex-fawzi-94710199/)for their research and development of this tool
+- [Prof. Stefano De Paoli](https://www.linkedin.com/in/stefanodepaoli/) and [Alex Fawzi](https://www.linkedin.com/in/alex-fawzi-94710199/) for their research and development of this tool
 - The British Academy for their support with funding for developing the GUI
 -  for significant improvements to the first version of the software 
 - Virginia Braun and Victoria Clarke for their seminal work on Thematic Analysis
 
-For questions or suggestions, please contact the project PIs: [Prof. Stefano De Paoli](mailto:s.depaoli@abertay.ac.uk) & [Dr. Daniel Rough](mailto:drough001@dundee.ac.uk).
+For questions or suggestions, please contact the project PI: [Prof. Stefano De Paoli](mailto:s.depaoli@abertay.ac.uk)
 
 
 ---
