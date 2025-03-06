@@ -123,7 +123,7 @@ For a simpler deployment option without setting up a local environment, you can 
 
 3. Your application is now live and accessible via the provided Streamlit Cloud URL.
 
-4. Ensure you set sharing settings appropriately, streamlit does not natively support separate user sessions so any API keys or data uploaded will be accessible to anyone who has access to your deployed application
+4. Ensure you set sharing settings appropriately, streamlit does not natively support separate user sessions so any API keys or data uploaded will be accessible to anyone who has access to your deployed application.
 
 ## Project Structure
 
