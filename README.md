@@ -71,8 +71,8 @@ During this stage the LLM is tasked with identifying patterns and grouping assoc
 1. Clone the repository:
 
    ```
-   git clone https://github.com/flipflop4/TALLMesh_multi_page.git 
-   cd tallmesh_multi_page
+   git clone https://github.com/sdptn/TALLMesh_multi_page
+   cd TALLMesh_multi_page
    ```
 
 2. Create a virtual environment:
@@ -93,7 +93,7 @@ During this stage the LLM is tasked with identifying patterns and grouping assoc
 1. Start the Streamlit app:
 
    ```
-   streamlit run Tallmesh.py
+   streamlit run TALLMesh.py
    ```
 
 2. Follow the on-screen instructions to:
@@ -104,8 +104,6 @@ During this stage the LLM is tasked with identifying patterns and grouping assoc
    - Generate visualizations and reports
 
 ## Streamlit Cloud Deployment
-
-### Streamlit Cloud Deployment
 
 For a simpler deployment option without setting up a local environment, you can deploy TALLMesh directly to Streamlit Cloud:
 
