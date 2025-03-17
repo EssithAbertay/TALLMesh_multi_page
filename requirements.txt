@@ -69,7 +69,6 @@ msal==1.30.0
 msal-extensions==1.2.0
 networkx==3.3
 nibabel==5.2.1
-nipype==1.8.6
 numpy==2.0.1
 olefile==0.47
 openai==1.37.0
