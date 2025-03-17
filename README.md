@@ -12,6 +12,9 @@ It uses streamlit for the GUI elements, and for the analysis it uses code and id
 
 4. [📃 Mathis, W. S., Zhao, S., Pratt, N., Weleff, J., & De Paoli, S. (2024). *Inductive thematic analysis of healthcare qualitative interviews using open-source large language models: How does it compare to traditional methods?* PubMed.](https://pubmed.ncbi.nlm.nih.gov/39067136/)
 
+## Discord
+
+https://discord.com/invite/HmdEyE3x
 
 ## Table of Contents
 
