@@ -180,3 +180,6 @@ For questions or suggestions, please contact the project PI: [Prof. Stefano De P
 
 
 ---
+## Citation
+
+De Paoli S. and Fawzi A. (2025). TALLMesh (0.1) [Computer software]. GitHub. URL: https://github.com/sdptn/TALLMesh_multi_page
