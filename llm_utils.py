@@ -11,7 +11,7 @@ import re
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-default_models = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo"] #, "claude-sonnet-3.5"] # Anthropic model removed, dependency issue with anthropic package
+default_models = ["gpt-4o-mini", "gpt-4o", "gpt-4.1", "gpt-4.1-2025-04-14", "gpt-4.1-mini", "gpt-4.1-nano"] #, "claude-sonnet-3.5"] # Anthropic model removed, dependency issue with anthropic package
 
 def exponential_backoff(attempt, max_attempts=5, base_delay=5, max_delay=120):
     if attempt >= max_attempts:
