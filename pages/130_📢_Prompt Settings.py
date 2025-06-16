@@ -22,7 +22,8 @@ CUSTOM_PROMPTS_FILE = 'custom_prompts.json'
 PROMPT_TYPES = {
     "Initial Coding": initial_coding_prompts,
     "Reduction of Codes": reduce_duplicate_codes_prompts,
-    "Finding Themes": finding_themes_prompts
+    "Finding Themes": finding_themes_prompts,
+    "Pairwise Reduction": {}  # Empty dict as default, custom prompts can be added
 }
 
 def get_prepopulated_prompt(prompt_type: str) -> str:
@@ -88,6 +89,31 @@ Important! Your response should be a JSON-like object with no additional text be
 
 Important! Your response should be a JSON-like object with no additional text before or after. Failure to adhere to this instruction will invalidate your response, making it worthless.
 """
+    elif prompt_type == "Pairwise Reduction":
+        return """Compare codes from File 1 with codes from File 2 and identify pairs that convey similar or the same meaning.
+
+File 1 Codes:
+%s
+
+File 2 Codes:
+%s
+
+For each pair of similar codes, provide the code_id from File 1 and the code_id from File 2.
+
+Respond with a JSON object in this exact format:
+{
+  "comparisons": [
+    {
+      "file1_code_id": "code_id_from_file1",
+      "file2_code_id": "code_id_from_file2"
+    },
+    ...
+  ]
+}
+
+Important! Only include pairs where the codes are genuinely similar or identical in meaning.
+Do not include pairs that are only superficially similar or distinctly different.
+Your response must be a valid JSON object with no additional text."""
     else:
         return ""
 
@@ -127,8 +153,9 @@ def display_instructions() -> None:
         st.write("At the top of the page, you'll find a dropdown menu to select the prompt type:")
         st.markdown("""
         - **Initial Coding**: For creating initial codes from your data.
-        - **Reduction of Codes**: For merging and refining your codes.
+        - **Reduction of Codes**: For merging and refining your codes using 1-vs-all comparison.
         - **Finding Themes**: For identifying overarching themes from your codes.
+        - **Pairwise Reduction**: For comparing and merging codes between pairs of files.
         """)
         st.write("Select the prompt type you want to work with.")
 

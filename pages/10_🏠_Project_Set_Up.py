@@ -16,9 +16,8 @@ PROJECTS_DIR = 'projects'
 FOLDER_ORDER = ['data', 'initial_codes', 'reduced_codes', 'expanded_reduced_codes', 'themes', 'theme_books']
 
 def get_project_structure(project):
-    structure = {folder: [] for folder in FOLDER_ORDER}
-    project_path = os.path.join(PROJECTS_DIR, project)
-    
+    structure = {folder: [] for folder in FOLDER_ORDER} # Initialize structure with empty lists for each folder
+    project_path = os.path.join(PROJECTS_DIR, project) # Construct the full path to the project folder    
     for folder in FOLDER_ORDER:
         folder_path = os.path.join(project_path, folder)
         if os.path.exists(folder_path):
