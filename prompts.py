@@ -349,3 +349,60 @@ reduce_duplicate_codes_1_v_all = {
         "top_p": 0.1
     },
 }
+
+reduce_duplicate_codes_pairwise = {
+    "Preset 1 - Pairwise Comparison": {"prompt":"""Compare codes from File 1 with codes from File 2 and identify pairs that convey similar or the same meaning.
+
+    File 1 Codes:
+    %s
+
+    File 2 Codes:
+    %s
+
+    For each pair of similar codes, provide the code_id from File 1 and the code_id from File 2.
+    
+    Respond with a JSON object in this exact format:
+    {
+        "comparisons": [
+            {
+                "file1_code_id": "code_id_from_file1",
+                "file2_code_id": "code_id_from_file2"
+            },
+            ...
+        ]
+    }
+
+    Important! Only include pairs where the codes are genuinely similar or identical in meaning.
+    Do not include pairs that are only superficially similar or distinctly different.
+    Your response must be a valid JSON object with no additional text.""",
+        "temperature": 0.00,
+        "top_p": 0.1
+    },
+    "Preset 2 - Pairwise Strict Matching": {"prompt":"""Compare codes from File 1 with codes from File 2 and identify only those pairs that are nearly identical in meaning.
+
+    File 1 Codes:
+    %s
+
+    File 2 Codes:
+    %s
+
+    For each pair of matching codes, provide the code_id from File 1 and the code_id from File 2.
+    Only match codes that express the same concept with minimal variation.
+    
+    Respond with a JSON object in this exact format:
+    {
+        "comparisons": [
+            {
+                "file1_code_id": "code_id_from_file1",
+                "file2_code_id": "code_id_from_file2"
+            },
+            ...
+        ]
+    }
+
+    Important! Be very strict - only match codes that are essentially duplicates.
+    Your response must be a valid JSON object with no additional text.""",
+        "temperature": 0.00,
+        "top_p": 0.1
+    },
+}

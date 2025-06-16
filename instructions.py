@@ -371,3 +371,96 @@ def saturation_metric_instructions():
         """)
 
         st.info("See our paper on saturation and LLMs (https://arxiv.org/pdf/2401.03239) for more information.")
+
+def pairwise_reduce_codes_instructions():
+
+    process_gif = "pages/animations/process_rounded.gif"
+    compare_gif = "pages/animations/compare_rounded.gif"
+    merge_gif = "pages/animations/merge_rounded.gif"
+
+    process_text = 'The LLM compares codes between pairs of files...'
+    compare_text = '...to identify similar codes across different sources...'
+    merge_text = "...which are merged into a unified set of codes."
+
+    st.header(":orange[Pairwise Reduction of Codes]")
+
+    with st.expander("Instructions"):
+
+        st.write("""
+        The Pairwise Reduction page offers an alternative approach to code reduction that compares codes between pairs of files rather than comparing each code against all others. 
+        This method significantly reduces the number of API calls while maintaining effective code consolidation.
+        """)
+        col1, col2, col3 = st.columns(3)
+        centered_column_with_number(col1, 1, process_text, process_gif)
+        centered_column_with_number(col2, 2, compare_text, compare_gif)
+        centered_column_with_number(col3, 3, merge_text, merge_gif)
+
+        st.markdown(
+            """
+            <p style="font-size: 8px; color: gray; text-align: center;">
+            <a href="https://www.flaticon.com/animated-icons" title="document animated icons" style="color: gray; text-decoration: none;">
+            Animated icons created by Freepik - Flaticon
+            </a>
+            </p>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.subheader(":orange[1. Project and File Selection]")
+        st.write("""
+        - Select your project from the dropdown menu.
+        - Choose at least 2 files containing initial codes to compare.
+        - Use the "Select All" checkbox to quickly select all available files.
+        """)
+
+        st.subheader(":orange[2. Pairwise Comparison Settings]")
+        st.write("""
+        - **All Pairs**: Compares each file with every other file (more thorough but more API calls).
+        - **Sequential Pairs**: Compares each file only with the next file in the list (fewer API calls).
+        - The system shows you which file pairs will be compared before processing.
+        """)
+
+        st.subheader(":orange[3. LLM Settings]")
+        st.write("""
+        - Choose the AI model for the analysis.
+        - Select or customize the comparison prompt.
+        - Adjust temperature and top_p parameters to control the AI's behavior.
+        - Enable "Include Quotes" for more context-aware comparisons.
+        - Toggle "Include merge explanation" to get detailed reasoning for merged codes.
+        """)
+
+        st.subheader(":orange[4. Processing and Results]")
+        st.write("""
+        - Click 'Process' to start the pairwise comparison.
+        - The system will:
+          - Compare codes between the selected file pairs
+          - Identify similar codes across files
+          - Merge similar codes into unified representations
+        - View the reduced codes with their descriptions and sources.
+        - Download results as CSV files for further analysis.
+        """)
+
+        st.subheader(":orange[5. Reduction Statistics]")
+        st.write("""
+        - See the total number of original codes across all files.
+        - View the final number of reduced codes.
+        - Check the reduction percentage to understand the consolidation achieved.
+        """)
+
+        st.subheader(":orange[Key Advantages]")
+        st.write("""
+        - :orange[Efficiency]: Fewer API calls compared to 1-vs-all comparison approach.
+        - :orange[Scalability]: Better suited for projects with many files or codes.
+        - :orange[Flexibility]: Choose between thorough (all pairs) or efficient (sequential) comparison modes.
+        - :orange[Transparency]: See exactly which files are being compared before processing.
+        """)
+
+        st.subheader(":orange[Tips]")
+        st.write("""
+        - For initial exploration, try "Sequential Pairs" mode to get quick results with fewer API calls.
+        - Use "All Pairs" mode when you need the most comprehensive code reduction.
+        - If you have files from different sources or time periods, consider the order when using sequential mode.
+        - Review the file pairs before processing to ensure the comparison strategy makes sense for your data.
+        """)
+
+        st.info("Pairwise reduction offers a balanced approach between thoroughness and efficiency, making it ideal for larger projects or when API usage is a concern.")
