@@ -8,10 +8,16 @@ import logging
 import json
 import re
 
+import requests # Ari Thomson added - need this for making api requests to Blablador as there is no wrapper, already in the requirements file, super handy
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 default_models = ["gpt-4o-mini", "gpt-4o", "gpt-4.1", "gpt-4.1-2025-04-14", "gpt-4.1-mini", "gpt-4.1-nano"] #, "claude-sonnet-3.5"] # Anthropic model removed, dependency issue with anthropic package
+
+
+#Add a way of checking what blablador models are currently up!
+blablador_models = ["Blablador - Qwen3 30B A3B (Large Model as of May 2025)", "Blablador - Llama3.1 405b (Currently Testing)"] # Ari Thomson added blablador models, thought it best to keep them seperate from the GPT ones
 
 def exponential_backoff(attempt, max_attempts=5, base_delay=5, max_delay=120):
     if attempt >= max_attempts:
@@ -105,6 +111,45 @@ def llm_call(model, full_prompt, model_temperature, model_top_p):
                     raise ValueError("Failed to extract valid JSON from Azure's response")
                 return json.dumps(json_content)
 
+            #testing having the call outside the loop, even if i think it wont change anything 
+            elif model.startswith("Blablador"):
+
+                alias = "alias-large"
+
+                if(model.startswith("Blablador - Llama")):
+                       alias = "alias-llama3-huge"
+
+
+                settings = {
+                "model": alias,
+                "messages":  [
+                                {"role": "system", "content": "You are a helpful assistant."},
+                                {"role": "user", "content": full_prompt}
+                ],
+                "temperature": model_temperature,
+                "top_p": model_top_p,
+                }
+
+                settings = json.dumps(settings)
+
+                headers = {
+                    'accept': 'application/json', 
+                    'Authorization': f'Bearer {load_api_keys().get('Blablador')}', 
+                    'Content-Type': 'application/json',
+                    'Connection': 'close' 
+                }
+
+                response = requests.post(url="https://api.helmholtz-blablador.fz-juelich.de/v1/chat/completions", headers=headers, data=settings)  
+
+                print("Getting Response")
+                print(response)
+                print(response.text)
+                print("----------------")
+                response_data = response.json()
+
+                return response_data['choices'][0]['message']['content']
+
+            
             else:
                 st.error(f"Unsupported model type: {model}")
                 return None
