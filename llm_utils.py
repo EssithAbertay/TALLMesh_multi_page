@@ -17,7 +17,7 @@ default_models = ["gpt-4o-mini", "gpt-4o", "gpt-4.1", "gpt-4.1-2025-04-14", "gpt
 
 
 #Add a way of checking what blablador models are currently up!
-blablador_models = ["Blablador - Qwen3 30B A3B (Large Model as of May 2025)", "Blablador - Llama3.1 405b (Currently Testing)"] # Ari Thomson added blablador models, thought it best to keep them seperate from the GPT ones
+blablador_models = ["Blablador - Qwen3-VL-32B-Instruct-FP8 (Large Model as of Novemeber 2025)", "Blablador - Llama3.1 405b (Currently Testing)"] # Ari Thomson added blablador models, thought it best to keep them seperate from the GPT ones
 
 def exponential_backoff(attempt, max_attempts=5, base_delay=5, max_delay=120):
     if attempt >= max_attempts:
